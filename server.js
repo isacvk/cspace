@@ -1,10 +1,15 @@
 const mongoose = require("mongoose");
+const dotenv = require("dotenv")
+
+dotenv.config({path:"./config.env"})
 
 const app = require("./app");
 
+const DB = process.env.DATABASE_ATLAS;
+
 mongoose
   .connect(
-    "mongodb+srv://isac:isac1234@natours.sabm7.mongodb.net/natours?retryWrites=true&w=majority"
+    DB
   )
   .then(() => console.log("DB Connection Successfull"));
 

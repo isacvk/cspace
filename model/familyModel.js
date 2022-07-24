@@ -1,9 +1,14 @@
 const mongoose = require("mongoose")
 
 const familySchema = new mongoose.Schema({
-    houseName:{
+    familyName:{
         type:String,
-        require:[true,"Please speceify the family name"]
+        required:[true,"Please speceify the family name"]
+    },
+    familyId:{
+        type:String,
+        unique:true,
+        required:[true,"Family ID not specified"]
     },
     address:{
         type:String,
@@ -17,9 +22,17 @@ const familySchema = new mongoose.Schema({
         type:Number,
         required:[true,"Please specify the ward number"]
     },
+    parishId:{
+        type:String,
+        required:[true,"parish ID not specified"]
+    },
     pin:{
         type:String,
         required:[true,"Please specify the pin number"]
+    },
+    familyHead:{
+        type: mongoose.Schema.ObjectId,
+        ref: "Users",
     },
     members: [
         {
@@ -27,6 +40,9 @@ const familySchema = new mongoose.Schema({
           ref: "Users",
         },
     ],
+    familyPic:{
+        type:String,
+    },
 })
 
 const Families = mongoose.model("Families", familySchema);

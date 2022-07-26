@@ -9,8 +9,7 @@ exports.signup = catchAsync(async (req,res,next)=>{
     const confirmPass = req.body.confirmPassword;
     
     if(password !== confirmPass) return next(new AppError("Passwords does not match!",200))
-    // userId,name,role,password,confirmPassword,parish,parishId,passwordChangedAt,otp,otpTime
-      
+   
     // const newUser = await Users.create(req.body)
 
     res.status(201).json({

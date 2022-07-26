@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
   },
   parish: {
     type: String,
-    // required: [true, "Please specify parish"],
+    // required: [true,. "Please specify parish"],
   },
   parishId:{
     type:String,

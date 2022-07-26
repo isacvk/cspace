@@ -11,3 +11,15 @@ exports.addFamily = catchAsync(async (req,res,next)=>{
     data:addFamily,
   })
 })
+
+exports.getFamily = catchAsync(async (req,res,next)=>{
+
+  if(req.body.family === 'all') getFamily = await Family.find();
+  else
+  getFamily = await Family.findOne({familyId:req.body.family})
+
+  res.status(201).json({  
+    status:"success",
+    data:getFamily,
+  })
+})

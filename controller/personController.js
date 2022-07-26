@@ -4,7 +4,6 @@ const AppError = require("./../utils/appError")
 const catchAsync = require("./../utils/catchAsync")
 
 exports.newPerson = catchAsync(async (req, res, next) => {
-  // id,familyId,firstName,lastName,dob,baptism,marriage,death,phoneNumber,gender,wardNo
 
   const addPerson = await Persons.create(req.body);
 
@@ -15,9 +14,10 @@ exports.newPerson = catchAsync(async (req, res, next) => {
 })
 
 exports.getPerson = catchAsync(async (req, res, next) => {
-  // console.log(req.body.userId);
-  const person = await Persons.findOne({
-    userId: req.body.userId,
+  if (req.body.person==='all') person = await Persons.find();
+  else
+  person = await Persons.findOne({
+    userId: req.body.person,
   });
 
   res.status(201).json({

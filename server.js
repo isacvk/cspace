@@ -5,7 +5,7 @@ dotenv.config({path:"./config.env"})
 
 const app = require("./app");
 
-const DB = process.env.DATABASE_ATLAS;
+const DB = process.env.DATABASE_ATLAS.replace('<PASSWORD>',process.env.DATABASE_ATLAS_PASSWORD)
 
 mongoose
   .connect(

@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 
 const AppError = require("./utils/appError")
 const globalErrorHandler = require("./controller/errorController")
@@ -13,6 +14,24 @@ app.use(express.json());
 
 // Serving static files
 // app.use(express.static(path.join(__dirname, "public")));
+
+// CORS Functionalities
+app.use(cors({ origin: true, credentials: true }));
+
+app.use((req, res, next) => {
+  // res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Credentials", true);
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, GET, DELETE");
+    return res.status(200).json({});
+  }
+  next();
+});
 
 app.use("/api/v1/family", familyRouter);
 app.use("/api/v1/persons", personRouter);

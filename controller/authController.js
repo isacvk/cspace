@@ -10,7 +10,7 @@ exports.signup = catchAsync(async (req,res,next)=>{
     
     if(password !== confirmPass) return next(new AppError("Passwords does not match!",200))
    
-    // const newUser = await Users.create(req.body)
+    const newUser = await Users.create(req.body)
 
     res.status(201).json({
         status:"sucess"

@@ -4,8 +4,11 @@ const personController = require("./../controller/personController");
 
 const router = express.Router();
 
-router.post("/", personController.newPerson);
+router
+  .route("/")
+  .get(personController.getPersons)
+  .post(personController.newPerson);
 
-router.get("/", personController.getPerson);
+router.route("/:id").get(personController.getPerson);
 
 module.exports = router;

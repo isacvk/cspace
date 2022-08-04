@@ -1,10 +1,14 @@
-const express = require("express")
+const express = require("express");
 
-const familyController = require("./../controller/familyController")
+const familyController = require("./../controller/familyController");
 
 const router = express.Router();
 
-router.post("/",familyController.addFamily)
-router.get("/",familyController.getFamily)
+router
+  .route("/")
+  .get(familyController.getFamilies)
+  .post(familyController.addFamily);
+
+router.route("/:id").get(familyController.getFamily);
 
 module.exports = router;

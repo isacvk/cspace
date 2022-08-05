@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Family = require("./familyModel");
 
 const personSchema = new mongoose.Schema({
   familyId: {
@@ -44,6 +45,21 @@ const personSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Please specify ward number"],
   },
+});
+
+personSchema.post("save", async function (next) {
+  family = await Family.findOneAndUpdate(
+    {
+      _id: this.familyId,
+    },
+    {
+      $push: {
+        members: {
+          _id: this._id,
+        },
+      },
+    }
+  );
 });
 
 const Parishioners = mongoose.model("Parishioners", personSchema);

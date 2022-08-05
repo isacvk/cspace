@@ -14,19 +14,17 @@ exports.newPerson = catchAsync(async (req, res, next) => {
 
 const addMember = catchAsync(async (details) => {
   console.log("This called");
-  const addPerson = await Persons.create(details).catch((e) => {
-    console.log("Fuck : ", e.errors.parishId);
-  });
+  const addPerson = await Persons.create(details).catch((e) => {});
 });
 
 exports.newPerson2 = catchAsync(async (req, res, next) => {
   // const addPerson = await Persons.create(req.body);
 
   const familyMembers = req.body.persons;
-  let data;
   familyMembers.map((person) => {
     person.familyId = `${req.body.familyId}`;
-    console.log(person);
+    person.wardNo = `${req.body.wardNo}`;
+    addMember(person);
   });
   // const result = await addMember(data);
   console.log(req.body.persons.length);

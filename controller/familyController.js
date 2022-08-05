@@ -23,14 +23,14 @@ exports.getFamilies = catchAsync(async (req, res, next) => {
 });
 
 exports.getFamily = catchAsync(async (req, res, next) => {
-  const getFamily = await Family.findOne({ familyId: req.params.id });
+  const getFamily = await Family.findById(req.params.id).populate("members");
 
   if (!getFamily)
     return next(
       new AppError(`No family found with the id ${req.params.id}!`, 404)
     );
 
-  res.status(201).json({
+  res.status(200).json({
     status: "success",
     data: getFamily,
   });

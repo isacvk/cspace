@@ -27,12 +27,12 @@ const familySchema = new mongoose.Schema({
   },
   familyHead: {
     type: mongoose.Schema.ObjectId,
-    ref: "Users",
+    ref: "Parishioners",
   },
   members: [
     {
       type: mongoose.Schema.ObjectId,
-      ref: "Users",
+      ref: "Parishioners",
     },
   ],
   familyPic: {

@@ -13,7 +13,6 @@ exports.newPerson = catchAsync(async (req, res, next) => {
 });
 
 const addMember = catchAsync(async (details) => {
-  console.log("This called");
   const addPerson = await Persons.create(details).catch((e) => {});
 });
 
@@ -26,8 +25,6 @@ exports.newPerson2 = catchAsync(async (req, res, next) => {
     person.wardNo = `${req.body.wardNo}`;
     addMember(person);
   });
-  // const result = await addMember(data);
-  console.log(req.body.persons.length);
 
   res.status(201).json({
     status: "success",

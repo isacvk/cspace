@@ -78,7 +78,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     // req.body.loginId = await randomId();
     const idExist = await Users.findOne({ loginId: `${req.body.loginId}` });
 
-    console.log(idExist);
+    // console.log(idExist);
     if (!idExist) repeatIdGenetation = false;
   }
 
@@ -88,7 +88,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   const newUser = await Users.create(req.body);
 
-  console.log(newUser);
+  // console.log(newUser);
   // SMS CONTENT
   if (newUser) {
     let message = `You can now login to cspace,
@@ -98,7 +98,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     let phoneNum = [];
     phoneNum[0] = user.phoneNumber;
 
-    const sendMessage = await sms.sendSMS(message, phoneNum);
+    // const sendMessage = await sms.sendSMS(message, phoneNum);
   }
 
   res.status(201).json({

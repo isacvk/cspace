@@ -13,8 +13,7 @@ exports.addFamily = catchAsync(async (req, res, next) => {
 });
 
 exports.getFamilies = catchAsync(async (req, res, next) => {
-  if (req.body.family === "all") getFamily = await Family.find();
-  else getFamily = await Family.findOne({ familyId: req.body.family });
+  getFamily = await Family.find().sort({ familyName: 1 });
 
   res.status(201).json({
     status: "success",

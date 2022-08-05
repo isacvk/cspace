@@ -1,19 +1,14 @@
 const mongoose = require("mongoose");
 
 const personSchema = new mongoose.Schema({
-  userId: {
-    type: String,
-    required: [true, "User ID not specified"],
-    unique:true,
-  },
   familyId: {
-    type: String,
-    required: [true, "Family ID is not specified"],
+    type: mongoose.Schema.ObjectId,
+    ref: "Families",
   },
-  parishId:{
-    type:String,
-    required:[true,"Parish Id is not specified"]
-  },
+  // parishId: {
+  //   type: String,
+  //   required: [true, "Parish Id is not specified"],
+  // },
   firstName: {
     type: String,
     required: [true, "Please tell us your first name!"],

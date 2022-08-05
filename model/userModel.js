@@ -4,6 +4,10 @@ const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
   userId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Parishioners",
+  },
+  loginId: {
     type: String,
     required: [true, "User ID is required!"],
     unique: true,
@@ -15,6 +19,7 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     required: [true, "User role not specified"],
+    enum: ["Admin", "Accountant", "User"],
   },
   password: {
     type: String,
@@ -22,14 +27,14 @@ const userSchema = new mongoose.Schema({
     minlength: 8,
     select: false,
   },
-  parish: {
-    type: String,
-    // required: [true,. "Please specify parish"],
-  },
-  parishId: {
-    type: String,
-    required: [true, "Parish ID is not specified"],
-  },
+  // parish: {
+  //   type: String,
+  //   // required: [true,. "Please specify parish"],
+  // },
+  // parishId: {
+  //   type: String,
+  //   required: [true, "Parish ID is not specified"],
+  // },
   passwordChangedAt: Date,
   otp: Number,
   otpTime: Date,

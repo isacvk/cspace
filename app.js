@@ -1,14 +1,17 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 
-const AppError = require("./utils/appError")
-const globalErrorHandler = require("./controller/errorController")
+const AppError = require("./utils/appError");
+const globalErrorHandler = require("./controller/errorController");
 
 const familyRouter = require("./routes/familyRoutes");
 const personRouter = require("./routes/personRoutes");
 const userRouter = require("./routes/userRoutes");
 
 const app = express();
+
+app.use(cookieParser());
 
 app.use(express.json());
 
@@ -37,10 +40,10 @@ app.use("/api/v1/family", familyRouter);
 app.use("/api/v1/persons", personRouter);
 app.use("/api/v1/users", userRouter);
 
-app.all('*',(req,res,next)=>{
-    next(new AppError(`can't find ${req.originalUrl} on this server!`,404))
-})
+app.all("*", (req, res, next) => {
+  next(new AppError(`can't find ${req.originalUrl} on this server!`, 404));
+});
 
-app.use(globalErrorHandler)
+app.use(globalErrorHandler);
 
 module.exports = app;

@@ -9,6 +9,8 @@ router
   .get(personController.getPersons)
   .post(personController.newPerson);
 
-router.route("/:id").get(personController.getPerson);
+router.route("/add").post(personController.newPerson2);
+
+router.route("/id/:id").get(personController.getPerson);
 
 module.exports = router;

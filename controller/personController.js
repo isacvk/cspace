@@ -12,6 +12,31 @@ exports.newPerson = catchAsync(async (req, res, next) => {
   });
 });
 
+const addMember = catchAsync(async (details) => {
+  console.log("This called");
+  const addPerson = await Persons.create(details).catch((e) => {
+    console.log("Fuck : ", e.errors.parishId);
+  });
+});
+
+exports.newPerson2 = catchAsync(async (req, res, next) => {
+  // const addPerson = await Persons.create(req.body);
+
+  const familyMembers = req.body.persons;
+  let data;
+  familyMembers.map((person) => {
+    person.familyId = `${req.body.familyId}`;
+    console.log(person);
+  });
+  // const result = await addMember(data);
+  console.log(req.body.persons.length);
+
+  res.status(201).json({
+    status: "success",
+    // data: addPerson,
+  });
+});
+
 exports.getPersons = catchAsync(async (req, res, next) => {
   if (req.body.person === "all") person = await Persons.find();
   else

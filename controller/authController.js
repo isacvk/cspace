@@ -4,6 +4,7 @@ const Users = require("./../model/userModel");
 const Parishioners = require("./../model/personModel");
 
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const catchAsync = require("./../utils/catchAsync");
 const AppError = require("./../utils/appError");
@@ -69,6 +70,7 @@ const randomId = async () => {
 
 exports.signup = catchAsync(async (req, res, next) => {
   // find the name, create login ID and password and send sms
+  // ***?What if user already have uid and pass
 
   const user = await Parishioners.findById(req.body.userId);
 
@@ -98,7 +100,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     let phoneNum = [];
     phoneNum[0] = user.phoneNumber;
 
-    // const sendMessage = await sms.sendSMS(message, phoneNum);
+    const sendMessage = await sms.sendSMS(message, phoneNum);
   }
 
   res.status(201).json({
@@ -120,6 +122,126 @@ exports.login = async (req, res, next) => {
 
   createSendToken(user, 200, res);
 };
+
+exports.forgotPass = catchAsync(async (req, res, next) => {
+  // 1. Check users table and get userId
+  // 2. Get phone num from persons doc
+  // 3. Create OTP and time and store it database
+  // 4. Send otp and SMS
+  // 5. Check if OTP matches and time is correct
+  // 6. If everything is ok
+
+  const validUser = await Users.findOne({ loginId: `${req.body.userId}` });
+
+  if (!validUser) {
+    return next(
+      new AppError(`User with the id ${req.body.userId} doesn't exist!`, 404)
+    );
+  }
+
+  const user = await Parishioners.findById(validUser.userId);
+
+  //***?What is user doesn't have a phone number
+  //***TODO: Generate OTP
+  let otp = "1232";
+
+  const setOtp = await Users.findOneAndUpdate(
+    { loginId: `${req.body.userId}` },
+    {
+      otp: `${otp}`,
+      otpTime: `${new Date()}`,
+    }
+  );
+
+  // SMS Content
+  if (setOtp) {
+    let message = `Your OTP is ${otp} , valid for 15 mins`;
+    let phoneNum = [];
+    phoneNum[0] = user.phoneNumber;
+
+    const sendMessage = await sms.sendSMS(message, phoneNum);
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "An OTP is sent to your number, valid for 15 mins.",
+  });
+});
+
+exports.verifyOtp = catchAsync(async (req, res, next) => {
+  const otpLength = req.body.otp / 1000;
+  if (otpLength < 1 || otpLength >= 10) {
+    return next(new AppError(`Please enter 4 digit otp`, 401));
+  }
+
+  const validOtp = await Users.findOne({
+    loginId: `${req.body.userId}`,
+    otp: `${req.body.otp}`,
+  });
+
+  if (!validOtp) {
+    return next(new AppError("Invalid otp!", 401));
+  }
+  // Checking if 15 mins has been passed
+  const timeElapsed =
+    parseInt(new Date() / 1000, 10) - parseInt(validOtp.otpTime / 1000, 10);
+
+  if (timeElapsed > 900) {
+    return next(new AppError("Your Otp has been expired", 401));
+  }
+
+  const updateOtp = await Users.findOneAndUpdate(
+    {
+      loginId: `${req.body.userId}`,
+      otp: `${req.body.otp}`,
+    },
+    {
+      otp: `1`,
+    }
+  );
+
+  res.status(200).json({
+    status: "success",
+    message: "Otp verified!",
+  });
+});
+
+exports.resetPass = catchAsync(async (req, res, next) => {
+  const user = await Users.findOne({ loginId: `${req.body.userId}` });
+
+  if (!user) {
+    return next(
+      new AppError(`No user found with id ${req.body.userId} !`, 404)
+    );
+  }
+
+  if (user.otp !== 1) {
+    return next(new AppError("Your Otp is not verified!", 401));
+  }
+
+  const timeElapsed =
+    parseInt(new Date() / 1000, 10) - parseInt(user.otpTime / 1000, 10);
+
+  if (timeElapsed > 900) {
+    return next(new AppError("Your 15 min has been expired", 401));
+  }
+
+  const hashedPassword = await bcrypt.hash(req.body.password, 12);
+
+  const updatePassword = await Users.findOneAndUpdate(
+    { loginId: `${req.body.userId}` },
+    {
+      password: `${hashedPassword}`,
+      passwordChangedAt: `${new Date()}`,
+      otp: `0`,
+    }
+  );
+
+  res.status(201).json({
+    status: "success",
+    message: "password modified successfully",
+  });
+});
 
 exports.protect = catchAsync(async (req, res, next) => {
   // 1. Get Token & check if it exist
@@ -150,11 +272,11 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
 
   // 4. Check if user changed password after token issued
-  // if (currentUser.changedPasswordAfter(decoded.iat)) {
-  //   return next(
-  //     new AppError("User recently changed password! Please login again", 401)
-  //   );
-  // }
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
+    return next(
+      new AppError("User recently changed password! Please login again", 401)
+    );
+  }
 
   // Grants Access To Protected Route
   req.user = currentUser;

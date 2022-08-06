@@ -22,6 +22,7 @@ exports.addEngagementRegistry = catchAsync(async (req, res, next) => {
 
 exports.addMarriageRegistry = catchAsync(async (req, res, next) => {
   //***TODO: Check if age above 18 or 21
+  //***TODO: Update marriage date in perwson model as this gets entered
   //***? What if the person marries second time. [Add a field to mark marriage as invalid]
 
   const user = await Parishioners.findById(req.params.id);

@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const Parishioners = require("./personModel");
+
 const marriageRegistrySchema = new mongoose.Schema({
   brideGroomId: {
     type: mongoose.Schema.ObjectId,
@@ -66,6 +68,21 @@ const marriageRegistrySchema = new mongoose.Schema({
     type: String,
     required: [true, "Parish priest name is not specified"],
   },
+});
+
+//*param myParam Updates marriage date on persons model
+
+marriageRegistrySchema.post("save", async function (next) {
+  let updateList = [];
+  if (this.brideGroomId) updateList.push(this.brideGroomId);
+  if (this.brideId) updateList.push(this.brideId);
+
+  updateMarriageDate = await Parishioners.updateMany(
+    { _id: { $in: updateList } },
+    {
+      $set: { marriage: this.marriageDate },
+    }
+  );
 });
 
 const marriageRegistry = mongoose.model(

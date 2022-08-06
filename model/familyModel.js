@@ -25,7 +25,8 @@ const familySchema = new mongoose.Schema({
     type: String,
     required: [true, "Please specify the pin number"],
   },
-  familyHead: {
+  familyHead: String,
+  familyHeadId: {
     type: mongoose.Schema.ObjectId,
     ref: "Parishioners",
   },

@@ -34,3 +34,22 @@ exports.getFamily = catchAsync(async (req, res, next) => {
     data: getFamily,
   });
 });
+
+exports.updateFamily = catchAsync(async (req, res, next) => {
+  const updateFamily = await Family.findOneAndUpdate(
+    {
+      _id: `${req.params.id}`,
+    },
+    req.body
+  );
+
+  if (!updateFamily) {
+    return next(new AppError(`No family found with that Id!`, 404));
+  }
+
+  res.status(201).json({
+    status: "success",
+    message: "Family info succesfully modified",
+    family: updateFamily,
+  });
+});

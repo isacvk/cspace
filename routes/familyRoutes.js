@@ -10,6 +10,9 @@ router
   .get(authController.protect, familyController.getFamilies)
   .post(familyController.addFamily);
 
-router.route("/:id").get(familyController.getFamily);
+router
+  .route("/:id")
+  .get(familyController.getFamily)
+  .patch(familyController.updateFamily);
 
 module.exports = router;

@@ -124,13 +124,6 @@ exports.login = async (req, res, next) => {
 };
 
 exports.forgotPass = catchAsync(async (req, res, next) => {
-  // 1. Check users table and get userId
-  // 2. Get phone num from persons doc
-  // 3. Create OTP and time and store it database
-  // 4. Send otp and SMS
-  // 5. Check if OTP matches and time is correct
-  // 6. If everything is ok
-
   const validUser = await Users.findOne({ loginId: `${req.body.userId}` });
 
   if (!validUser) {

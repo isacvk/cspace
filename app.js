@@ -1,3 +1,5 @@
+const path = require("path");
+
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -16,21 +18,30 @@ app.use(cookieParser());
 
 app.use(express.json());
 
-// Serving static files
-// app.use(express.static(path.join(__dirname, "public")));
-
 // CORS Functionalities
-app.use(cors({ origin: true, credentials: true }));
+// app.use(cors({ origin: true, credentials: true }));
+app.use(cors({ origin: "http://localhost:5500", credentials: true }));
+// app.set("trust proxy", 1);
+
+// app.options("*", cors());
+
+// Serving static files
+app.use(express.static(path.join(__dirname, "public")));
+
+// Testing
+app.set("trust proxy", 1);
 
 app.use((req, res, next) => {
   // res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
-  res.header("Access-Control-Allow-Origin", "*");
+  // res.header("Access-Control-Allow-Origin", "*");
+  // res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
   res.header("Access-Control-Allow-Credentials", true);
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
+  // res.header(
+  //   "Access-Control-Allow-Headers",
+  //   "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  // );
   if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Credentials", true);
     res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, GET, DELETE");
     return res.status(200).json({});
   }

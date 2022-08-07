@@ -12,6 +12,8 @@ router.post(
 );
 router.post("/login", authController.login);
 
+router.post("/login-cookie", authController.loginCookie);
+
 router.post("/forgot-password", authController.forgotPass);
 router.post("/verify-otp", authController.verifyOtp);
 router.patch("/reset-password", authController.resetPass);

@@ -19,20 +19,23 @@ const createSendToken = (user, statusCode, res) => {
     expiresIn: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
+    // sameSite: "strict",
     sameSite: "strict",
+    // secure: true,
     httpOnly: true,
     Path: "/",
   };
 
-  if (process.env.NODE_ENV === "production") {
-    cookieOptions.secure = true;
-  }
+  // if (process.env.NODE_ENV === "production") {
+  //   cookieOptions.secure = true;
+  // }
 
-  res.cookie("jwt", token, cookieOptions, "Path=/");
+  // res.cookie("jwt", token, cookieOptions, "Path=/");
+  res.cookie("jwt", token, cookieOptions);
 
   user.__v = undefined;
 
-  res.status(statusCode).json({
+  res.status(202).json({
     status: "success",
     data: {
       user: user,
@@ -109,6 +112,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 });
 
 exports.login = async (req, res, next) => {
+  console.log(req.body);
   const { loginId, password } = req.body;
 
   if (!loginId || !password)
@@ -122,6 +126,23 @@ exports.login = async (req, res, next) => {
 
   createSendToken(user, 200, res);
 };
+//* Sample cookies
+exports.loginCookie = catchAsync(async (req, res, next) => {
+  let cookieOptions = {
+    expiresIn: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    sameSite: "strict",
+    // secure: true,
+    httpOnly: true,
+    Path: "/",
+  };
+
+  res.cookie("jwt", "12345", cookieOptions);
+  res.status(202).json({
+    status: "success",
+  });
+});
 
 exports.forgotPass = catchAsync(async (req, res, next) => {
   const validUser = await Users.findOne({ loginId: `${req.body.userId}` });

@@ -48,10 +48,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  console.log(req);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log(req);
+//   next();
+// });
 
 app.use("/api/v1/family", familyRouter);
 app.use("/api/v1/persons", personRouter);

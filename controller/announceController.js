@@ -25,6 +25,12 @@ exports.modifyAnnounce = catchAsync(async (req, res, next) => {
     }
   );
 
+  if (!modifyAnnouncement) {
+    return next(
+      new AppError(`No announcement found with id ${req.params.id}`, 404)
+    );
+  }
+
   res.status(200).json({
     status: "success",
     message: "announcement modified!",
@@ -34,6 +40,12 @@ exports.deleteAnnounce = catchAsync(async (req, res, next) => {
   const deleteAnnouncement = await Announce.findByIdAndDelete({
     _id: req.params.id,
   });
+
+  if (!deleteAnnouncement) {
+    return next(
+      new AppError(`No announcement found with id ${req.params.id}`, 404)
+    );
+  }
 
   res.status(200).json({
     status: "success",

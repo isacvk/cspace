@@ -127,6 +127,7 @@ exports.login = async (req, res, next) => {
   createSendToken(user, 200, res);
 };
 //* Sample cookies
+//***! Probably should be deleted
 exports.loginCookie = catchAsync(async (req, res, next) => {
   let cookieOptions = {
     expiresIn: new Date(

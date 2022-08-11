@@ -11,6 +11,7 @@ const familyRouter = require("./routes/familyRoutes");
 const personRouter = require("./routes/personRoutes");
 const userRouter = require("./routes/userRoutes");
 const registryRouter = require("./routes/registryRoutes");
+const announceRouter = require("./routes/announceRoutes");
 
 const app = express();
 
@@ -20,7 +21,7 @@ app.use(express.json());
 
 // CORS Functionalities
 // app.use(cors({ origin: true, credentials: true }));
-app.use(cors({ origin: "http://localhost:5500", credentials: true }));
+app.use(cors({ origin: "http://127.0.0.1:5500", credentials: true }));
 // app.set("trust proxy", 1);
 
 // app.options("*", cors());
@@ -57,6 +58,7 @@ app.use("/api/v1/family", familyRouter);
 app.use("/api/v1/persons", personRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/registry", registryRouter);
+app.use("/api/v1/announce", announceRouter);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl} on this server!`, 404));

@@ -12,6 +12,7 @@ const personRouter = require("./routes/personRoutes");
 const userRouter = require("./routes/userRoutes");
 const registryRouter = require("./routes/registryRoutes");
 const announceRouter = require("./routes/announceRoutes");
+const smsRouter = require("./routes/smsRoutes");
 
 const app = express();
 
@@ -59,6 +60,7 @@ app.use("/api/v1/persons", personRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/registry", registryRouter);
 app.use("/api/v1/announce", announceRouter);
+app.use("/api/v1/send-sms", smsRouter);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl} on this server!`, 404));

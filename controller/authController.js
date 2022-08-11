@@ -79,6 +79,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   let repeatIdGenetation = true;
   while (repeatIdGenetation) {
+    //***! Create dynamic login id
     req.body.loginId = "123458";
     // req.body.loginId = await randomId();
     const idExist = await Users.findOne({ loginId: `${req.body.loginId}` });

@@ -33,11 +33,7 @@ exports.newPerson2 = catchAsync(async (req, res, next) => {
 });
 
 exports.getPersons = catchAsync(async (req, res, next) => {
-  if (req.body.person === "all") person = await Persons.find();
-  else
-    person = await Persons.findOne({
-      userId: req.body.person,
-    });
+  const person = await Persons.find();
 
   res.status(201).json({
     status: "success",

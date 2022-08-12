@@ -13,6 +13,8 @@ const userRouter = require("./routes/userRoutes");
 const registryRouter = require("./routes/registryRoutes");
 const announceRouter = require("./routes/announceRoutes");
 const smsRouter = require("./routes/smsRoutes");
+const pdfRouter = require("./routes/pdfRoutes");
+const digitalSign = require("./controller/signController");
 
 const app = express();
 
@@ -61,6 +63,8 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/registry", registryRouter);
 app.use("/api/v1/announce", announceRouter);
 app.use("/api/v1/send-sms", smsRouter);
+app.use("/api/v1/create-pdf", pdfRouter);
+app.use("/api/v1/verify-sign", digitalSign.verifySign);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl} on this server!`, 404));

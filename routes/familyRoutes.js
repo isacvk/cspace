@@ -7,7 +7,10 @@ const router = express.Router();
 
 router
   .route("/")
-  .get(authController.protect, familyController.getFamilies)
+  .get(
+    // authController.protect,
+    familyController.getFamilies
+  )
   .post(familyController.addFamily);
 
 router

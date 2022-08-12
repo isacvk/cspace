@@ -64,6 +64,7 @@ exports.sendMessage = catchAsync(async (req, res, next) => {
   if (req.body.to === "ward") queryObj = { wardNo: req.body.id };
   if (req.body.to === "family") queryObj = { familyId: req.body.id };
   if (req.body.to === "person") queryObj = { _id: req.body.id };
+  if (req.body.to === "all") queryObj = {};
 
   const users = await Persons.find(queryObj).select("phoneNumber");
 

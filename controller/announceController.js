@@ -15,6 +15,15 @@ exports.announce = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getAnnouncement = catchAsync(async (req, res, next) => {
+  const announcements = await Announce.find();
+
+  res.status(200).json({
+    status: "success",
+    announcements,
+  });
+});
+
 exports.modifyAnnounce = catchAsync(async (req, res, next) => {
   const modifyAnnouncement = await Announce.findByIdAndUpdate(
     {
@@ -36,6 +45,7 @@ exports.modifyAnnounce = catchAsync(async (req, res, next) => {
     message: "announcement modified!",
   });
 });
+
 exports.deleteAnnounce = catchAsync(async (req, res, next) => {
   const deleteAnnouncement = await Announce.findByIdAndDelete({
     _id: req.params.id,

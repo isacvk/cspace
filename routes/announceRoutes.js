@@ -5,7 +5,10 @@ const announceController = require("./../controller/announceController");
 
 const router = express.Router();
 
-router.route("/").get().post(announceController.announce);
+router
+  .route("/")
+  .get(announceController.getAnnouncement)
+  .post(announceController.announce);
 router.route("/:id").patch(announceController.modifyAnnounce);
 router.route("/:id").delete(announceController.deleteAnnounce);
 

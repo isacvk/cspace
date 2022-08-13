@@ -20,7 +20,7 @@ const personSchema = new mongoose.Schema({
   },
   dob: {
     type: Date,
-    required: [true, "Please tell us your date of birth"],
+    // required: [true, "Please tell us your date of birth"],
   },
   baptism: {
     type: Date,
@@ -45,6 +45,46 @@ const personSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Please specify ward number"],
   },
+  father: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Parishioners",
+  },
+  mother: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Parishioners",
+  },
+  brothers: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "Parishioners",
+    },
+  ],
+  sisters: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "Parishioners",
+    },
+  ],
+  wife: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Parishioners",
+  },
+  husband: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Parishioners",
+  },
+  sons: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "Parishioners",
+    },
+  ],
+  daughters: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "Parishioners",
+    },
+  ],
 });
 
 personSchema.post("save", async function (next) {

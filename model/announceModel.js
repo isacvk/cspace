@@ -10,7 +10,7 @@ const announceSchema = new mongoose.Schema({
   },
   visibility: {
     type: String,
-    enum: [private, public],
+    enum: ["private", "public"],
   },
 });
 

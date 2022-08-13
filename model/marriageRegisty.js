@@ -70,7 +70,8 @@ const marriageRegistrySchema = new mongoose.Schema({
   },
 });
 
-//*param myParam Updates marriage date on persons model
+//*Updates marriage date on persons model
+//***?Why update many is used here
 
 marriageRegistrySchema.post("save", async function (next) {
   let updateList = [];

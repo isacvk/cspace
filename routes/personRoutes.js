@@ -10,6 +10,11 @@ router
   .post(personController.newPerson);
 
 router.route("/add").post(personController.newPerson2);
+router
+  .route("/relations/:id")
+  .get(personController.getPersonRelations)
+  .post(personController.addRelations)
+  .patch(personController.updateRelations);
 
 router.route("/id/:id").get(personController.getPerson);
 

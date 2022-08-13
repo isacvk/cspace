@@ -80,6 +80,7 @@ exports.addRelations = catchAsync(async (req, res, next) => {
 });
 
 exports.updateRelations = catchAsync(async (req, res, next) => {
+  //***TODO: Handle errors
   const user = await Persons.findByIdAndUpdate(req.params.id, {
     $push: {
       brothers: {

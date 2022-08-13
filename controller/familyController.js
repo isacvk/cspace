@@ -13,11 +13,28 @@ exports.addFamily = catchAsync(async (req, res, next) => {
 });
 
 exports.getFamilies = catchAsync(async (req, res, next) => {
-  getFamily = await Family.find().sort({ familyName: 1 });
+  const queryObj = { ...req.query };
+  const excludedFields = ["sort"];
+  excludedFields.forEach((el) => delete queryObj[el]);
+
+  let queryStr = JSON.stringify(queryObj);
+  queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+  let query = Family.find(JSON.parse(queryStr));
+
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(",").join(" ");
+    query = query.sort(sortBy);
+  } else {
+    query = query.sort("familyName");
+  }
+
+  const getFamilies = await query;
 
   res.status(201).json({
     status: "success",
-    data: getFamily,
+    results: getFamilies.length,
+    data: getFamilies,
   });
 });
 

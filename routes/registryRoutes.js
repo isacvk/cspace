@@ -6,16 +6,16 @@ const router = express.Router();
 
 router
   .route("/baptism-registry/:id")
-  .post(registryController.addBaptismRegistry);
+  .get(registryController.getBaptismReg)
+  .post(registryController.addBaptismReg)
+  .patch(registryController.updateBaptismReg);
 
 router
   .route("/engagement-registry/:id")
-  .post(registryController.addEngagementRegistry);
+  .post(registryController.addEngagementReg);
 
-router
-  .route("/marriage-registry/:id")
-  .post(registryController.addMarriageRegistry);
+router.route("/marriage-registry/:id").post(registryController.addMarriageReg);
 
-router.route("/death-registry/:id").post(registryController.addDeathRegistry);
+router.route("/death-registry/:id").post(registryController.addDeathReg);
 
 module.exports = router;

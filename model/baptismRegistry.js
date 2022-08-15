@@ -1,6 +1,12 @@
 const mongoose = require("mongoose");
 
+const Parishioners = require("./personModel");
+
 const baptismSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Parishioners",
+  },
   familyId: {
     type: mongoose.Schema.ObjectId,
     ref: "Families",
@@ -65,6 +71,15 @@ const baptismSchema = new mongoose.Schema({
   },
 });
 
-const BaptismReg = mongoose.model("Announce", baptismSchema);
+baptismSchema.post("save", async function (next) {
+  updateDate = await Parishioners.findByIdAndUpdate(
+    { _id: this.userId },
+    {
+      $set: { dob: this.dob, baptism: this.doBaptism },
+    }
+  );
+});
+
+const BaptismReg = mongoose.model("BaptismReg", baptismSchema);
 
 module.exports = BaptismReg;

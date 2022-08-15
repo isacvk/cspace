@@ -67,6 +67,7 @@ app.use("/api/v1/send-sms", smsRouter);
 app.use("/api/v1/create-pdf", pdfRouter);
 app.use("/api/v1/verify-sign", digitalSign.verifySign);
 app.use("/api/v1/payment", paymentRouter);
+app.use("/verify", paymentRouter);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl} on this server!`, 404));

@@ -15,6 +15,7 @@ const announceRouter = require("./routes/announceRoutes");
 const smsRouter = require("./routes/smsRoutes");
 const pdfRouter = require("./routes/pdfRoutes");
 const digitalSign = require("./controller/signController");
+const paymentRouter = require("./routes/paymentRoutes");
 
 const app = express();
 
@@ -24,7 +25,7 @@ app.use(express.json());
 
 // CORS Functionalities
 // app.use(cors({ origin: true, credentials: true }));
-app.use(cors({ origin: "http://127.0.0.1:3000", credentials: true }));
+app.use(cors({ origin: "http://127.0.0.1:5500", credentials: true }));
 // app.set("trust proxy", 1);
 
 // app.options("*", cors());
@@ -65,6 +66,7 @@ app.use("/api/v1/announce", announceRouter);
 app.use("/api/v1/send-sms", smsRouter);
 app.use("/api/v1/create-pdf", pdfRouter);
 app.use("/api/v1/verify-sign", digitalSign.verifySign);
+app.use("/api/v1/payment", paymentRouter);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl} on this server!`, 404));

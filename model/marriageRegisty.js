@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const Parishioners = require("./personModel");
 
-const marriageRegistrySchema = new mongoose.Schema({
+const marriageRegSchema = new mongoose.Schema({
   brideGroomId: {
     type: mongoose.Schema.ObjectId,
     ref: "Parishioners",
@@ -11,51 +11,6 @@ const marriageRegistrySchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Parishioners",
   },
-  brideGroomData: {
-    name: {
-      type: String,
-      required: [true, "Name of the bride groom is not specified"],
-    },
-    familyName: {
-      type: String,
-      required: [true, "Family name of the bride groom is not specified"],
-    },
-    father: {
-      type: String,
-      required: [true, "Name of bridegroom's father is not specified"],
-    },
-    mother: {
-      type: String,
-      required: [true, "Name of bridegroom's mother is not specified"],
-    },
-    parish: {
-      type: String,
-      required: [true, "Name of bridegroom's parish is not specified"],
-    },
-  },
-  brideData: {
-    name: {
-      type: String,
-      required: [true, "Name of the bride is not specified"],
-    },
-    familyName: {
-      type: String,
-      required: [true, "Family name of the bride is not specified"],
-    },
-    father: {
-      type: String,
-      required: [true, "Name of bride's father is not specified"],
-    },
-    mother: {
-      type: String,
-      required: [true, "Name of bride's mother is not specified"],
-    },
-    parish: {
-      type: String,
-      required: [true, "Name of bride's parish is not specified"],
-    },
-  },
-
   marriageDate: {
     type: Date,
     required: [true, "Please provide marriage date"],
@@ -68,12 +23,15 @@ const marriageRegistrySchema = new mongoose.Schema({
     type: String,
     required: [true, "Parish priest name is not specified"],
   },
+  remarks: {
+    type: String,
+  },
 });
 
 //*Updates marriage date on persons model
 //***?Why update many is used here
 
-marriageRegistrySchema.post("save", async function (next) {
+marriageRegSchema.post("save", async function (next) {
   let updateList = [];
   if (this.brideGroomId) updateList.push(this.brideGroomId);
   if (this.brideId) updateList.push(this.brideId);
@@ -81,14 +39,11 @@ marriageRegistrySchema.post("save", async function (next) {
   updateMarriageDate = await Parishioners.updateMany(
     { _id: { $in: updateList } },
     {
-      $set: { marriage: this.marriageDate },
+      $set: { marriage: this.marriageDate, maritalStatus: "Married" },
     }
   );
 });
 
-const marriageRegistry = mongoose.model(
-  "marriageRegistry",
-  marriageRegistrySchema
-);
+const marriageReg = mongoose.model("marriageReg", marriageRegSchema);
 
-module.exports = marriageRegistry;
+module.exports = marriageReg;

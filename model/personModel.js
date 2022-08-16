@@ -42,6 +42,11 @@ const personSchema = new mongoose.Schema(
       type: String,
       enum: ["M", "F"],
     },
+    maritalStatus: {
+      type: String,
+      enum: ["Single", "Engaged", "Married"],
+      default: "Single",
+    },
     wardNo: {
       type: Number,
       required: [true, "Please specify ward number"],
@@ -94,10 +99,6 @@ const personSchema = new mongoose.Schema(
 );
 
 personSchema.virtual("age").get(function () {
-  // birthDate = this.dob.getFullYear();
-  // currentYear = new Date().getFullYear();
-  // return currentYear - birthYear;
-
   let birthDate = this.dob;
   let today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();

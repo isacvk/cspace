@@ -12,7 +12,9 @@ router
 
 router
   .route("/engagement-registry/:id")
-  .post(registryController.addEngagementReg);
+  .get(registryController.getEngagementReg)
+  .post(registryController.addEngagementReg)
+  .patch(registryController.updateEngagementReg);
 
 router.route("/marriage-registry/:id").post(registryController.addMarriageReg);
 

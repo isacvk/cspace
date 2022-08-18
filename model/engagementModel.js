@@ -107,7 +107,12 @@ const engagementRegSchema = new mongoose.Schema({
   },
 });
 
-engagementRegSchema.post("save", async function (next) {
+// engagementRegSchema.pre("save", async function (req,next) {
+//   const user = await Parishioners.findById()
+
+// })
+
+engagementRegSchema.post("save", async function (doc, next) {
   let updateList = [];
   if (this.groomId) updateList.push(this.groomId);
   if (this.brideId) updateList.push(this.brideId);
@@ -118,6 +123,7 @@ engagementRegSchema.post("save", async function (next) {
       $set: { maritalStatus: "Engaged" },
     }
   );
+  next();
 });
 
 const engagementReg = mongoose.model("engagementReg", engagementRegSchema);

@@ -47,6 +47,10 @@ const personSchema = new mongoose.Schema(
       enum: ["Single", "Engaged", "Married"],
       default: "Single",
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
     wardNo: {
       type: Number,
       required: [true, "Please specify ward number"],

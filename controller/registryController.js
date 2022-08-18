@@ -99,33 +99,78 @@ exports.addEngagementReg = catchAsync(async (req, res, next) => {
 
   if (!isLegalAge(user.dob, user.gender)) {
     return next(
-      new AppError(`This person is under aged! Can't add to registry.`, 401)
+      new AppError(
+        `The person with Id ${req.params.id} is under aged! Can't add to registry.`,
+        403
+      )
     );
+  }
+
+  let partner;
+  if (req.body.partnerId) {
+    partner = await Parishioners.findById(req.body.partnerId).select(
+      "dob gender"
+    );
+
+    if (!partner)
+      return next(
+        new AppError(`No user found with Id ${req.body.partnerId}`, 404)
+      );
+
+    if (
+      (user.gender === "M" && partner.gender === "M") ||
+      (user.gender === "F" && partner.gender === "F")
+    )
+      return next(new AppError(`Same sex marriage is not allowed!`, 403));
+
+    if (!isLegalAge(partner.dob, partner.gender)) {
+      return next(
+        new AppError(
+          `The person with Id ${req.body.partnerId} is under aged! Can't add to registry.`,
+          403
+        )
+      );
+    }
   }
 
   let queryObj = {};
+  let queryObj2 = {}; //USE THIS
   if (user.gender === "M") {
     queryObj = { groomId: req.params.id, status: "valid" };
     req.body.groomId = req.params.id;
+    if (req.body.partnerId) {
+      req.body.brideId = req.body.partnerId;
+      queryObj2 = { brideId: req.body.partnerId, status: "valid" };
+    }
   }
+
   if (user.gender === "F") {
     queryObj = { brideId: req.params.id, status: "valid" };
     req.body.brideId = req.params.id;
+    if (req.body.partnerId) {
+      req.body.groomId = req.body.partnerId;
+      queryObj2 = { groomId: req.body.partnerId, status: "valid" };
+    }
   }
 
   const engagementData = await EngagementReg.find(queryObj);
+  const engagementData2 = await EngagementReg.find(queryObj2);
+  const marriageData = await EngagementReg.find(queryObj);
+  const marriageData2 = await EngagementReg.find(queryObj2);
 
-  if (engagementData.length !== 0) {
-    return next(
-      new AppError(`valid engagement data already extists for this person`, 403)
-    );
+  if (engagementData.length !== 0 || engagementData2.length !== 0) {
+    return next(new AppError(`valid engagement data already extists!`, 403));
   }
 
-  //***TODO: GET DATA OF BRIDE AND GROOM AND ADD BY DEFAULT
+  if (marriageData.length !== 0 || marriageData2.length !== 0) {
+    return next(new AppError(`valid marriage data already extists!`, 403));
+  }
+  //***TODO: CHECK IF BRIDE OR GROOM HAS VALID MARRIAGE REGISTRY
+  //***TODO: GET DATA OF BRIDE AND GROOM AND ADD BY DEFAULT - NOT POSSIBLE AS SOME PEOPLE MAY NOT HAVE THAT.
   // let groomData, brideData;
-  if (!req.body.groomId && !req.body.brideId) {
-    return next(new AppError("Please provide either bride Id or groom Id"));
-  }
+  // if (!req.body.groomId && !req.body.brideId) {
+  //   return next(new AppError("Please provide either bride Id or groom Id"));
+  // }
 
   // if (req.body.brideGroomId) {
   //   groomData = await BaptismReg.findOne({ userId: req.body.brideGroomId });
@@ -170,51 +215,93 @@ exports.getMarriageReg = catchAsync(async (req, res, next) => {
 });
 
 exports.addMarriageReg = catchAsync(async (req, res, next) => {
-  //***TODO: Update marriage date in person model as this gets entered
   //***TODO: The details of the bride/groom should automaticlly appear
   //***TODO: SHOULD NOT ADD ENTRY IF DEATH REGISTRY IS PRESENT
   //***? What if the person marries second time. [Add a field to mark marriage as invalid]
 
-  const user = await Parishioners.findOne({ _id: req.params.id }).select(
-    "dob gender"
-  );
+  // const user = await Parishioners.findOne({ _id: req.params.id }).select(
+  //   "dob gender"
+  // );
 
-  if (!user)
-    return next(new AppError(`No user found with Id${req.params.id}`, 404));
+  // if (!user)
+  //   return next(new AppError(`No user found with Id${req.params.id}`, 404));
 
-  if (!isLegalAge(user.dob, user.gender)) {
-    return next(
-      new AppError(`This person is under aged! Can't add to registry.`, 401)
-    );
+  // if (!isLegalAge(user.dob, user.gender)) {
+  //   return next(
+  //     new AppError(`This person is under aged! Can't add to registry.`, 401)
+  //   );
+  // }
+
+  const engagementEntry = await EngagementReg.findOne({
+    _id: req.params.id,
+    status: "valid",
+  });
+
+  console.log("ENG : ", engagementEntry);
+
+  if (!engagementEntry)
+    return next(new AppError(`No valid engagement data found!`, 403));
+
+  //!PROBABLY NOT NEEDED AS VALIDATIONS HAPPEN IN ENGAGEMENT
+  if (engagementEntry.groomId) {
+    const isMarried = await MarriageReg.findOne({
+      groomId: engagementEntry.groomId,
+      status: "valid",
+    });
+    if (isMarried)
+      return next(
+        new AppError(`Valid marriage entry exists for the groom!`, 403)
+      );
   }
 
-  //***? What about M, F and Others
-  let queryObj = {};
-  if (user.gender === "M") {
-    queryObj = { groomId: `${req.params.id}` };
-    req.body.groomId = req.params.id;
-  }
-  if (user.gender === "f") {
-    queryObj = { brideId: `${req.params.id}` };
-    req.body.brideId = req.params.id;
-  }
-
-  //***TODO: Add isValidMarriage in query later
-
-  const isMarried = await MarriageReg.findOne(queryObj);
-
-  if (isMarried) {
-    return next(new AppError("This person is already married!", 200));
+  if (engagementEntry.brideId) {
+    const isMarried = await MarriageReg.findOne({
+      brideId: engagementEntry.brideId,
+      status: "valid",
+    });
+    if (isMarried)
+      return next(
+        new AppError(`Valid marriage entry exists for the bride!`, 403)
+      );
   }
 
-  const engagementData = await EngagementReg.findOne(queryObj);
+  // //***? What about M, F and Others
+  // let queryObj = {};
+  // if (user.gender === "M") {
+  //   queryObj = { groomId: `${req.params.id}`, status: "valid" };
+  //   // req.body.groomId = req.params.id;
+  // }
+  // if (user.gender === "f") {
+  //   queryObj = { brideId: `${req.params.id}`, status: "valid" };
+  //   // req.body.brideId = req.params.id;
+  // }
 
-  console.log("ENG DATA : ", engagementData);
+  // //***TODO: Add isValidMarriage in query later
 
-  req.body.groomName = engagementData.groomData.name;
-  req.body.brideName = engagementData.brideData.name;
+  // const isMarried = await MarriageReg.findOne(queryObj);
 
-  const register = await MarriageReg.create(req.body);
+  // if (isMarried) {
+  //   return next(new AppError("This person is already married!", 200));
+  // }
+
+  // const engagementData = await EngagementReg.findOne(queryObj);
+
+  // if (!engagementData)
+  //   return next(
+  //     new AppError(
+  //       `No valid engagement data found for ${user.firstName}! Please add that before adding marriage data.`,
+  //       403
+  //     )
+  //   );
+
+  // console.log("ENG DATA : ", engagementData);
+
+  if (engagementEntry.groomId) req.body.groomId = engagementEntry.groomId;
+  if (engagementEntry.groomId) req.body.brideId = engagementEntry.brideId;
+  req.body.groomName = engagementEntry.groomData.name;
+  req.body.brideName = engagementEntry.brideData.name;
+
+  // const register = await MarriageReg.create(req.body);
 
   res.status(201).json({
     status: "success",

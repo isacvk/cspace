@@ -21,6 +21,11 @@ const marriageRegSchema = new mongoose.Schema({
     type: String,
     required: [true, "Bride name is not specified"],
   },
+  status: {
+    type: String,
+    enum: ["valid", "divorced", "hus-exp", "wife-exp"],
+    default: "valid",
+  },
   marriageDate: {
     type: Date,
     required: [true, "Please provide marriage date"],
@@ -37,9 +42,6 @@ const marriageRegSchema = new mongoose.Schema({
     type: String,
   },
 });
-
-//*Updates marriage date on persons model
-//***?Why update many is used here
 
 marriageRegSchema.post("save", async function (doc, next) {
   //***WHEN BRIDE IS FROM ANOTHR PARISH
@@ -66,7 +68,6 @@ marriageRegSchema.post("save", async function (doc, next) {
       husband: this.groomId,
       maritalStatus: "Married",
     });
-    //TODO: UPDATE REF IN HUSBAND'S DOC
 
     console.log("PERSONS : ", addToParishioners);
 
@@ -87,6 +88,41 @@ marriageRegSchema.post("save", async function (doc, next) {
     );
   }
 
+  next();
+});
+
+marriageRegSchema.post("save", async function (doc, next) {
+  if (this.brideId && !this.groomId) {
+    const updateActiveStatus = await Parishioners.findByIdAndUpdate(
+      this.brideId,
+      {
+        isActive: false,
+      }
+    );
+  }
+  next();
+});
+
+marriageRegSchema.post("save", async function (doc, next) {
+  if (this.brideId && this.groomId) {
+    //***CHECK IF THEY ARE SAME FAMILY, IF TRUE DON'T DO ANYTHING
+    const groomFamily = await Parishioners.findById(this.groomId).select(
+      "familyId"
+    );
+    const brideFamily = await Parishioners.findById(this.brideId).select(
+      "familyId"
+    );
+    if (groomFamily.familyId !== brideFamily.familyId) {
+      //***IF NOT THEN REMOVE BRIDE FROM BRIDE'S FAM AND ADD TO GROOM'S FAM
+      const pullBrideId = await Family.findByIdAndUpdate(brideFamily.familyId, {
+        $pull: {
+          members: {
+            _id: brideFamily.familyId,
+          },
+        },
+      });
+    }
+  }
   next();
 });
 

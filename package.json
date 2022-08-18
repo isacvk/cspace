@@ -20,7 +20,9 @@
     "html-pdf": "^3.0.1",
     "json2csv": "^5.0.7",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.4.6"
+    "mongoose": "^6.4.6",
+    "razorpay": "^2.8.3",
+    "shortid": "^2.2.16"
   },
   "devDependencies": {
     "nodemon": "^2.0.19"

@@ -16,7 +16,10 @@ router
   .post(registryController.addEngagementReg)
   .patch(registryController.updateEngagementReg);
 
-router.route("/marriage-registry/:id").post(registryController.addMarriageReg);
+router
+  .route("/marriage-registry/:id")
+  .get(registryController.getMarriageReg)
+  .post(registryController.addMarriageReg);
 
 router.route("/death-registry/:id").post(registryController.addDeathReg);
 

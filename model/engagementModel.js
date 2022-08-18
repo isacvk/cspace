@@ -109,7 +109,7 @@ const engagementRegSchema = new mongoose.Schema({
 
 engagementRegSchema.post("save", async function (next) {
   let updateList = [];
-  if (this.brideGroomId) updateList.push(this.brideGroomId);
+  if (this.groomId) updateList.push(this.groomId);
   if (this.brideId) updateList.push(this.brideId);
 
   updateStatus = await Parishioners.updateMany(

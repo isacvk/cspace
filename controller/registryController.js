@@ -1,7 +1,7 @@
 const Parishioners = require("./../model/personModel");
 const BaptismReg = require("./../model/baptismRegistry");
 const EngagementReg = require("./../model/engagementModel");
-const marriageRegistry = require("./../model/marriageRegisty");
+const MarriageReg = require("./../model/marriageRegisty");
 
 const AppError = require("./../utils/appError");
 const catchAsync = require("./../utils/catchAsync");
@@ -65,6 +65,7 @@ exports.updateBaptismReg = catchAsync(async (req, res, next) => {
 });
 
 exports.getEngagementReg = catchAsync(async (req, res, next) => {
+  //***CAN SEND GENDER ALSO SO THAT BELOW QUERY DOESN'T NEED TO BE DONE
   const user = await Parishioners.findById(req.params.id).select(
     "gender firstName"
   );
@@ -103,16 +104,20 @@ exports.addEngagementReg = catchAsync(async (req, res, next) => {
   }
 
   let queryObj = {};
-  if (user.gender === "M")
-    queryObj = { brideGroomId: req.params.id, status: "valid" };
-  if (user.gender === "F")
+  if (user.gender === "M") {
+    queryObj = { groomId: req.params.id, status: "valid" };
+    req.body.groomId = req.params.id;
+  }
+  if (user.gender === "F") {
     queryObj = { brideId: req.params.id, status: "valid" };
+    req.body.brideId = req.params.id;
+  }
 
   const engagementData = await EngagementReg.find(queryObj);
 
   if (engagementData.length !== 0) {
     return next(
-      new AppError(`valid engagement data already extists for this person`, 401)
+      new AppError(`valid engagement data already extists for this person`, 403)
     );
   }
 
@@ -139,7 +144,6 @@ exports.addEngagementReg = catchAsync(async (req, res, next) => {
 });
 
 exports.updateEngagementReg = catchAsync(async (req, res, next) => {
-  console.log("REQ : ", req.body);
   const update = await EngagementReg.findByIdAndUpdate(
     req.params.id,
     req.body,
@@ -155,38 +159,79 @@ exports.updateEngagementReg = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getMarriageReg = catchAsync(async (req, res, next) => {
+  //***? What if the person marries second time. [Add a field to mark marriage as invalid]
+
+  // const user = await MarriageReg.findById(req.params.id);
+
+  res.status(201).json({
+    status: "success",
+  });
+});
+
 exports.addMarriageReg = catchAsync(async (req, res, next) => {
-  //***TODO: Check if age above 18 or 21
   //***TODO: Update marriage date in person model as this gets entered
   //***TODO: The details of the bride/groom should automaticlly appear
   //***TODO: SHOULD NOT ADD ENTRY IF DEATH REGISTRY IS PRESENT
   //***? What if the person marries second time. [Add a field to mark marriage as invalid]
 
-  const user = await Parishioners.findById(req.params.id);
+  const user = await Parishioners.findOne({ _id: req.params.id }).select(
+    "dob gender"
+  );
+
+  if (!user)
+    return next(new AppError(`No user found with Id${req.params.id}`, 404));
+
+  if (!isLegalAge(user.dob, user.gender)) {
+    return next(
+      new AppError(`This person is under aged! Can't add to registry.`, 401)
+    );
+  }
 
   //***? What about M, F and Others
   let queryObj = {};
   if (user.gender === "M") {
-    queryObj = {
-      brideGroomId: `${req.params.id}`,
-    };
-  } else {
-    queryObj = {
-      brideId: `${req.params.id}`,
-    };
+    queryObj = { groomId: `${req.params.id}` };
+    req.body.groomId = req.params.id;
+  }
+  if (user.gender === "f") {
+    queryObj = { brideId: `${req.params.id}` };
+    req.body.brideId = req.params.id;
   }
 
   //***TODO: Add isValidMarriage in query later
 
-  const isMarried = await marriageRegistry.findOne(queryObj);
+  const isMarried = await MarriageReg.findOne(queryObj);
 
   if (isMarried) {
     return next(new AppError("This person is already married!", 200));
   }
-  const register = await marriageRegistry.create(req.body);
+
+  const engagementData = await EngagementReg.findOne(queryObj);
+
+  console.log("ENG DATA : ", engagementData);
+
+  req.body.groomName = engagementData.groomData.name;
+  req.body.brideName = engagementData.brideData.name;
+
+  const register = await MarriageReg.create(req.body);
 
   res.status(201).json({
     status: "success",
+  });
+});
+
+exports.updateMarriagetReg = catchAsync(async (req, res, next) => {
+  const update = await MarriageReg.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+
+  if (!update)
+    return next(new AppError(`No entry found with Id ${req.params.id}`, 404));
+
+  res.status(201).json({
+    status: "success",
+    data: update,
   });
 });
 

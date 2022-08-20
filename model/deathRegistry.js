@@ -1,20 +1,24 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+
+const Parishioners = require('./personModel');
+const MarriageReg = require('./marriageRegistry');
+const EngagementReg = require('./engagementModel');
 
 const deathRegSchema = new mongoose.Schema({
-  personId: {
+  userId: {
     type: mongoose.Schema.ObjectId,
-    ref: "Parishioners",
+    ref: 'Parishioners',
   },
-  name: {
+  baptismName: {
     type: String,
-    required: [true, "Please specify the name"],
+    required: [true, 'Please specify the baptism name'],
   },
   dob: {
     type: Date,
   },
   age: {
     type: Number,
-    required: [true, "Please specify the age"],
+    required: [true, 'Please specify the age'],
   },
   //   father:{
   //     type:String
@@ -25,33 +29,86 @@ const deathRegSchema = new mongoose.Schema({
   sacraments: {
     confession: {
       type: Boolean,
-      required: [true, "Please specify whether or not confessed"],
+      required: [true, 'Please specify whether or not confessed'],
     },
     viaticum: {
       type: Boolean,
-      required: [true, "Please specify viaticum"],
+      required: [true, 'Please specify viaticum'],
     },
     anointing: {
       type: Boolean,
-      requied: [true, "Please specify anointing"],
+      requied: [true, 'Please specify anointing'],
     },
-    dod: {
-      type: Date,
-      required: [true, "Please specify the date of death"],
-    },
-    doburial: {
-      type: Date,
-      required: [true, "Please specify the date of burial"],
-    },
-    parishPriest: {
-      type: String,
-    },
-    remarks: {
-      type: String,
-    },
+  },
+  dod: {
+    type: Date,
+    required: [true, 'Please specify the date of death'],
+  },
+  doburial: {
+    type: Date,
+    required: [true, 'Please specify the date of burial'],
+  },
+  parishPriest: {
+    type: String,
+  },
+  remarks: {
+    type: String,
   },
 });
 
-const DeathReg = mongoose.model("DeathReg", deathRegSchema);
+deathRegSchema.post('save', async (doc, next) => {
+  // console.log("DEATH DOC : ", doc);
+  const updateStats = await Parishioners.findByIdAndUpdate(doc.userId, {
+    // death: doc.dod,
+    isActive: false,
+  });
+
+  if (updateStats.gender === 'M' && updateStats.wife) {
+    const wifeStatus = await Parishioners.findByIdAndUpdate(doc.wife, {
+      maritalStatus: 'hus-exp',
+    });
+    const engagementStatus = await EngagementReg.findOneAndUpdate(
+      { brideId: doc.wife },
+      {
+        status: 'hus-exp',
+      },
+    );
+    const marriageStatus = await MarriageReg.findOneAndUpdate(
+      { brideId: doc.wife },
+      {
+        status: 'hus-exp',
+      },
+    );
+  }
+
+  if (updateStats.gender === 'F' && updateStats.husband) {
+    const husbandStatus = await Parishioners.findByIdAndUpdate(doc.husband, {
+      maritalStatus: 'wife-exp',
+    });
+    const engagementStatus = await EngagementReg.findOneAndUpdate(
+      { brideId: doc.wife },
+      {
+        status: 'wife-exp',
+      },
+    );
+    const marriageStatus = await MarriageReg.findOneAndUpdate(
+      { brideId: doc.wife },
+      {
+        status: 'wife-exp',
+      },
+    );
+  }
+
+  next();
+});
+
+deathRegSchema.post('save', async (doc, next) => {
+  // CHANGE MARITAL STATUS OF THE PARTNER & THIS PESON?
+  // const user = await Parishioners.find
+
+  next();
+});
+
+const DeathReg = mongoose.model('DeathReg', deathRegSchema);
 
 module.exports = DeathReg;

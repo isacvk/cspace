@@ -1,5 +1,5 @@
 const Persons = require("./../model/personModel");
-const marriageRegistry = require("./../model/marriageRegisty");
+const marriageRegistry = require("./../model/marriageRegistry");
 
 const AppError = require("./../utils/appError");
 const catchAsync = require("./../utils/catchAsync");

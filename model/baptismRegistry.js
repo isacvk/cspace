@@ -1,24 +1,24 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const Parishioners = require("./personModel");
+const Parishioners = require('./personModel');
 
 const baptismSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.ObjectId,
-    ref: "Parishioners",
+    ref: 'Parishioners',
   },
   familyId: {
     type: mongoose.Schema.ObjectId,
-    ref: "Families",
-    required: [true, "Family Id is not specified"],
+    ref: 'Families',
+    required: [true, 'Family Id is not specified'],
   },
   familyName: {
     type: String,
-    required: [true, "Family name is not specified"],
+    required: [true, 'Family name is not specified'],
   },
   baptismName: {
     type: String,
-    required: [true, "Baptism name is not specified"],
+    required: [true, 'Baptism name is not specified'],
   },
   father: {
     type: String,
@@ -28,39 +28,39 @@ const baptismSchema = new mongoose.Schema({
   },
   dob: {
     type: Date,
-    required: [true, "DOB is not specified"],
+    required: [true, 'DOB is not specified'],
   },
   doBaptism: {
     type: Date,
-    required: [true, "Date of baptism is not specified"],
+    required: [true, 'Date of baptism is not specified'],
   },
   place: {
     type: String,
-    required: [true, "Place of bith is not specified"],
+    required: [true, 'Place of bith is not specified'],
   },
   godFather: {
     name: {
       type: String,
-      required: [true, "God father name is not specified"],
+      required: [true, 'God father name is not specified'],
     },
     parish: {
       type: String,
-      required: [true, "Parish of the god father is not specified"],
+      required: [true, 'Parish of the god father is not specified'],
     },
   },
   godMother: {
     name: {
       type: String,
-      required: [true, "God mother name is not specified"],
+      required: [true, 'God mother name is not specified'],
     },
     parish: {
       type: String,
-      required: [true, "Parish of the god father is not specified"],
+      required: [true, 'Parish of the god father is not specified'],
     },
   },
   minister: {
     type: String,
-    required: [true, "Minister name is not specified"],
+    required: [true, 'Minister name is not specified'],
   },
   parishPriest: {
     type: String,
@@ -71,15 +71,15 @@ const baptismSchema = new mongoose.Schema({
   },
 });
 
-baptismSchema.post("save", async function (next) {
-  updateDate = await Parishioners.findByIdAndUpdate(
+baptismSchema.post('save', async function (next) {
+  const updateDate = await Parishioners.findByIdAndUpdate(
     { _id: this.userId },
     {
       $set: { dob: this.dob, baptism: this.doBaptism },
-    }
+    },
   );
 });
 
-const BaptismReg = mongoose.model("BaptismReg", baptismSchema);
+const BaptismReg = mongoose.model('BaptismReg', baptismSchema);
 
 module.exports = BaptismReg;

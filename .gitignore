@@ -5,3 +5,4 @@
 /.prettierignore
 /public
 /controller/paytm
+/.eslintrc.js

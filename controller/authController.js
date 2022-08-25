@@ -1,14 +1,14 @@
-const { promisify } = require("util");
+const { promisify } = require('util');
 
-const Users = require("./../model/userModel");
-const Parishioners = require("./../model/personModel");
+const Users = require('./../model/userModel');
+const Parishioners = require('./../model/personModel');
 
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
-const catchAsync = require("./../utils/catchAsync");
-const AppError = require("./../utils/appError");
-const sms = require("./../controller/smsController");
+const catchAsync = require('./../utils/catchAsync');
+const AppError = require('./../utils/appError');
+const sms = require('./../controller/smsController');
 
 const createSendToken = (user, statusCode, res) => {
   user.password = undefined;
@@ -17,13 +17,13 @@ const createSendToken = (user, statusCode, res) => {
 
   let cookieOptions = {
     expiresIn: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
     ),
     // sameSite: "strict",
-    sameSite: "strict",
+    sameSite: 'strict',
     // secure: true,
     httpOnly: true,
-    Path: "/",
+    Path: '/',
   };
 
   // if (process.env.NODE_ENV === "production") {
@@ -31,12 +31,12 @@ const createSendToken = (user, statusCode, res) => {
   // }
 
   // res.cookie("jwt", token, cookieOptions, "Path=/");
-  res.cookie("jwt", token, cookieOptions);
+  res.cookie('jwt', token, cookieOptions);
 
   user.__v = undefined;
 
   res.status(202).json({
-    status: "success",
+    status: 'success',
     data: {
       user: user,
     },
@@ -50,9 +50,9 @@ const signToken = (id) => {
 };
 
 const randomPass = async () => {
-  let chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
   let string_length = 8;
-  let randomPassword = "";
+  let randomPassword = '';
   for (let i = 0; i < string_length; i++) {
     let rnum = Math.floor(Math.random() * chars.length);
     randomPassword += chars.substring(rnum, rnum + 1);
@@ -61,9 +61,9 @@ const randomPass = async () => {
 };
 
 const randomId = async () => {
-  let chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   let string_length = 4;
-  let randomId = "";
+  let randomId = '';
   for (let i = 0; i < string_length; i++) {
     let rnum = Math.floor(Math.random() * chars.length);
     randomId += chars.substring(rnum, rnum + 1);
@@ -79,8 +79,8 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   let repeatIdGenetation = true;
   while (repeatIdGenetation) {
-    //***! Create dynamic login id
-    req.body.loginId = "123458";
+    //! Create dynamic login id
+    req.body.loginId = '123458';
     // req.body.loginId = await randomId();
     const idExist = await Users.findOne({ loginId: `${req.body.loginId}` });
 
@@ -89,7 +89,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   }
 
   // req.body.password = await randomPass();
-  req.body.password = "pass1234";
+  req.body.password = 'pass1234';
   req.body.name = user.firstName;
 
   const newUser = await Users.create(req.body);
@@ -108,7 +108,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   }
 
   res.status(201).json({
-    status: "sucess",
+    status: 'sucess',
   });
 });
 
@@ -117,12 +117,12 @@ exports.login = async (req, res, next) => {
   const { loginId, password } = req.body;
 
   if (!loginId || !password)
-    return next(new AppError("Please provide your userId and password"));
+    return next(new AppError('Please provide your userId and password'));
 
-  const user = await Users.findOne({ loginId }).select("+password");
+  const user = await Users.findOne({ loginId }).select('+password');
 
   if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(new AppError("Incorrect userId or password", 401));
+    return next(new AppError('Incorrect userId or password', 401));
   }
 
   createSendToken(user, 200, res);
@@ -132,17 +132,17 @@ exports.login = async (req, res, next) => {
 exports.loginCookie = catchAsync(async (req, res, next) => {
   let cookieOptions = {
     expiresIn: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
     ),
-    sameSite: "strict",
+    sameSite: 'strict',
     // secure: true,
     httpOnly: true,
-    Path: "/",
+    Path: '/',
   };
 
-  res.cookie("jwt", "12345", cookieOptions);
+  res.cookie('jwt', '12345', cookieOptions);
   res.status(202).json({
-    status: "success",
+    status: 'success',
   });
 });
 
@@ -151,7 +151,7 @@ exports.forgotPass = catchAsync(async (req, res, next) => {
 
   if (!validUser) {
     return next(
-      new AppError(`User with the id ${req.body.userId} doesn't exist!`, 404)
+      new AppError(`User with the id ${req.body.userId} doesn't exist!`, 404),
     );
   }
 
@@ -159,14 +159,14 @@ exports.forgotPass = catchAsync(async (req, res, next) => {
 
   //***?What is user doesn't have a phone number
   //***TODO: Generate OTP
-  let otp = "1232";
+  let otp = '1232';
 
   const setOtp = await Users.findOneAndUpdate(
     { loginId: `${req.body.userId}` },
     {
       otp: `${otp}`,
       otpTime: `${new Date()}`,
-    }
+    },
   );
 
   // SMS Content
@@ -179,8 +179,8 @@ exports.forgotPass = catchAsync(async (req, res, next) => {
   }
 
   res.status(200).json({
-    status: "success",
-    message: "An OTP is sent to your number, valid for 15 mins.",
+    status: 'success',
+    message: 'An OTP is sent to your number, valid for 15 mins.',
   });
 });
 
@@ -196,14 +196,14 @@ exports.verifyOtp = catchAsync(async (req, res, next) => {
   });
 
   if (!validOtp) {
-    return next(new AppError("Invalid otp!", 401));
+    return next(new AppError('Invalid otp!', 401));
   }
   // Checking if 15 mins has been passed
   const timeElapsed =
     parseInt(new Date() / 1000, 10) - parseInt(validOtp.otpTime / 1000, 10);
 
   if (timeElapsed > 900) {
-    return next(new AppError("Your Otp has been expired", 401));
+    return next(new AppError('Your Otp has been expired', 401));
   }
 
   const updateOtp = await Users.findOneAndUpdate(
@@ -213,12 +213,12 @@ exports.verifyOtp = catchAsync(async (req, res, next) => {
     },
     {
       otp: `1`,
-    }
+    },
   );
 
   res.status(200).json({
-    status: "success",
-    message: "Otp verified!",
+    status: 'success',
+    message: 'Otp verified!',
   });
 });
 
@@ -227,19 +227,19 @@ exports.resetPass = catchAsync(async (req, res, next) => {
 
   if (!user) {
     return next(
-      new AppError(`No user found with id ${req.body.userId} !`, 404)
+      new AppError(`No user found with id ${req.body.userId} !`, 404),
     );
   }
 
   if (user.otp !== 1) {
-    return next(new AppError("Your Otp is not verified!", 401));
+    return next(new AppError('Your Otp is not verified!', 401));
   }
 
   const timeElapsed =
     parseInt(new Date() / 1000, 10) - parseInt(user.otpTime / 1000, 10);
 
   if (timeElapsed > 900) {
-    return next(new AppError("Your 15 min has been expired", 401));
+    return next(new AppError('Your 15 min has been expired', 401));
   }
 
   const hashedPassword = await bcrypt.hash(req.body.password, 12);
@@ -250,12 +250,12 @@ exports.resetPass = catchAsync(async (req, res, next) => {
       password: `${hashedPassword}`,
       passwordChangedAt: `${new Date()}`,
       otp: `0`,
-    }
+    },
   );
 
   res.status(201).json({
-    status: "success",
-    message: "password modified successfully",
+    status: 'success',
+    message: 'password modified successfully',
   });
 });
 
@@ -264,16 +264,16 @@ exports.protect = catchAsync(async (req, res, next) => {
   let token;
   if (
     req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
+    req.headers.authorization.startsWith('Bearer')
   ) {
-    token = req.headers.authorization.split(" ")[1];
+    token = req.headers.authorization.split(' ')[1];
   } else if (req.cookies.jwt) {
     token = req.cookies.jwt;
   }
 
   if (!token) {
     // return res.redirect("/login");
-    return next(new AppError("You are not logged in", 401));
+    return next(new AppError('You are not logged in', 401));
   }
   // 2. Verification token
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
@@ -283,14 +283,14 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   if (!currentUser) {
     return next(
-      new AppError("The user belonging to the token no longer exist.", 401)
+      new AppError('The user belonging to the token no longer exist.', 401),
     );
   }
 
   // 4. Check if user changed password after token issued
   if (currentUser.changedPasswordAfter(decoded.iat)) {
     return next(
-      new AppError("User recently changed password! Please login again", 401)
+      new AppError('User recently changed password! Please login again', 401),
     );
   }
 
@@ -304,7 +304,7 @@ exports.restrictTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return next(
-        new AppError("You do not have permission to perform this action", 403)
+        new AppError('You do not have permission to perform this action', 403),
       );
     }
     next();

@@ -1,63 +1,63 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const Parishioners = require("./personModel");
-const Family = require("./familyModel");
-const EngagementReg = require("./engagementModel");
+const Parishioners = require('./personModel');
+const Family = require('./familyModel');
+const EngagementReg = require('./engagementModel');
 
 const marriageRegSchema = new mongoose.Schema({
   groomId: {
     type: mongoose.Schema.ObjectId,
-    ref: "Parishioners",
+    ref: 'Parishioners',
   },
   brideId: {
     type: mongoose.Schema.ObjectId,
-    ref: "Parishioners",
+    ref: 'Parishioners',
   },
   groomName: {
     type: String,
-    required: [true, "Groom name is not specified"],
+    required: [true, 'Groom name is not specified'],
   },
   brideName: {
     type: String,
-    required: [true, "Bride name is not specified"],
+    required: [true, 'Bride name is not specified'],
   },
   status: {
     type: String,
-    enum: ["valid", "divorced", "hus-exp", "wife-exp"],
-    default: "valid",
+    enum: ['valid', 'divorced', 'hus-exp', 'wife-exp'],
+    default: 'valid',
   },
   marriageDate: {
     type: Date,
-    required: [true, "Please provide marriage date"],
+    required: [true, 'Please provide marriage date'],
   },
   celebrant: {
     type: String,
-    required: [true, "Please provide the celebrant name"],
+    required: [true, 'Please provide the celebrant name'],
   },
   parishPriest: {
     type: String,
-    required: [true, "Parish priest name is not specified"],
+    required: [true, 'Parish priest name is not specified'],
   },
   remarks: {
     type: String,
   },
 });
 
-marriageRegSchema.post("save", async function (doc, next) {
-  //***WHEN BRIDE IS FROM ANOTHR PARISH
+marriageRegSchema.post('save', async function (doc, next) {
+  //* WHEN BRIDE IS FROM ANOTHR PARISH
   if (this.groomId && !this.brideId) {
     const familyInfo = await Parishioners.findById(this.groomId).select(
-      "familyId wardNo"
+      'familyId wardNo',
     );
-    console.log("FAM INFO : ", familyInfo);
+    console.log('FAM INFO : ', familyInfo);
 
     let brideData = await EngagementReg.findOne({
       groomId: this.groomId,
-      status: "valid",
-    }).select("brideData");
+      status: 'valid',
+    }).select('brideData');
 
     brideData = brideData.brideData;
-    console.log("BRIDE INFO : ", brideData);
+    console.log('BRIDE INFO : ', brideData);
 
     const addToParishioners = await Parishioners.create({
       familyId: familyInfo.familyId,
@@ -66,51 +66,51 @@ marriageRegSchema.post("save", async function (doc, next) {
       dob: brideData.dob,
       baptism: brideData.baptism,
       husband: this.groomId,
-      maritalStatus: "Married",
+      maritalStatus: 'Married',
     });
 
-    console.log("PERSONS : ", addToParishioners);
+    console.log('PERSONS : ', addToParishioners);
 
     const updateBrideIdEngReg = await EngagementReg.findOneAndUpdate(
       { groomId: this.groomId },
-      { brideId: addToParishioners._id }
+      { brideId: addToParishioners._id },
     );
 
     const updateGroomRef = await Parishioners.findByIdAndUpdate(this.groomId, {
       wife: addToParishioners._id,
     });
 
-    console.log("ENG ID : ", updateBrideIdEngReg);
+    console.log('ENG ID : ', updateBrideIdEngReg);
 
     const updateBrideIdMarReg = await marriageReg.findOneAndUpdate(
       { groomId: this.groomId },
-      { brideId: addToParishioners._id }
+      { brideId: addToParishioners._id },
     );
   }
 
   next();
 });
 
-marriageRegSchema.post("save", async function (doc, next) {
+marriageRegSchema.post('save', async function (doc, next) {
   if (this.brideId && !this.groomId) {
     const updateActiveStatus = await Parishioners.findByIdAndUpdate(
       this.brideId,
       {
         isActive: false,
-      }
+      },
     );
   }
   next();
 });
 
-marriageRegSchema.post("save", async function (doc, next) {
+marriageRegSchema.post('save', async function (doc, next) {
   if (this.brideId && this.groomId) {
     //***CHECK IF THEY ARE SAME FAMILY, IF TRUE DON'T DO ANYTHING
     const groomFamily = await Parishioners.findById(this.groomId).select(
-      "familyId"
+      'familyId',
     );
     const brideFamily = await Parishioners.findById(this.brideId).select(
-      "familyId"
+      'familyId',
     );
     if (groomFamily.familyId !== brideFamily.familyId) {
       //***IF NOT THEN REMOVE BRIDE FROM BRIDE'S FAM AND ADD TO GROOM'S FAM
@@ -126,7 +126,7 @@ marriageRegSchema.post("save", async function (doc, next) {
   next();
 });
 
-marriageRegSchema.post("save", async function (doc, next) {
+marriageRegSchema.post('save', async function (doc, next) {
   let updateList = [];
   if (this.groomId) updateList.push(this.groomId);
   if (this.brideId) updateList.push(this.brideId);
@@ -134,12 +134,12 @@ marriageRegSchema.post("save", async function (doc, next) {
   updateMarriageDate = await Parishioners.updateMany(
     { _id: { $in: updateList } },
     {
-      $set: { marriage: this.marriageDate, maritalStatus: "Married" },
-    }
+      $set: { marriage: this.marriageDate, maritalStatus: 'Married' },
+    },
   );
   next();
 });
 
-const marriageReg = mongoose.model("marriageReg", marriageRegSchema);
+const marriageReg = mongoose.model('marriageReg', marriageRegSchema);
 
 module.exports = marriageReg;

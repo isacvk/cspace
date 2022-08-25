@@ -1,24 +1,24 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const Parishioners = require("./personModel");
+const Parishioners = require('./personModel');
 
 const engagementRegSchema = new mongoose.Schema({
   groomId: {
     type: mongoose.Schema.ObjectId,
-    ref: "Parishioners",
+    ref: 'Parishioners',
   },
   brideId: {
     type: mongoose.Schema.ObjectId,
-    ref: "Parishioners",
+    ref: 'Parishioners',
   },
   groomData: {
     name: {
       type: String,
-      required: [true, "Name of the bride groom is not specified"],
+      required: [true, 'Name of the bride groom is not specified'],
     },
     familyName: {
       type: String,
-      required: [true, "Family name of the bride groom is not specified"],
+      required: [true, 'Family name of the bride groom is not specified'],
     },
     father: {
       type: String,
@@ -34,25 +34,25 @@ const engagementRegSchema = new mongoose.Schema({
     },
     dob: {
       type: Date,
-      required: [true, "Dob is not specified"],
+      required: [true, 'Dob is not specified'],
     },
     baptism: {
       type: Date,
-      required: [true, "Baptism date is not specified"],
+      required: [true, 'Baptism date is not specified'],
     },
     baptismPlace: {
       type: String,
-      required: [true, "Baptism place is not specified"],
+      required: [true, 'Baptism place is not specified'],
     },
   },
   brideData: {
     name: {
       type: String,
-      required: [true, "Name of the bride is not specified"],
+      required: [true, 'Name of the bride is not specified'],
     },
     familyName: {
       type: String,
-      required: [true, "Family name of the bride is not specified"],
+      required: [true, 'Family name of the bride is not specified'],
     },
     father: {
       type: String,
@@ -68,15 +68,15 @@ const engagementRegSchema = new mongoose.Schema({
     },
     dob: {
       type: Date,
-      required: [true, "Dob is not specified"],
+      required: [true, 'Dob is not specified'],
     },
     baptism: {
       type: Date,
-      required: [true, "Baptism date is not specified"],
+      required: [true, 'Baptism date is not specified'],
     },
     baptismPlace: {
       type: String,
-      required: [true, "Baptism place is not specified"],
+      required: [true, 'Baptism place is not specified'],
     },
   },
   bannDates: [
@@ -87,20 +87,20 @@ const engagementRegSchema = new mongoose.Schema({
 
   engagementDate: {
     type: Date,
-    required: [true, "Engagement date is not specified"],
+    required: [true, 'Engagement date is not specified'],
   },
   celebrant: {
     type: String,
-    required: [true, "Name of the celebrant is not specified"],
+    required: [true, 'Name of the celebrant is not specified'],
   },
   parishPriest: {
     type: String,
-    required: [true, "Parish priest name is not specified"],
+    required: [true, 'Parish priest name is not specified'],
   },
   status: {
     type: String,
-    enum: ["valid", "divorced", "hus-exp", "wife-exp"],
-    default: "valid",
+    enum: ['valid', 'divorced', 'hus-exp', 'wife-exp'],
+    default: 'valid',
   },
   remarks: {
     type: String,
@@ -112,20 +112,20 @@ const engagementRegSchema = new mongoose.Schema({
 
 // })
 
-engagementRegSchema.post("save", async function (doc, next) {
+engagementRegSchema.post('save', async (doc, next) => {
   let updateList = [];
   if (this.groomId) updateList.push(this.groomId);
   if (this.brideId) updateList.push(this.brideId);
 
-  updateStatus = await Parishioners.updateMany(
+  const updateStatus = await Parishioners.updateMany(
     { _id: { $in: updateList } },
     {
-      $set: { maritalStatus: "Engaged" },
-    }
+      $set: { maritalStatus: 'Engaged' },
+    },
   );
   next();
 });
 
-const engagementReg = mongoose.model("engagementReg", engagementRegSchema);
+const engagementReg = mongoose.model('engagementReg', engagementRegSchema);
 
 module.exports = engagementReg;

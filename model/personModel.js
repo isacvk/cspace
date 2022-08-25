@@ -1,11 +1,11 @@
-const mongoose = require("mongoose");
-const Family = require("./familyModel");
+const mongoose = require('mongoose');
+const Family = require('./familyModel');
 
 const personSchema = new mongoose.Schema(
   {
     familyId: {
       type: mongoose.Schema.ObjectId,
-      ref: "Families",
+      ref: 'Families',
     },
     // parishId: {
     //   type: String,
@@ -13,7 +13,7 @@ const personSchema = new mongoose.Schema(
     // },
     firstName: {
       type: String,
-      required: [true, "Please tell us your first name!"],
+      required: [true, 'Please tell us your first name!'],
     },
     lastName: {
       type: String,
@@ -40,12 +40,12 @@ const personSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      enum: ["M", "F"],
+      enum: ['M', 'F'],
     },
     maritalStatus: {
       type: String,
-      enum: ["Single", "Engaged", "Married"],
-      default: "Single",
+      enum: ['single', 'engaged', 'married', 'divorced', 'hus-exp', 'wife-exp'],
+      default: 'single',
     },
     isActive: {
       type: Boolean,
@@ -53,68 +53,68 @@ const personSchema = new mongoose.Schema(
     },
     wardNo: {
       type: Number,
-      required: [true, "Please specify ward number"],
+      required: [true, 'Please specify ward number'],
     },
     father: {
       type: mongoose.Schema.ObjectId,
-      ref: "Parishioners",
+      ref: 'Parishioners',
     },
     mother: {
       type: mongoose.Schema.ObjectId,
-      ref: "Parishioners",
+      ref: 'Parishioners',
     },
     brothers: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "Parishioners",
+        ref: 'Parishioners',
       },
     ],
     sisters: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "Parishioners",
+        ref: 'Parishioners',
       },
     ],
     wife: {
       type: mongoose.Schema.ObjectId,
-      ref: "Parishioners",
+      ref: 'Parishioners',
     },
     husband: {
       type: mongoose.Schema.ObjectId,
-      ref: "Parishioners",
+      ref: 'Parishioners',
     },
     sons: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "Parishioners",
+        ref: 'Parishioners',
       },
     ],
     daughters: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "Parishioners",
+        ref: 'Parishioners',
       },
     ],
   },
   {
     toJSON: { virtuals: true },
-    toJSON: { virtuals: true },
-  }
+    toObject: { virtuals: true },
+  },
 );
 
-personSchema.virtual("age").get(function () {
-  let birthDate = this.dob;
-  let today = new Date();
+personSchema.virtual('age').get(function () {
+  const birthDate = this.dob;
+  const today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();
-  let m = today.getMonth() - birthDate.getMonth();
+  const m = today.getMonth() - birthDate.getMonth();
   if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-    age--;
+    age -= 1;
   }
   return age;
 });
 
-personSchema.post("save", async function (next) {
-  family = await Family.findOneAndUpdate(
+personSchema.post('save', async function (next) {
+  const family = await Family.findOneAndUpdate(
     {
       _id: this.familyId,
     },
@@ -124,10 +124,10 @@ personSchema.post("save", async function (next) {
           _id: this._id,
         },
       },
-    }
+    },
   );
 });
 
-const Parishioners = mongoose.model("Parishioners", personSchema);
+const Parishioners = mongoose.model('Parishioners', personSchema);
 
 module.exports = Parishioners;

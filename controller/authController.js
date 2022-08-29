@@ -90,7 +90,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   // req.body.password = await randomPass();
   req.body.password = 'pass1234';
-  req.body.name = user.firstName;
+  req.body.name = user.baptismName;
 
   const newUser = await Users.create(req.body);
 

@@ -7,7 +7,7 @@ exports.generalInfo = (data) => {
     <title>Person Info</title>
   </head>
   <body>
-    <h1>${data.firstName}</h1>
+    <h1>${data.baptismName}</h1>
   </body>
 </html>
     `;

@@ -1,19 +1,22 @@
-const Persons = require("./../model/personModel");
+const Persons = require('./../model/personModel');
 
-const AppError = require("./../utils/appError");
-const catchAsync = require("./../utils/catchAsync");
+const AppError = require('./../utils/appError');
+const catchAsync = require('./../utils/catchAsync');
 
 exports.newPerson = catchAsync(async (req, res, next) => {
   const addPerson = await Persons.create(req.body);
 
   res.status(201).json({
-    status: "success",
+    status: 'success',
     data: addPerson,
   });
 });
 
 const addMember = catchAsync(async (details) => {
-  const addPerson = await Persons.create(details).catch((e) => {});
+  const addPerson = await Persons.create(details).catch((e) => {
+    console.log('ERR : ', e);
+  });
+  console.log('PERSON : ', addPerson);
 });
 
 exports.newPerson2 = catchAsync(async (req, res, next) => {
@@ -27,7 +30,7 @@ exports.newPerson2 = catchAsync(async (req, res, next) => {
   });
 
   res.status(201).json({
-    status: "success",
+    status: 'success',
     // data: addPerson,
   });
 });
@@ -36,7 +39,7 @@ exports.getPersons = catchAsync(async (req, res, next) => {
   const person = await Persons.find();
 
   res.status(201).json({
-    status: "success",
+    status: 'success',
     person,
   });
 });
@@ -50,21 +53,21 @@ exports.getPerson = catchAsync(async (req, res, next) => {
   person.relations = person.__v = undefined;
 
   res.status(200).json({
-    status: "success",
+    status: 'success',
     person,
   });
 });
 
 exports.getPersonRelations = catchAsync(async (req, res, next) => {
   const person = await Persons.findOne({ _id: req.params.id }).populate(
-    "father brothers"
+    'father brothers',
   );
 
   if (!person)
     return next(new AppError(`No person found with id ${req.params.id}!`, 404));
 
   res.status(200).json({
-    status: "success",
+    status: 'success',
     person,
   });
 });
@@ -74,8 +77,8 @@ exports.addRelations = catchAsync(async (req, res, next) => {
   // console.log(user);
 
   res.status(200).json({
-    status: "success",
-    message: "relations successfully added",
+    status: 'success',
+    message: 'relations successfully added',
   });
 });
 
@@ -90,7 +93,7 @@ exports.updateRelations = catchAsync(async (req, res, next) => {
   });
 
   res.status(201).json({
-    status: "success",
-    message: "new relation added",
+    status: 'success',
+    message: 'new relation added',
   });
 });

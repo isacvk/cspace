@@ -57,7 +57,7 @@ exports.addBaptismReg = catchAsync(async (req, res, next) => {
   // TODO: ADD VALIDATIONS HERE I.E ONLY IF USERS FOUND
   req.body.userId = req.params.id;
   req.body.familyId = user.familyId;
-  req.body.father = father.firstName;
+  req.body.father = father.baptismName;
 
   const addEntry = await BaptismReg.create(req.body);
 
@@ -84,7 +84,7 @@ exports.updateBaptismReg = catchAsync(async (req, res, next) => {
 exports.getEngagementReg = catchAsync(async (req, res, next) => {
   //***CAN SEND GENDER ALSO SO THAT BELOW QUERY DOESN'T NEED TO BE DONE
   const user = await Parishioners.findById(req.params.id).select(
-    'gender firstName',
+    'gender baptismName',
   );
 
   if (!user)
@@ -98,7 +98,7 @@ exports.getEngagementReg = catchAsync(async (req, res, next) => {
   const entry = await EngagementReg.find(queryObj);
 
   if (entry.length === 0)
-    return next(new AppError(`No data found for ${user.firstName}!`, 404));
+    return next(new AppError(`No data found for ${user.baptismName}!`, 404));
 
   res.status(201).json({
     status: 'success',
@@ -339,7 +339,7 @@ exports.addMarriageReg = catchAsync(async (req, res, next) => {
   // if (!engagementData)
   //   return next(
   //     new AppError(
-  //       `No valid engagement data found for ${user.firstName}! Please add that before adding marriage data.`,
+  //       `No valid engagement data found for ${user.baptismName}! Please add that before adding marriage data.`,
   //       403
   //     )
   //   );
@@ -398,7 +398,7 @@ exports.addDeathReg = catchAsync(async (req, res, next) => {
   //***!CHANGE NAME TO BAPTISM NAME
   // req.body.baptismName = user.baptismName;
   req.body.userId = user._id;
-  req.body.baptismName = user.firstName;
+  req.body.baptismName = user.baptismName;
   req.body.dob = user.dob;
   req.body.age = calcDeathAge(user.dob, new Date(req.body.dod));
 

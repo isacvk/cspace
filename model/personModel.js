@@ -11,11 +11,11 @@ const personSchema = new mongoose.Schema(
     //   type: String,
     //   required: [true, "Parish Id is not specified"],
     // },
-    firstName: {
+    baptismName: {
       type: String,
-      required: [true, 'Please tell us your first name!'],
+      required: [true, 'Please tell us your baptism name!'],
     },
-    lastName: {
+    name: {
       type: String,
       // required: [true, "Please tell us your last name!"],
     },

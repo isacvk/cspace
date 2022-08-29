@@ -17,6 +17,7 @@ const pdfRouter = require('./routes/pdfRoutes');
 const digitalSign = require('./controller/signController');
 const paymentRouter = require('./routes/paymentRoutes');
 const offeringsRouter = require('./routes/offeringsRoutes');
+const accountsRouter = require('./routes/accountsRoutes');
 
 const app = express();
 
@@ -69,6 +70,7 @@ app.use('/api/v1/create-pdf', pdfRouter);
 app.use('/api/v1/verify-sign', digitalSign.verifySign);
 app.use('/api/v1/payment', paymentRouter);
 app.use('/api/v1/offerings', offeringsRouter);
+app.use('/api/v1/accounts', accountsRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl} on this server!`, 404));

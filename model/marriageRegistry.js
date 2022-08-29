@@ -62,7 +62,7 @@ marriageRegSchema.post('save', async function (doc, next) {
     const addToParishioners = await Parishioners.create({
       familyId: familyInfo.familyId,
       wardNo: familyInfo.wardNo,
-      firstName: brideData.name,
+      baptismName: brideData.name,
       dob: brideData.dob,
       baptism: brideData.baptism,
       husband: this.groomId,

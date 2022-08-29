@@ -51,13 +51,19 @@ exports.getBaptismReg = catchAsync(async (req, res, next) => {
 exports.addBaptismReg = catchAsync(async (req, res, next) => {
   //***? WHAT ABOUT THE MEMBERS WHOSE PARENT DETAILS ARE NOT PRESENT IN DB
   const user = await Parishioners.findById(req.params.id);
-  const father = await Parishioners.findById(user.father);
+
+  if (!user) {
+    return next(new AppError(`No user found with Id ${req.params.id}`, 404));
+  }
+
+  // const father = await Parishioners.findById(user.father);
   // const mother = await Parishioners.findById(user.mother);
 
   // TODO: ADD VALIDATIONS HERE I.E ONLY IF USERS FOUND
   req.body.userId = req.params.id;
   req.body.familyId = user.familyId;
-  req.body.father = father.baptismName;
+  req.body.baptismName = user.baptismName;
+  // req.body.father = father.baptismName;
 
   const addEntry = await BaptismReg.create(req.body);
 

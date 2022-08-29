@@ -71,13 +71,21 @@ const baptismSchema = new mongoose.Schema({
   },
 });
 
-baptismSchema.post('save', async function (next) {
+baptismSchema.post('save', async function (doc, next) {
+  const day = doc.dob.getDate();
+  const month = doc.dob.getMonth() + 1;
   const updateDate = await Parishioners.findByIdAndUpdate(
     { _id: this.userId },
     {
-      $set: { dob: this.dob, baptism: this.doBaptism },
+      $set: {
+        dob: this.dob,
+        baptism: this.doBaptism,
+        dobDay: day,
+        dobMonth: month,
+      },
     },
   );
+  next();
 });
 
 const BaptismReg = mongoose.model('BaptismReg', baptismSchema);

@@ -7,10 +7,9 @@ const personSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'Families',
     },
-    // parishId: {
-    //   type: String,
-    //   required: [true, "Parish Id is not specified"],
-    // },
+    familyName: {
+      type: String,
+    },
     baptismName: {
       type: String,
       required: [true, 'Please tell us your baptism name!'],
@@ -22,6 +21,12 @@ const personSchema = new mongoose.Schema(
     dob: {
       type: Date,
       // required: [true, "Please tell us your date of birth"],
+    },
+    dobDay: {
+      type: Number,
+    },
+    dobMonth: {
+      type: Number,
     },
     baptism: {
       type: Date,
@@ -104,6 +109,7 @@ const personSchema = new mongoose.Schema(
 
 personSchema.virtual('age').get(function () {
   const birthDate = this.dob;
+  console.log(birthDate, this.dob);
   const today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();
   const m = today.getMonth() - birthDate.getMonth();

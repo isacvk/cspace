@@ -1,21 +1,23 @@
-const express = require("express");
+const express = require('express');
 
-const personController = require("./../controller/personController");
+const personController = require('../controller/personController');
 
 const router = express.Router();
 
 router
-  .route("/")
+  .route('/')
   .get(personController.getPersons)
   .post(personController.newPerson);
 
-router.route("/add").post(personController.newPerson2);
+router.route('/add').post(personController.newPerson2);
 router
-  .route("/relations/:id")
+  .route('/relations/:id')
   .get(personController.getPersonRelations)
   .post(personController.addRelations)
   .patch(personController.updateRelations);
 
-router.route("/id/:id").get(personController.getPerson);
+router.route('/birthdays').get(personController.getBdayList);
+
+router.route('/id/:id').get(personController.getPerson);
 
 module.exports = router;

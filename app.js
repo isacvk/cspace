@@ -3,6 +3,7 @@ const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const schedule = require('node-schedule');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controller/errorController');
@@ -14,10 +15,12 @@ const registryRouter = require('./routes/registryRoutes');
 const announceRouter = require('./routes/announceRoutes');
 const smsRouter = require('./routes/smsRoutes');
 const pdfRouter = require('./routes/pdfRoutes');
-const digitalSign = require('./controller/signController');
 const paymentRouter = require('./routes/paymentRoutes');
 const offeringsRouter = require('./routes/offeringsRoutes');
 const accountsRouter = require('./routes/accountsRoutes');
+
+const digitalSign = require('./controller/signController');
+const cronController = require('./controller/cronController');
 
 const app = express();
 
@@ -59,6 +62,10 @@ app.use((req, res, next) => {
 //   console.log(req);
 //   next();
 // });
+
+schedule.scheduleJob('0 0 * * *', () => {
+  cronController.generateBdayList();
+});
 
 app.use('/api/v1/family', familyRouter);
 app.use('/api/v1/persons', personRouter);

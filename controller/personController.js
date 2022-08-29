@@ -1,7 +1,9 @@
-const Persons = require('./../model/personModel');
+const Persons = require('../model/personModel');
+const Family = require('../model/familyModel');
+const Birthdays = require('../model/birthdayModel');
 
-const AppError = require('./../utils/appError');
-const catchAsync = require('./../utils/catchAsync');
+const AppError = require('../utils/appError');
+const catchAsync = require('../utils/catchAsync');
 
 exports.newPerson = catchAsync(async (req, res, next) => {
   const addPerson = await Persons.create(req.body);
@@ -16,16 +18,25 @@ const addMember = catchAsync(async (details) => {
   const addPerson = await Persons.create(details).catch((e) => {
     console.log('ERR : ', e);
   });
-  console.log('PERSON : ', addPerson);
 });
 
 exports.newPerson2 = catchAsync(async (req, res, next) => {
   // const addPerson = await Persons.create(req.body);
 
+  // TODO: ADD FAMILY NAME IN PARISHIONERS MODEL
+  const family = await Family.findById(req.body.familyId);
+
+  if (!family) {
+    return next(
+      new AppError(`No family found with Id ${req.body.familyId}`, 404),
+    );
+  }
+
   const familyMembers = req.body.persons;
   familyMembers.map((person) => {
     person.familyId = `${req.body.familyId}`;
     person.wardNo = `${req.body.wardNo}`;
+    person.familyName = family.familyName;
     addMember(person);
   });
 
@@ -38,7 +49,7 @@ exports.newPerson2 = catchAsync(async (req, res, next) => {
 exports.getPersons = catchAsync(async (req, res, next) => {
   const person = await Persons.find();
 
-  res.status(201).json({
+  res.status(200).json({
     status: 'success',
     person,
   });
@@ -95,5 +106,14 @@ exports.updateRelations = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: 'success',
     message: 'new relation added',
+  });
+});
+
+exports.getBdayList = catchAsync(async (req, res, next) => {
+  const birthdays = await Birthdays.find();
+
+  res.status(200).json({
+    status: 'success',
+    data: birthdays,
   });
 });

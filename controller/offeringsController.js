@@ -1,4 +1,10 @@
+const fs = require('fs');
+
+const json2csv = require('json2csv').parse;
+const fields = ['baptismName', 'phoneNum', 'description', 'paidAt'];
+
 const Offerings = require('../model/offeringsModel');
+const Sponsors = require('../model/sponsorsModel');
 
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
@@ -45,5 +51,26 @@ exports.getOffering = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: offering,
+  });
+});
+
+exports.generateCsv = catchAsync(async (req, res, next) => {
+  const sponsors = await Sponsors.find({ offeringId: req.params.id });
+
+  if (sponsors.length === 0) {
+    return next(
+      new AppError(`No data found with offer id ${req.params.id}`, 404),
+    );
+  }
+
+  const csv = json2csv(sponsors, { fields });
+
+  fs.writeFile('./public/sponsors.csv', `${csv}`, (err) => {
+    if (err) throw err;
+  });
+  res.status(200).json({
+    status: 'success',
+    message: 'CSV file generated!',
+    link: '/sponsors.csv',
   });
 });

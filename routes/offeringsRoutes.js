@@ -12,4 +12,6 @@ router
 router.route('/:id').get(offeringsController.getOffering);
 // .post(paymentController.callback);
 
+router.route('/generate-csv/:id').get(offeringsController.generateCsv);
+
 module.exports = router;

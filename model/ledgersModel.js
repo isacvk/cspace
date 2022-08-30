@@ -10,6 +10,9 @@ const ledgerSchema = new mongoose.Schema({
     ref: 'Groups',
     required: [true, 'group id is not specified!'],
   },
+  groupName: {
+    type: String,
+  },
   type: {
     type: String,
     enum: ['income', 'expense'],

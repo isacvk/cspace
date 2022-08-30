@@ -25,9 +25,15 @@ const voucherSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'Groups',
   },
+  groupName: {
+    type: String,
+  },
   ledgerId: {
     type: mongoose.Schema.ObjectId,
     ref: 'Groups',
+  },
+  ledgerName: {
+    type: String,
   },
   type: {
     type: String,
@@ -36,7 +42,7 @@ const voucherSchema = new mongoose.Schema({
   },
 });
 
-voucherSchema.post('save', async function (doc, next) {
+voucherSchema.post('save', async (doc, next) => {
   if (doc.type === 'income') {
     if (doc.account === 'cash') {
       console.log('ENTERED!!!');

@@ -1,20 +1,20 @@
-const Family = require("./../model/familyModel");
+const Family = require('./../model/familyModel');
 
-const AppError = require("./../utils/appError");
-const catchAsync = require("./../utils/catchAsync");
+const AppError = require('./../utils/appError');
+const catchAsync = require('./../utils/catchAsync');
 
 exports.addFamily = catchAsync(async (req, res, next) => {
   const addFamily = await Family.create(req.body);
 
   res.status(201).json({
-    status: "success",
+    status: 'success',
     data: addFamily,
   });
 });
 
 exports.getFamilies = catchAsync(async (req, res, next) => {
   const queryObj = { ...req.query };
-  const excludedFields = ["sort"];
+  const excludedFields = ['sort'];
   excludedFields.forEach((el) => delete queryObj[el]);
 
   let queryStr = JSON.stringify(queryObj);
@@ -23,31 +23,31 @@ exports.getFamilies = catchAsync(async (req, res, next) => {
   let query = Family.find(JSON.parse(queryStr));
 
   if (req.query.sort) {
-    const sortBy = req.query.sort.split(",").join(" ");
+    const sortBy = req.query.sort.split(',').join(' ');
     query = query.sort(sortBy);
   } else {
-    query = query.sort("familyName");
+    query = query.sort('familyName');
   }
 
   const getFamilies = await query;
 
   res.status(201).json({
-    status: "success",
+    status: 'success',
     results: getFamilies.length,
     data: getFamilies,
   });
 });
 
 exports.getFamily = catchAsync(async (req, res, next) => {
-  const getFamily = await Family.findById(req.params.id).populate("members");
+  const getFamily = await Family.findById(req.params.id).populate('members');
 
   if (!getFamily)
     return next(
-      new AppError(`No family found with the id ${req.params.id}!`, 404)
+      new AppError(`No family found with the id ${req.params.id}!`, 404),
     );
 
   res.status(200).json({
-    status: "success",
+    status: 'success',
     data: getFamily,
   });
 });
@@ -57,7 +57,7 @@ exports.updateFamily = catchAsync(async (req, res, next) => {
     {
       _id: `${req.params.id}`,
     },
-    req.body
+    req.body,
   );
 
   if (!updateFamily) {
@@ -65,8 +65,8 @@ exports.updateFamily = catchAsync(async (req, res, next) => {
   }
 
   res.status(201).json({
-    status: "success",
-    message: "Family info succesfully modified",
+    status: 'success',
+    message: 'Family info succesfully modified',
     family: updateFamily,
   });
 });

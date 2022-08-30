@@ -18,10 +18,14 @@ const addMember = catchAsync(async (details) => {
   const addPerson = await Persons.create(details).catch((e) => {
     console.log('ERR : ', e);
   });
+
+  console.log('ADDPERSON : ', addPerson);
 });
 
 exports.newPerson2 = catchAsync(async (req, res, next) => {
   // const addPerson = await Persons.create(req.body);
+
+  console.log('REQ BODY : ', req.body);
 
   // TODO: ADD FAMILY NAME IN PARISHIONERS MODEL
   const family = await Family.findById(req.body.familyId);
@@ -42,7 +46,7 @@ exports.newPerson2 = catchAsync(async (req, res, next) => {
 
   res.status(201).json({
     status: 'success',
-    // data: addPerson,
+    message: 'members added successfully',
   });
 });
 

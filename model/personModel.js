@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Family = require('./familyModel');
 
+// TODO: FAMILY ID SHOULD BE REQUIRED
+// TODO: CHANGE TO PHONENUM
 const personSchema = new mongoose.Schema(
   {
     familyId: {
@@ -43,9 +45,17 @@ const personSchema = new mongoose.Schema(
       type: Number,
       // required: [true, "Please enter your contact number!"],
     },
+    whatsappNum: {
+      type: Number,
+      // required: [true, "Please enter your contact number!"],
+    },
+    email: {
+      type: String,
+    },
     gender: {
       type: String,
       enum: ['M', 'F'],
+      required: [true, 'Please specify the geners of the person'],
     },
     maritalStatus: {
       type: String,
@@ -107,17 +117,17 @@ const personSchema = new mongoose.Schema(
   },
 );
 
-personSchema.virtual('age').get(function () {
-  const birthDate = this.dob;
-  console.log(birthDate, this.dob);
-  const today = new Date();
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const m = today.getMonth() - birthDate.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-    age -= 1;
-  }
-  return age;
-});
+// personSchema.virtual('age').get(function () {
+//   const birthDate = this.dob;
+//   console.log(birthDate, this.dob);
+//   const today = new Date();
+//   let age = today.getFullYear() - birthDate.getFullYear();
+//   const m = today.getMonth() - birthDate.getMonth();
+//   if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+//     age -= 1;
+//   }
+//   return age;
+// });
 
 personSchema.post('save', async function (next) {
   const family = await Family.findOneAndUpdate(

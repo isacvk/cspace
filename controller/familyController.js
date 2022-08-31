@@ -1,19 +1,22 @@
 const multer = require('multer');
+const sharp = require('sharp');
 
 const Family = require('../model/familyModel');
 
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
-const multerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/img/family');
-  },
-  filename: (req, file, cb) => {
-    const ext = file.mimetype.split('/')[1];
-    cb(null, `family-${req.params.id}-${Date.now()}.${ext}`);
-  },
-});
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'public/img/family');
+//   },
+//   filename: (req, file, cb) => {
+//     const ext = file.mimetype.split('/')[1];
+//     cb(null, `family-${req.params.id}-${Date.now()}.${ext}`);
+//   },
+// });
+
+const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
@@ -29,6 +32,22 @@ const upload = multer({
 });
 
 exports.uploadFamilyPhoto = upload.single('photo');
+
+exports.resizeFamilyPhoto = (req, res, next) => {
+  if (!req.file) {
+    return next();
+  }
+
+  req.file.filename = `family-${req.params.id}-${Date.now()}.jpeg`;
+
+  sharp(req.file.buffer)
+    .resize(500, 400)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/family/${req.file.filename}`);
+
+  next();
+};
 
 exports.addFamily = catchAsync(async (req, res, next) => {
   const addFamily = await Family.create(req.body);
@@ -80,15 +99,11 @@ exports.getFamily = catchAsync(async (req, res, next) => {
 });
 
 exports.updateFamily = catchAsync(async (req, res, next) => {
-  const updateFamily = await Family.findOneAndUpdate(
-    {
-      _id: `${req.params.id}`,
-    },
-    req.body,
-  );
+  if (req.file) req.body.photo = req.file.filename;
+  const updateFamily = await Family.findByIdAndUpdate(req.params.id, req.body);
 
   if (!updateFamily) {
-    return next(new AppError(`No family found with that Id!`, 404));
+    return next(new AppError(`No family found with Id ${req.params.id}!`, 404));
   }
 
   res.status(201).json({

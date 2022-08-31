@@ -16,6 +16,10 @@ router
 router
   .route('/:id')
   .get(familyController.getFamily)
-  .patch(familyController.uploadFamilyPhoto, familyController.updateFamily);
+  .patch(
+    familyController.uploadFamilyPhoto,
+    familyController.resizeFamilyPhoto,
+    familyController.updateFamily,
+  );
 
 module.exports = router;

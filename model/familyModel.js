@@ -36,7 +36,7 @@ const familySchema = new mongoose.Schema({
       ref: 'Parishioners',
     },
   ],
-  familyPic: {
+  photo: {
     type: String,
   },
 });

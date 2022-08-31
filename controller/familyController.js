@@ -1,7 +1,34 @@
-const Family = require('./../model/familyModel');
+const multer = require('multer');
 
-const AppError = require('./../utils/appError');
-const catchAsync = require('./../utils/catchAsync');
+const Family = require('../model/familyModel');
+
+const AppError = require('../utils/appError');
+const catchAsync = require('../utils/catchAsync');
+
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/img/family');
+  },
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split('/')[1];
+    cb(null, `family-${req.params.id}-${Date.now()}.${ext}`);
+  },
+});
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please upload only images', 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+exports.uploadFamilyPhoto = upload.single('photo');
 
 exports.addFamily = catchAsync(async (req, res, next) => {
   const addFamily = await Family.create(req.body);
@@ -41,11 +68,11 @@ exports.getFamilies = catchAsync(async (req, res, next) => {
 exports.getFamily = catchAsync(async (req, res, next) => {
   const getFamily = await Family.findById(req.params.id).populate('members');
 
-  if (!getFamily)
+  if (!getFamily) {
     return next(
       new AppError(`No family found with the id ${req.params.id}!`, 404),
     );
-
+  }
   res.status(200).json({
     status: 'success',
     data: getFamily,

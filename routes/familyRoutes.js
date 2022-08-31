@@ -1,21 +1,21 @@
-const express = require("express");
+const express = require('express');
 
-const authController = require("./../controller/authController");
-const familyController = require("./../controller/familyController");
+const authController = require('../controller/authController');
+const familyController = require('../controller/familyController');
 
 const router = express.Router();
 
 router
-  .route("/")
+  .route('/')
   .get(
     // authController.protect,
-    familyController.getFamilies
+    familyController.getFamilies,
   )
   .post(familyController.addFamily);
 
 router
-  .route("/:id")
+  .route('/:id')
   .get(familyController.getFamily)
-  .patch(familyController.updateFamily);
+  .patch(familyController.uploadFamilyPhoto, familyController.updateFamily);
 
 module.exports = router;

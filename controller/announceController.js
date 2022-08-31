@@ -4,10 +4,8 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
 exports.announce = catchAsync(async (req, res, next) => {
-  const makeAnnouncement = await Announce.create({
-    announcement: req.body.announcement,
-    date: new Date(),
-  });
+  req.body.date = new Date();
+  const makeAnnouncement = await Announce.create(req.body.announcement);
 
   res.status(200).json({
     status: 'success',

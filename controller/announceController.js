@@ -23,14 +23,9 @@ exports.getAnnouncement = catchAsync(async (req, res, next) => {
 });
 
 exports.modifyAnnounce = catchAsync(async (req, res, next) => {
-  const modifyAnnouncement = await Announce.findByIdAndUpdate(
-    {
-      _id: req.params.id,
-    },
-    {
-      announcement: req.body.announcement,
-    },
-  );
+  const modifyAnnouncement = await Announce.findByIdAndUpdate(req.params.id, {
+    announcement: req.body.announcement,
+  });
 
   if (!modifyAnnouncement) {
     return next(

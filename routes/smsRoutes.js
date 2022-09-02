@@ -1,29 +1,29 @@
-const express = require("express");
+const express = require('express');
 
-const authController = require("../controller/authController");
-const messageController = require("../controller/messageController");
+const authController = require('../controller/authController');
+const messageController = require('../controller/messageController');
 
 const router = express.Router();
 
 router.post(
-  "/person/:id",
+  '/person/:id',
   //   authController.protect,
   //   authController.restrictTo("Admin"),
-  messageController.person
+  messageController.person,
 );
 
 router.post(
-  "/family/:id",
+  '/family/:id',
   //   authController.protect,
   //   authController.restrictTo("Admin"),
-  messageController.family
+  messageController.family,
 );
 
 router.post(
-  "/",
+  '/',
   //   authController.protect,
   //   authController.restrictTo("Admin"),
-  messageController.sendMessage
+  messageController.sendMessage,
 );
 
 module.exports = router;

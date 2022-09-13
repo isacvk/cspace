@@ -1,0 +1,4 @@
+This is where files will be uploaded before sending mail.
+Files in this foler will be deleted after sending the mail.
+This text file if only used to add this folder to github.
+Because empty folder can't be added.

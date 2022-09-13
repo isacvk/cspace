@@ -398,10 +398,12 @@ exports.getDeathReg = catchAsync(async (req, res, next) => {
 exports.addDeathReg = catchAsync(async (req, res, next) => {
   const user = await Parishioners.findById(req.params.id);
 
-  if (!user)
+  if (!user) {
     return next(new AppError(`No user found with Id ${req.params.id}`, 404));
+  }
 
   //***!CHANGE NAME TO BAPTISM NAME
+  // TODO: CHECK IF DEATH REG ALREADY EXISTS
   // req.body.baptismName = user.baptismName;
   req.body.userId = user._id;
   req.body.baptismName = user.baptismName;

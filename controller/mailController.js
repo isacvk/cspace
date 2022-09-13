@@ -19,7 +19,7 @@ const multerStorage = multer.diskStorage({
 
 const multerFilter = (req, file, cb) => {
   const ext = file.mimetype.split('/')[1];
-  if (ext === 'jpeg' || ext === 'jpg' || ext === 'pdf') {
+  if (ext === 'jpeg' || ext === 'jpg' || ext === 'pdf' || ext === 'png') {
     cb(null, true);
   } else {
     cb(new AppError('Only jpeg, jpg and pdf can be uploaded', 400));
@@ -42,11 +42,12 @@ const transporter = mail.createTransport({
 });
 
 exports.sendMail = catchAsync(async (req, res, next) => {
+  // TODO: GET MAIL ID USING USERID, FAMILY ID/WARD AND SEND MAIL
   const mailOptions = {
     from: 'isac.vk@outlook.com',
-    to: 'isackv913@gmail.com',
-    subject: 'First file from node js!',
-    text: 'Did you receive the second mail?',
+    to: 'jestin9900767795@gmail.com',
+    subject: `${req.body.subject}`,
+    text: `${req.body.text}`,
     attachments: [
       {
         path: req.mailattach,
@@ -56,11 +57,11 @@ exports.sendMail = catchAsync(async (req, res, next) => {
 
   transporter.sendMail(mailOptions, (err, info) => {
     if (err) {
-      console.log(err);
+      console.log('ERR IN MAIL SENDING : ', err);
     } else {
       fs.unlink(req.mailattach, (error) => {
         if (error) {
-          console.log('File not deleted', error);
+          console.log('ERR IN FILE DELETION : ', error);
         }
       });
       console.log('Message send : ', info.response);

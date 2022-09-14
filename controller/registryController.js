@@ -257,29 +257,28 @@ exports.getMarriageRegs = catchAsync(async (req, res, next) => {
 exports.getMarriageReg = catchAsync(async (req, res, next) => {
   //***? What if the person marries second time. [Add a field to mark marriage as invalid]
 
-  let entry = await MarriageReg.findById(req.params.id);
+  // let entry = await MarriageReg.findById(req.params.id);
 
-  if (!entry) {
-    const user = await Parishioners.findById(req.params.id).select('gender');
+  // if (!entry) {
+  const user = await Parishioners.findById(req.params.id).select('gender');
 
-    if (!user)
-      return next(new AppError(`No user found with Id ${req.params.id}`, 404));
-
-    let queryObj = {};
-    if (user.gender === 'M') {
-      queryObj = { groomId: req.params.id, status: 'valid' };
-    }
-    if (user.gender === 'F') {
-      queryObj = { brideId: req.params.id, status: 'valid' };
-    }
-
-    entry = await MarriageReg.findOne(queryObj);
-    if (!entry) {
-      return next(
-        new AppError(`No entry found with id ${req.params.id}!`, 404),
-      );
-    }
+  if (!user) {
+    return next(new AppError(`No user found with Id ${req.params.id}`, 404));
   }
+
+  let queryObj = {};
+  if (user.gender === 'M') {
+    queryObj = { groomId: req.params.id, status: 'valid' };
+  }
+  if (user.gender === 'F') {
+    queryObj = { brideId: req.params.id, status: 'valid' };
+  }
+
+  const entry = await MarriageReg.findOne(queryObj);
+  if (!entry) {
+    return next(new AppError(`No entry found with id ${req.params.id}!`, 404));
+  }
+  // }
   res.status(201).json({
     status: 'success',
     data: entry,

@@ -76,13 +76,23 @@ exports.signup = catchAsync(async (req, res, next) => {
   // ***?What if user already have uid and pass
 
   const user = await Parishioners.findById(req.body.userId);
+  // TEMP CODE
+  let counter = 0;
+  const loginId = [
+    123458, 123459, 123460, 123461, 123462, 123463, 123464, 123465, 123466,
+    123467, 123468, 123469, 123470, 123471, 123472, 123473, 123474, 123475,
+  ];
 
   let repeatIdGenetation = true;
   while (repeatIdGenetation) {
     //! Create dynamic login id
-    req.body.loginId = '123458';
+    req.body.loginId = loginId[counter];
+
     // req.body.loginId = await randomId();
     const idExist = await Users.findOne({ loginId: `${req.body.loginId}` });
+
+    // TEMP CODE
+    counter += 1;
 
     // console.log(idExist);
     if (!idExist) repeatIdGenetation = false;

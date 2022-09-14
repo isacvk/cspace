@@ -12,7 +12,7 @@ const engagementRegSchema = new mongoose.Schema({
     ref: 'Parishioners',
   },
   groomData: {
-    name: {
+    baptismName: {
       type: String,
       required: [true, 'Name of the bride groom is not specified'],
     },
@@ -30,7 +30,7 @@ const engagementRegSchema = new mongoose.Schema({
     },
     parish: {
       type: String,
-      required: [true, "Name of bridegroom's parish is not specified"],
+      // required: [true, "Name of bridegroom's parish is not specified"],
     },
     dob: {
       type: Date,
@@ -46,7 +46,7 @@ const engagementRegSchema = new mongoose.Schema({
     },
   },
   brideData: {
-    name: {
+    baptismName: {
       type: String,
       required: [true, 'Name of the bride is not specified'],
     },
@@ -64,13 +64,13 @@ const engagementRegSchema = new mongoose.Schema({
     },
     parish: {
       type: String,
-      required: [true, "Name of bride's parish is not specified"],
+      // required: [true, "Name of bride's parish is not specified"],
     },
     dob: {
       type: Date,
       required: [true, 'Dob is not specified'],
     },
-    baptism: {
+    doBaptism: {
       type: Date,
       required: [true, 'Baptism date is not specified'],
     },
@@ -114,13 +114,13 @@ const engagementRegSchema = new mongoose.Schema({
 
 engagementRegSchema.post('save', async (doc, next) => {
   let updateList = [];
-  if (this.groomId) updateList.push(this.groomId);
-  if (this.brideId) updateList.push(this.brideId);
+  if (doc.groomId) updateList.push(doc.groomId);
+  if (doc.brideId) updateList.push(doc.brideId);
 
   const updateStatus = await Parishioners.updateMany(
     { _id: { $in: updateList } },
     {
-      $set: { maritalStatus: 'Engaged' },
+      $set: { maritalStatus: 'engaged' },
     },
   );
   next();

@@ -97,11 +97,13 @@ exports.getEngagementReg = catchAsync(async (req, res, next) => {
     return next(new AppError(`No user found with Id ${req.params.id}`, 404));
 
   let queryObj = {};
-  if (user.gender === 'M') queryObj = { groomId: req.params.id };
-  if (user.gender === 'F') queryObj = { brideId: req.params.id };
+  if (user.gender === 'M')
+    queryObj = { groomId: req.params.id, status: 'valid' };
+  if (user.gender === 'F')
+    queryObj = { brideId: req.params.id, status: 'valid' };
 
   //***? WHAT TO DO WHEN MULTIPLE ENTRIES ARE THERE
-  const entry = await EngagementReg.find(queryObj);
+  const entry = await EngagementReg.findOne(queryObj);
 
   if (entry.length === 0)
     return next(new AppError(`No data found for ${user.baptismName}!`, 404));
@@ -113,6 +115,7 @@ exports.getEngagementReg = catchAsync(async (req, res, next) => {
 });
 
 exports.addEngagementReg = catchAsync(async (req, res, next) => {
+  console.log('REQ OBJ : ', req.body);
   const user = await Parishioners.findOne({ _id: req.params.id }).select(
     'dob gender',
   );
@@ -180,12 +183,12 @@ exports.addEngagementReg = catchAsync(async (req, res, next) => {
   }
 
   // ?WTF IS THIS??? QUERYING FROM SAME MODEL?
-  console.log('QEURY OBJ', queryObj);
-  console.log('QEURY OBJ', queryObj2);
-  let engagementData;
-  let marriageData;
-  let engagementData2;
-  let marriageData2;
+  // console.log('QEURY OBJ', queryObj);
+  // console.log('QEURY OBJ', queryObj2);
+  let engagementData = [];
+  let marriageData = [];
+  let engagementData2 = [];
+  let marriageData2 = [];
 
   if (Object.keys(queryObj).length !== 0) {
     engagementData = await EngagementReg.find(queryObj);
@@ -301,12 +304,12 @@ exports.addMarriageReg = catchAsync(async (req, res, next) => {
   //   );
   // }
 
+  console.log('REQ PARAMS : ', req.params.id);
+
   const engagementEntry = await EngagementReg.findOne({
     _id: req.params.id,
     status: 'valid',
   });
-
-  console.log('ENG : ', engagementEntry);
 
   if (!engagementEntry)
     return next(new AppError(`No valid engagement data found!`, 403));
@@ -368,10 +371,10 @@ exports.addMarriageReg = catchAsync(async (req, res, next) => {
 
   if (engagementEntry.groomId) req.body.groomId = engagementEntry.groomId;
   if (engagementEntry.groomId) req.body.brideId = engagementEntry.brideId;
-  req.body.groomName = engagementEntry.groomData.name;
-  req.body.brideName = engagementEntry.brideData.name;
+  req.body.groomName = engagementEntry.groomData.baptismName;
+  req.body.brideName = engagementEntry.brideData.baptismName;
 
-  // const register = await MarriageReg.create(req.body);
+  const register = await MarriageReg.create(req.body);
 
   res.status(201).json({
     status: 'success',

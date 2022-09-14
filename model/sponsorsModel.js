@@ -13,6 +13,9 @@ const sponsorSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Payee name is not specified!'],
   },
+  familyName: {
+    type: String,
+  },
   phoneNum: {
     type: Number,
     required: [true, 'Phone number is not specified!'],

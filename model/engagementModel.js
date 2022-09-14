@@ -36,13 +36,13 @@ const engagementRegSchema = new mongoose.Schema({
       type: Date,
       required: [true, 'Dob is not specified'],
     },
-    baptism: {
+    doBaptism: {
       type: Date,
       required: [true, 'Baptism date is not specified'],
     },
     baptismPlace: {
       type: String,
-      required: [true, 'Baptism place is not specified'],
+      // required: [true, 'Baptism place is not specified'],
     },
   },
   brideData: {
@@ -76,7 +76,7 @@ const engagementRegSchema = new mongoose.Schema({
     },
     baptismPlace: {
       type: String,
-      required: [true, 'Baptism place is not specified'],
+      // required: [true, 'Baptism place is not specified'],
     },
   },
   bannDates: [

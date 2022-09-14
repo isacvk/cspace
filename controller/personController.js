@@ -47,11 +47,30 @@ exports.newPerson2 = catchAsync(async (req, res, next) => {
 });
 
 exports.getPersons = catchAsync(async (req, res, next) => {
-  const person = await Persons.find();
+  const queryObj = { ...req.query };
+
+  console.log('REQ QUERY : ', queryObj);
+  const excludedFields = ['sort'];
+  excludedFields.forEach((el) => delete queryObj[el]);
+
+  let queryStr = JSON.stringify(queryObj);
+  queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+  let query = Persons.find(JSON.parse(queryStr));
+
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(',').join(' ');
+    query = query.sort(sortBy);
+  } else {
+    query = query.sort('baptismName');
+  }
+
+  const persons = await query;
 
   res.status(200).json({
     status: 'success',
-    person,
+    results: persons.length,
+    persons,
   });
 });
 

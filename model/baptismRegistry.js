@@ -79,7 +79,7 @@ baptismSchema.post('save', async function (doc, next) {
     {
       $set: {
         dob: this.dob,
-        baptism: this.doBaptism,
+        doBaptism: this.doBaptism,
         dobDay: day,
         dobMonth: month,
       },

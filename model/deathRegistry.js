@@ -59,7 +59,7 @@ const deathRegSchema = new mongoose.Schema({
 deathRegSchema.post('save', async (doc, next) => {
   // console.log("DEATH DOC : ", doc);
   const updateStats = await Parishioners.findByIdAndUpdate(doc.userId, {
-    // death: doc.dod,
+    death: doc.dod,
     isActive: false,
   });
 

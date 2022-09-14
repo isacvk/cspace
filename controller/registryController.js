@@ -117,8 +117,9 @@ exports.addEngagementReg = catchAsync(async (req, res, next) => {
     'dob gender',
   );
 
-  if (!user)
+  if (!user) {
     return next(new AppError(`No user found with Id${req.params.id}`, 404));
+  }
 
   if (!isLegalAge(user.dob, user.gender)) {
     return next(
@@ -135,16 +136,18 @@ exports.addEngagementReg = catchAsync(async (req, res, next) => {
       'dob gender',
     );
 
-    if (!partner)
+    if (!partner) {
       return next(
         new AppError(`No user found with Id ${req.body.partnerId}`, 404),
       );
+    }
 
     if (
       (user.gender === 'M' && partner.gender === 'M') ||
       (user.gender === 'F' && partner.gender === 'F')
-    )
-      return next(new AppError(`Same sex marriage is not allowed!`, 403));
+    ) {
+      return next(new AppError('Same sex marriage is not allowed!', 403));
+    }
 
     if (!isLegalAge(partner.dob, partner.gender)) {
       return next(
@@ -176,21 +179,32 @@ exports.addEngagementReg = catchAsync(async (req, res, next) => {
     }
   }
 
-  //***?WTF IS THIS??? QUERYING FROM SAME MODEL?
-  const engagementData = await EngagementReg.find(queryObj);
-  const engagementData2 = await EngagementReg.find(queryObj2);
-  const marriageData = await EngagementReg.find(queryObj);
-  const marriageData2 = await EngagementReg.find(queryObj2);
+  // ?WTF IS THIS??? QUERYING FROM SAME MODEL?
+  console.log('QEURY OBJ', queryObj);
+  console.log('QEURY OBJ', queryObj2);
+  let engagementData;
+  let marriageData;
+  let engagementData2;
+  let marriageData2;
+
+  if (Object.keys(queryObj).length !== 0) {
+    engagementData = await EngagementReg.find(queryObj);
+    marriageData = await EngagementReg.find(queryObj);
+  }
+  if (Object.keys(queryObj2).length !== 0) {
+    engagementData2 = await EngagementReg.find(queryObj2);
+    marriageData2 = await EngagementReg.find(queryObj2);
+  }
 
   if (engagementData.length !== 0 || engagementData2.length !== 0) {
-    return next(new AppError(`valid engagement data already extists!`, 403));
+    return next(new AppError('valid engagement data already extists!', 403));
   }
 
   if (marriageData.length !== 0 || marriageData2.length !== 0) {
-    return next(new AppError(`valid marriage data already extists!`, 403));
+    return next(new AppError('valid marriage data already extists!', 403));
   }
-  //***TODO: CHECK IF BRIDE OR GROOM HAS VALID MARRIAGE REGISTRY
-  //***TODO: GET DATA OF BRIDE AND GROOM AND ADD BY DEFAULT - NOT POSSIBLE AS SOME PEOPLE MAY NOT HAVE THAT.
+  // TODO: CHECK IF BRIDE OR GROOM HAS VALID MARRIAGE REGISTRY
+  // TODO: GET DATA OF BRIDE AND GROOM AND ADD BY DEFAULT - NOT POSSIBLE AS SOME PEOPLE MAY NOT HAVE THAT.
   // let groomData, brideData;
   // if (!req.body.groomId && !req.body.brideId) {
   //   return next(new AppError("Please provide either bride Id or groom Id"));

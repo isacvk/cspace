@@ -38,7 +38,7 @@ const personSchema = new mongoose.Schema(
       type: Date,
       // required: [true, "Please tell us your marriage date"],
     },
-    death: {
+    dod: {
       type: Date,
     },
     phoneNumber: {

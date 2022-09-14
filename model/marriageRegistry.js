@@ -66,7 +66,7 @@ marriageRegSchema.post('save', async function (doc, next) {
       dob: brideData.dob,
       baptism: brideData.baptism,
       husband: this.groomId,
-      maritalStatus: 'Married',
+      maritalStatus: 'married',
     });
 
     console.log('PERSONS : ', addToParishioners);

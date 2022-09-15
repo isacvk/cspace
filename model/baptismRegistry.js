@@ -20,6 +20,9 @@ const baptismSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Baptism name is not specified'],
   },
+  name: {
+    type: String,
+  },
   father: {
     type: String,
   },

@@ -1,11 +1,11 @@
-const Parishioners = require('./../model/personModel');
-const BaptismReg = require('./../model/baptismRegistry');
-const EngagementReg = require('./../model/engagementModel');
-const MarriageReg = require('./../model/marriageRegistry');
-const DeathReg = require('./../model/deathRegistry');
+const Parishioners = require('../model/personModel');
+const BaptismReg = require('../model/baptismRegistry');
+const EngagementReg = require('../model/engagementModel');
+const MarriageReg = require('../model/marriageRegistry');
+const DeathReg = require('../model/deathRegistry');
 
-const AppError = require('./../utils/appError');
-const catchAsync = require('./../utils/catchAsync');
+const AppError = require('../utils/appError');
+const catchAsync = require('../utils/catchAsync');
 
 const calcAge = (dob) => {
   let birthDate = dob;
@@ -72,12 +72,13 @@ exports.addBaptismReg = catchAsync(async (req, res, next) => {
   req.body.userId = req.params.id;
   req.body.familyId = user.familyId;
   req.body.baptismName = user.baptismName;
-  // req.body.father = father.baptismName;
+  req.body.name = user.name;
 
   const addEntry = await BaptismReg.create(req.body);
 
   res.status(201).json({
     status: 'success',
+    data: addEntry,
   });
 });
 

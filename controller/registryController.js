@@ -101,7 +101,7 @@ exports.getEngagementRegs = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    date: registries,
+    data: registries,
   });
 });
 
@@ -268,7 +268,7 @@ exports.getMarriageRegs = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    date: registries,
+    data: registries,
   });
 });
 
@@ -428,7 +428,7 @@ exports.getDeathRegs = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    date: registries,
+    data: registries,
   });
 });
 
@@ -437,7 +437,7 @@ exports.getDeathReg = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    date: registries,
+    data: registries,
   });
 });
 

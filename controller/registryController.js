@@ -278,10 +278,20 @@ exports.getMarriageReg = catchAsync(async (req, res, next) => {
   if (!entry) {
     return next(new AppError(`No entry found with id ${req.params.id}!`, 404));
   }
+  const engData = await EngagementReg.findOne(queryObj);
+
   // }
+  entry['groomData'] = engData.groomData;
+  entry['brideData'] = engData.brideData;
+
+  console.log('ENG DATA  1 : ', engData.groomData);
+  console.log('ENG DATA : ', entry);
+  let tempObj = { ...engData, ...entry };
+  console.log('TEMP  : ', tempObj);
+
   res.status(201).json({
     status: 'success',
-    data: entry,
+    data: tempObj,
   });
 });
 

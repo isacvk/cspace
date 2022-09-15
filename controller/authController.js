@@ -72,6 +72,7 @@ const randomId = async () => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
+  console.log('SIGN UP CALLED');
   // find the name, create login ID and password and send sms
   // ***?What if user already have uid and pass
 

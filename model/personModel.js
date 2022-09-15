@@ -30,7 +30,7 @@ const personSchema = new mongoose.Schema(
     dobMonth: {
       type: Number,
     },
-    baptism: {
+    doBaptism: {
       type: Date,
       // required: [true, "Please tell us your baptism date"],
     },

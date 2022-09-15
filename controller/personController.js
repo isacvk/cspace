@@ -89,12 +89,26 @@ exports.getPerson = catchAsync(async (req, res, next) => {
 });
 
 exports.getPersonRelations = catchAsync(async (req, res, next) => {
+  console.log('REQ QEURY : ', req.query);
+  const query = { ...req.query };
+
+  const populateFields = `${query.father ? 'father' : ''} ${
+    query.mother ? 'mother' : ''
+  } ${query.husband ? 'husband' : ''} ${query.wife ? 'wife' : ''} ${
+    query.sons ? 'sons' : ''
+  } ${query.daughters ? 'daughter' : ''} ${query.brothers ? 'brothers' : ''} ${
+    query.sisters ? 'sisters' : ''
+  }`;
+
   const person = await Persons.findOne({ _id: req.params.id }).populate(
-    'father brothers',
+    // 'father mother brothers sisters husband wife',
+    // `${query.father ? query.father : ''} ${query.mother ? query.mother : ''}`,
+    [{ path: `${populateFields}`, strictPopulate: false }],
   );
 
-  if (!person)
+  if (!person) {
     return next(new AppError(`No person found with id ${req.params.id}!`, 404));
+  }
 
   res.status(200).json({
     status: 'success',

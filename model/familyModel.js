@@ -39,6 +39,9 @@ const familySchema = new mongoose.Schema({
   photo: {
     type: String,
   },
+  remarks: {
+    type: String,
+  },
 });
 
 const Families = mongoose.model('Families', familySchema);

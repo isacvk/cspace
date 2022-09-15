@@ -37,7 +37,7 @@ const baptismSchema = new mongoose.Schema({
     type: Date,
     required: [true, 'Date of baptism is not specified'],
   },
-  place: {
+  birthPlace: {
     type: String,
     required: [true, 'Place of bith is not specified'],
   },
@@ -78,6 +78,14 @@ const baptismSchema = new mongoose.Schema({
 });
 
 baptismSchema.post('save', async function (doc, next) {
+  const birthDate = doc.dob;
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age -= 1;
+  }
+
   const day = doc.dob.getDate();
   const month = doc.dob.getMonth() + 1;
   const updateDate = await Parishioners.findByIdAndUpdate(
@@ -88,6 +96,7 @@ baptismSchema.post('save', async function (doc, next) {
         doBaptism: doc.doBaptism,
         dobDay: day,
         dobMonth: month,
+        age,
       },
     },
   );

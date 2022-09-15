@@ -40,7 +40,7 @@ const engagementRegSchema = new mongoose.Schema({
       type: Date,
       required: [true, 'Baptism date is not specified'],
     },
-    baptismPlace: {
+    birthPlace: {
       type: String,
       // required: [true, 'Baptism place is not specified'],
     },
@@ -74,7 +74,7 @@ const engagementRegSchema = new mongoose.Schema({
       type: Date,
       required: [true, 'Baptism date is not specified'],
     },
-    baptismPlace: {
+    birthPlace: {
       type: String,
       // required: [true, 'Baptism place is not specified'],
     },

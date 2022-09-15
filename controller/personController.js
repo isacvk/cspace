@@ -34,8 +34,8 @@ exports.newPerson2 = catchAsync(async (req, res, next) => {
 
   const familyMembers = req.body.persons;
   familyMembers.map((person) => {
-    person.familyId = `${req.body.familyId}`;
-    person.wardNo = `${req.body.wardNo}`;
+    person.familyId = req.body.familyId;
+    person.wardNo = req.body.wardNo;
     person.familyName = family.familyName;
     addMember(person);
   });

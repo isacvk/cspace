@@ -24,6 +24,9 @@ const personSchema = new mongoose.Schema(
       type: Date,
       // required: [true, "Please tell us your date of birth"],
     },
+    age: {
+      type: Number,
+    },
     dobDay: {
       type: Number,
     },
@@ -128,16 +131,27 @@ const personSchema = new mongoose.Schema(
 //   }
 //   return age;
 // });
+personSchema.pre('save', async function (next) {
+  const birthDate = this.dob;
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age -= 1;
+  }
 
-personSchema.post('save', async function (next) {
+  this.age = age;
+});
+
+personSchema.post('save', async function (doc, next) {
   const family = await Family.findOneAndUpdate(
     {
-      _id: this.familyId,
+      _id: doc.familyId,
     },
     {
       $push: {
         members: {
-          _id: this._id,
+          _id: doc._id,
         },
       },
     },

@@ -11,6 +11,7 @@ router
 
 router.route('/:id').get(offeringsController.getOffering);
 // .post(paymentController.callback);
+router.route('/:id/sponsors').get(offeringsController.getSponsors);
 
 router.route('/generate-csv/:id').get(offeringsController.generateCsv);
 

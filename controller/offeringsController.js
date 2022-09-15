@@ -54,6 +54,18 @@ exports.getOffering = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getSponsors = catchAsync(async (req, res, next) => {
+  const sponsors = await Sponsors.find({
+    offeringId: req.params.id,
+    status: 'paid',
+  });
+
+  res.status(200).json({
+    status: 'success',
+    data: sponsors,
+  });
+});
+
 exports.generateCsv = catchAsync(async (req, res, next) => {
   const sponsors = await Sponsors.find({ offeringId: req.params.id });
 

@@ -38,6 +38,9 @@ const baptismSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Place of bith is not specified'],
   },
+  parish: {
+    type: String,
+  },
   godFather: {
     name: {
       type: String,

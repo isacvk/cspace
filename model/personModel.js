@@ -131,17 +131,6 @@ const personSchema = new mongoose.Schema(
 //   }
 //   return age;
 // });
-personSchema.pre('save', async function (next) {
-  const birthDate = this.dob;
-  const today = new Date();
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const m = today.getMonth() - birthDate.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-    age -= 1;
-  }
-
-  this.age = age;
-});
 
 personSchema.post('save', async function (doc, next) {
   const family = await Family.findOneAndUpdate(

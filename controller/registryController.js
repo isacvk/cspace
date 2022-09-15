@@ -8,7 +8,7 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
 const calcAge = (dob) => {
-  let birthDate = dob;
+  let birthDate = new Date(dob);
   let today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();
   let m = today.getMonth() - birthDate.getMonth();
@@ -58,7 +58,8 @@ exports.getBaptismReg = catchAsync(async (req, res, next) => {
 });
 
 exports.addBaptismReg = catchAsync(async (req, res, next) => {
-  //***? WHAT ABOUT THE MEMBERS WHOSE PARENT DETAILS ARE NOT PRESENT IN DB
+  // console.log('BAP REQ : ', req.body);
+  // ? WHAT ABOUT THE MEMBERS WHOSE PARENT DETAILS ARE NOT PRESENT IN DB
   const user = await Parishioners.findById(req.params.id);
 
   if (!user) {
@@ -134,9 +135,9 @@ exports.getEngagementReg = catchAsync(async (req, res, next) => {
 });
 
 exports.addEngagementReg = catchAsync(async (req, res, next) => {
-  console.log('REQ OBJ : ', req.body);
+  // console.log('REQ OBJ : ', req.body);
   const user = await Parishioners.findOne({ _id: req.params.id }).select(
-    'dob gender',
+    'dob gender baptismName',
   );
 
   if (!user) {
@@ -146,7 +147,7 @@ exports.addEngagementReg = catchAsync(async (req, res, next) => {
   if (!isLegalAge(user.dob, user.gender)) {
     return next(
       new AppError(
-        `The person with Id ${req.params.id} is under aged! Can't add to registry.`,
+        `The person ${user.baptismName} is under aged! Can't add to registry.`,
         403,
       ),
     );
@@ -155,7 +156,7 @@ exports.addEngagementReg = catchAsync(async (req, res, next) => {
   let partner;
   if (req.body.partnerId) {
     partner = await Parishioners.findById(req.body.partnerId).select(
-      'dob gender',
+      'dob gender baptismName',
     );
 
     if (!partner) {
@@ -174,15 +175,31 @@ exports.addEngagementReg = catchAsync(async (req, res, next) => {
     if (!isLegalAge(partner.dob, partner.gender)) {
       return next(
         new AppError(
-          `The person with Id ${req.body.partnerId} is under aged! Can't add to registry.`,
+          `The person ${partner.baptismName} is under aged! Can't add to registry.`,
           403,
         ),
       );
     }
   }
 
+  let partnerAge;
+  if (!req.body.partnerId) {
+    if (user.gender === 'M') {
+      partnerAge = calcAge(req.body.brideData.dob);
+      if (partnerAge < 18) {
+        return next(new AppError('The bride is under aged!', 403));
+      }
+    }
+    if (user.gender === 'F') {
+      partnerAge = calcAge(req.body.groomData.dob);
+      if (partnerAge < 21) {
+        return next(new AppError('The groom is under aged!', 403));
+      }
+    }
+  }
+
   let queryObj = {};
-  let queryObj2 = {}; //USE THIS
+  let queryObj2 = {}; // USE THIS
   if (user.gender === 'M') {
     queryObj = { groomId: req.params.id, status: 'valid' };
     req.body.groomId = req.params.id;

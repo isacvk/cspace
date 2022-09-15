@@ -15,6 +15,7 @@ exports.newPerson = catchAsync(async (req, res, next) => {
 });
 
 const addMember = catchAsync(async (details) => {
+  console.log('MEMBERS : ', details);
   const addPerson = await Persons.create(details).catch((e) => {
     console.log('ERR : ', e);
   });

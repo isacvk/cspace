@@ -36,6 +36,15 @@ const isLegalAge = (dob, gender) => {
   else return true;
 };
 
+exports.getBaptismRegs = catchAsync(async (req, res, next) => {
+  const registries = await BaptismReg.find();
+
+  res.status(200).json({
+    status: 'success',
+    date: registries,
+  });
+});
+
 exports.getBaptismReg = catchAsync(async (req, res, next) => {
   const baptismEntry = await BaptismReg.findOne({ userId: req.params.id });
 
@@ -84,6 +93,15 @@ exports.updateBaptismReg = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: 'success',
     data: baptismEntry,
+  });
+});
+
+exports.getEngagementRegs = catchAsync(async (req, res, next) => {
+  const registries = await EngagementReg.find();
+
+  res.status(200).json({
+    status: 'success',
+    date: registries,
   });
 });
 
@@ -246,11 +264,11 @@ exports.updateEngagementReg = catchAsync(async (req, res, next) => {
 });
 
 exports.getMarriageRegs = catchAsync(async (req, res, next) => {
-  const marriageEntries = await MarriageReg.find();
+  const registries = await MarriageReg.find();
 
   res.status(200).json({
     status: 'success',
-    data: marriageEntries,
+    date: registries,
   });
 });
 
@@ -406,18 +424,20 @@ exports.updateMarriagetReg = catchAsync(async (req, res, next) => {
 });
 
 exports.getDeathRegs = catchAsync(async (req, res, next) => {
-  console.log('Death Registry');
+  const registries = await DeathReg.find();
 
-  res.status(201).json({
+  res.status(200).json({
     status: 'success',
+    date: registries,
   });
 });
 
 exports.getDeathReg = catchAsync(async (req, res, next) => {
-  console.log('Death Registry');
+  const registries = await DeathReg.find();
 
-  res.status(201).json({
+  res.status(200).json({
     status: 'success',
+    date: registries,
   });
 });
 

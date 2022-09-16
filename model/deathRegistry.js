@@ -44,7 +44,7 @@ const deathRegSchema = new mongoose.Schema({
     type: Date,
     required: [true, 'Please specify the date of death'],
   },
-  doburial: {
+  doBurial: {
     type: Date,
     required: [true, 'Please specify the date of burial'],
   },

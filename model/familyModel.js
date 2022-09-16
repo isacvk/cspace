@@ -19,10 +19,10 @@ const familySchema = new mongoose.Schema({
   },
   parishId: {
     type: String,
-    required: [true, 'parish ID not specified'],
+    // required: [true, 'parish ID not specified'],
   },
   pin: {
-    type: String,
+    type: Number,
     required: [true, 'Please specify the pin number'],
   },
   familyHead: String,

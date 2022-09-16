@@ -13,6 +13,10 @@ const sponsorSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Payee name is not specified!'],
   },
+  familyId: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Families',
+  },
   familyName: {
     type: String,
   },

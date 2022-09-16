@@ -19,10 +19,9 @@ const offeringsSchema = new mongoose.Schema({
     type: Date,
     required: [true, 'Festival date is not specified!'],
   },
-  status: {
-    type: String,
-    enum: ['active', 'inactive'],
-    default: 'active',
+  isActive: {
+    type: Boolean,
+    default: true,
   },
 });
 

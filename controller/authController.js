@@ -77,6 +77,12 @@ exports.signup = catchAsync(async (req, res, next) => {
   // ***?What if user already have uid and pass
 
   const user = await Parishioners.findById(req.body.userId);
+
+  if (!user) {
+    return next(
+      new AppErrro(`No user found with Id ${req.body.userId} !`, 404),
+    );
+  }
   // TEMP CODE
   let counter = 0;
   const loginId = [
@@ -100,7 +106,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   }
 
   // req.body.password = await randomPass();
-  if (user.phoneNumber) {
+  if (!user.phoneNumber) {
     return next(
       new AppError(
         `Please add phone number of ${user.baptismName} before signup!`,
@@ -175,7 +181,7 @@ exports.forgotPass = catchAsync(async (req, res, next) => {
     );
   }
 
-  const user = await Parishioners.findById(validUser.loginId);
+  // const user = await Parishioners.findById(validUser.userId);
 
   //***?What is user doesn't have a phone number
   //***TODO: Generate OTP

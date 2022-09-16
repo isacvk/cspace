@@ -7,6 +7,7 @@ const personSchema = new mongoose.Schema(
   {
     changeProposed: {
       type: Boolean,
+      default: false,
     },
     changeId: {
       type: mongoose.Schema.ObjectId,

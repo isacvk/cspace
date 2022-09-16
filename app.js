@@ -19,7 +19,6 @@ const pdfRouter = require('./routes/pdfRoutes');
 const paymentRouter = require('./routes/paymentRoutes');
 const offeringsRouter = require('./routes/offeringsRoutes');
 const accountsRouter = require('./routes/accountsRoutes');
-
 const digitalSign = require('./controller/signController');
 const cronController = require('./controller/cronController');
 

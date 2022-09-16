@@ -41,6 +41,18 @@ const marriageRegSchema = new mongoose.Schema({
   remarks: {
     type: String,
   },
+  marriageDay: {
+    type: Number,
+  },
+  marriageMonth: {
+    type: Number,
+  },
+});
+
+marriageRegSchema.pre('save', async function (next) {
+  this.marriageDay = this.marriageDate.getDate();
+  this.marriageMonth = this.marriageDate.getMonth() + 1;
+  console.log(this);
 });
 
 marriageRegSchema.post('save', async function (doc, next) {

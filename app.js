@@ -30,27 +30,15 @@ app.use(cookieParser());
 app.use(express.json());
 
 // CORS Functionalities
-// app.use(cors({ origin: true, credentials: true }));
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
-// app.set("trust proxy", 1);
-
-// app.options("*", cors());
 
 // Serving static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Testing
 app.set('trust proxy', 1);
 
 app.use((req, res, next) => {
-  // res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
-  // res.header("Access-Control-Allow-Origin", "*");
-  // res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
   res.header('Access-Control-Allow-Credentials', true);
-  // res.header(
-  //   "Access-Control-Allow-Headers",
-  //   "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  // );
   if (req.method === 'OPTIONS') {
     res.header('Access-Control-Allow-Credentials', true);
     res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, GET, DELETE');
@@ -59,13 +47,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.use((req, res, next) => {
-//   console.log(req);
-//   next();
-// });
-
 schedule.scheduleJob('0 0 * * *', () => {
   cronController.generateBdayList();
+  cronController.generateMarriageAnniversayList();
 });
 
 app.use('/api/v1/family', familyRouter);

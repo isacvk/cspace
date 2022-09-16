@@ -5,6 +5,17 @@ const Family = require('./familyModel');
 // TODO: CHANGE TO PHONENUM
 const personSchema = new mongoose.Schema(
   {
+    changeProposed: {
+      type: Boolean,
+    },
+    changeId: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Parishioners',
+    },
+    privacyEnabled: {
+      type: Boolean,
+      default: false,
+    },
     familyId: {
       type: mongoose.Schema.ObjectId,
       ref: 'Families',
@@ -133,18 +144,20 @@ const personSchema = new mongoose.Schema(
 // });
 
 personSchema.post('save', async function (doc, next) {
-  const family = await Family.findOneAndUpdate(
-    {
-      _id: doc.familyId,
-    },
-    {
-      $push: {
-        members: {
-          _id: doc._id,
+  if (!doc.changeId) {
+    const family = await Family.findOneAndUpdate(
+      {
+        _id: doc.familyId,
+      },
+      {
+        $push: {
+          members: {
+            _id: doc._id,
+          },
         },
       },
-    },
-  );
+    );
+  }
 });
 
 const Parishioners = mongoose.model('Parishioners', personSchema);

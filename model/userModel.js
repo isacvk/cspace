@@ -19,13 +19,21 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     required: [true, 'User role not specified'],
-    enum: ['Admin', 'Accountant', 'User'],
+    enum: ['Super-Admin', 'Admin', 'Accountant', 'User'],
   },
   password: {
     type: String,
     required: true,
     minlength: 8,
     select: false,
+  },
+  phoneNumber: {
+    type: Number,
+    required: [true, 'Phone number is not specified'],
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
   },
   // parish: {
   //   type: String,

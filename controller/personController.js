@@ -34,12 +34,30 @@ exports.newPerson2 = catchAsync(async (req, res, next) => {
   }
 
   const familyMembers = req.body.persons;
-  familyMembers.map((person) => {
-    person.familyId = req.body.familyId;
-    person.wardNo = req.body.wardNo;
-    person.familyName = family.familyName;
-    addMember(person);
+  let personDetails;
+  let flag;
+  familyMembers.map(async (person) => {
+    personDetails = { ...person };
+    personDetails.familyId = family.id;
+    personDetails.wardNo = family.wardNum;
+    personDetails.familyName = family.familyName;
+    // addMember(person);
+
+    const addPerson = await Persons.create(personDetails).catch((e) => {
+      console.log('ERR : ', e);
+    });
+
+    flag = !addPerson ? 1 : 0;
+
+    // if(!addPerson){
+    //   return next(new AppError(`The person ${person.baptismName} was not created!`,))
+    // }
+    // console.log(personDetails);
   });
+
+  if (flag === 1) {
+    return next(new AppError('There was an error in adding members!', 500));
+  }
 
   res.status(201).json({
     status: 'success',
@@ -119,6 +137,10 @@ exports.getPersonRelations = catchAsync(async (req, res, next) => {
 
 exports.addRelations = catchAsync(async (req, res, next) => {
   const user = await Persons.findByIdAndUpdate(req.params.id, req.body);
+
+  if (!user) {
+    return next(new AppError(`No user found with id ${req.params.id}`));
+  }
   // console.log(user);
 
   res.status(200).json({
@@ -149,5 +171,24 @@ exports.getBdayList = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: birthdays,
+  });
+});
+
+exports.proposeChange = catchAsync(async (req, res, next) => {
+  const setProposal = await Persons.findByIdAndUpdate(req.body.changeId, {
+    changeProposed: true,
+  });
+
+  if (!setProposal) {
+    return next(
+      new AppError(`No user found with Id ${req.body.changeId}`, 404),
+    );
+  }
+
+  const createProposal = await Persons.create(req.body);
+
+  res.status(200).json({
+    status: 'success',
+    message: 'change request has been made. Wait till approval!',
   });
 });

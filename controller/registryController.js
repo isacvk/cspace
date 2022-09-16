@@ -451,7 +451,11 @@ exports.getDeathRegs = catchAsync(async (req, res, next) => {
 });
 
 exports.getDeathReg = catchAsync(async (req, res, next) => {
-  const registries = await DeathReg.find();
+  const registries = await DeathReg.findById(req.params.id);
+
+  if (!registries) {
+    return next(new AppError(`No entry found with Id ${req.params.id}!`, 404));
+  }
 
   res.status(200).json({
     status: 'success',

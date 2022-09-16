@@ -10,6 +10,9 @@ router.post(
   // authController.restrictTo("Admin"),
   authController.signup,
 );
+
+router.post('/signup/admin', authController.adminSignup);
+
 router.post('/login', authController.login);
 
 router.post('/login-cookie', authController.loginCookie);

@@ -100,8 +100,17 @@ exports.signup = catchAsync(async (req, res, next) => {
   }
 
   // req.body.password = await randomPass();
+  if (user.phoneNumber) {
+    return next(
+      new AppError(
+        `Please add phone number of ${user.baptismName} before signup!`,
+        403,
+      ),
+    );
+  }
   req.body.password = 'pass1234';
   req.body.name = user.baptismName;
+  req.body.phoneNumber = user.phoneNumber;
 
   const newUser = await Users.create(req.body);
 
@@ -128,12 +137,12 @@ exports.login = async (req, res, next) => {
   const { loginId, password } = req.body;
 
   if (!loginId || !password)
-    return next(new AppError('Please provide your userId and password'));
+    return next(new AppError('Please provide your loginId and password'));
 
   const user = await Users.findOne({ loginId }).select('+password');
 
   if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(new AppError('Incorrect userId or password', 401));
+    return next(new AppError('Incorrect loginId or password', 401));
   }
 
   createSendToken(user, 200, res);
@@ -158,22 +167,22 @@ exports.loginCookie = catchAsync(async (req, res, next) => {
 });
 
 exports.forgotPass = catchAsync(async (req, res, next) => {
-  const validUser = await Users.findOne({ loginId: `${req.body.userId}` });
+  const validUser = await Users.findOne({ loginId: `${req.body.loginId}` });
 
   if (!validUser) {
     return next(
-      new AppError(`User with the id ${req.body.userId} doesn't exist!`, 404),
+      new AppError(`User with the id ${req.body.loginId} doesn't exist!`, 404),
     );
   }
 
-  const user = await Parishioners.findById(validUser.userId);
+  const user = await Parishioners.findById(validUser.loginId);
 
   //***?What is user doesn't have a phone number
   //***TODO: Generate OTP
   let otp = '1232';
 
   const setOtp = await Users.findOneAndUpdate(
-    { loginId: `${req.body.userId}` },
+    { loginId: `${req.body.loginId}` },
     {
       otp: `${otp}`,
       otpTime: `${new Date()}`,
@@ -184,7 +193,7 @@ exports.forgotPass = catchAsync(async (req, res, next) => {
   if (setOtp) {
     let message = `Your OTP is ${otp} , valid for 15 mins`;
     let phoneNum = [];
-    phoneNum[0] = user.phoneNumber;
+    phoneNum[0] = validUser.phoneNumber;
 
     const sendMessage = await sms.sendSMS(message, phoneNum);
   }
@@ -202,7 +211,7 @@ exports.verifyOtp = catchAsync(async (req, res, next) => {
   }
 
   const validOtp = await Users.findOne({
-    loginId: `${req.body.userId}`,
+    loginId: `${req.body.loginId}`,
     otp: `${req.body.otp}`,
   });
 
@@ -219,7 +228,7 @@ exports.verifyOtp = catchAsync(async (req, res, next) => {
 
   const updateOtp = await Users.findOneAndUpdate(
     {
-      loginId: `${req.body.userId}`,
+      loginId: `${req.body.loginId}`,
       otp: `${req.body.otp}`,
     },
     {
@@ -234,11 +243,11 @@ exports.verifyOtp = catchAsync(async (req, res, next) => {
 });
 
 exports.resetPass = catchAsync(async (req, res, next) => {
-  const user = await Users.findOne({ loginId: `${req.body.userId}` });
+  const user = await Users.findOne({ loginId: `${req.body.loginId}` });
 
   if (!user) {
     return next(
-      new AppError(`No user found with id ${req.body.userId} !`, 404),
+      new AppError(`No user found with id ${req.body.loginId} !`, 404),
     );
   }
 
@@ -256,7 +265,7 @@ exports.resetPass = catchAsync(async (req, res, next) => {
   const hashedPassword = await bcrypt.hash(req.body.password, 12);
 
   const updatePassword = await Users.findOneAndUpdate(
-    { loginId: `${req.body.userId}` },
+    { loginId: `${req.body.loginId}` },
     {
       password: `${hashedPassword}`,
       passwordChangedAt: `${new Date()}`,
@@ -321,3 +330,7 @@ exports.restrictTo = (...roles) => {
     next();
   };
 };
+
+exports.adminSignup = catchAsync(async (req, res, next) => {
+  console.log('CALEED');
+});

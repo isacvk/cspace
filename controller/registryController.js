@@ -475,6 +475,57 @@ exports.addDeathReg = catchAsync(async (req, res, next) => {
     return next(new AppError(`No user found with Id ${req.params.id}`, 404));
   }
 
+  if (!req.body.dod || !req.body.doBurial) {
+    return next(
+      new AppError('Please provide date of death and date of burial', 400),
+    );
+  }
+
+  const dod = new Date(req.body.dod).getTime();
+  const doBurial = new Date(req.body.doBurial).getTime();
+
+  if (dod > doBurial) {
+    return next(
+      new AppError('Burial date can not be older than death date!', 400),
+    );
+  }
+
+  const dob = new Date(user.dob).getTime();
+
+  if (dob > dod) {
+    return next(
+      new AppError('Death date can not be older than birth date!', 400),
+    );
+  }
+
+  let queryObj = {};
+  if (user.maritalStatus === 'married' && user.gender === 'M') {
+    queryObj.groomId = user._id;
+  }
+  if (user.maritalStatus === 'married' && user.gender === 'F') {
+    queryObj.brideId = user._id;
+  }
+
+  let marriageData;
+  if (Object.keys(queryObj).length !== 0) {
+    marriageData = await MarriageReg.findOne(queryObj).lean();
+  }
+
+  // IF IT FINDS INVALID MARRIAGE ALSO SHOWS ERROR
+  if (marriageData) {
+    const marriageDate = new Date(marriageData.marriageDate).getTime();
+
+    if (dod < marriageDate) {
+      return next(
+        new AppError('Death date cannot be older than marriage date!', 400),
+      );
+    }
+  }
+
+  req.body.familyId = user.familyId;
+  req.body.familyName = user.familyName;
+  req.body.wardNo = user.wardNo;
+
   const baptismReg = await BaptismReg.findOne({ userId: req.params.id });
 
   if (!baptismReg) {
@@ -495,13 +546,12 @@ exports.addDeathReg = catchAsync(async (req, res, next) => {
   req.body.dob = user.dob;
   req.body.age = calcDeathAge(user.dob, new Date(req.body.dod));
 
-  console.log('DEAD : ', req.body);
-  const deathEntry = await DeathReg.create(req.body);
+  // const deathEntry = await DeathReg.create(req.body);
 
   res.status(201).json({
     status: 'success',
     message: 'death registry added!',
-    data: deathEntry,
+    // data: deathEntry,
   });
 });
 

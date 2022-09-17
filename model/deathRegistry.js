@@ -11,6 +11,19 @@ const deathRegSchema = new mongoose.Schema({
     required: [true, 'Please specify the user Id of the person'],
     unique: true,
   },
+  familyId: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Families',
+    required: [true, 'Family Id is not specified'],
+  },
+  familyName: {
+    type: String,
+    required: [true, 'Family name is not specified'],
+  },
+  wardNo: {
+    type: Number,
+    required: [true, 'Ward number is not specified'],
+  },
   baptismName: {
     type: String,
     required: [true, 'Please specify the baptism name'],

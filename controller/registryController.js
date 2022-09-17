@@ -484,16 +484,22 @@ exports.addDeathReg = catchAsync(async (req, res, next) => {
 
   if (dod > doBurial) {
     return next(
-      new AppError('Burial date can not be older than death date!', 400),
+      new AppError('Burial date can not be before date of death!', 400),
     );
   }
 
+  if (!user.dob) {
+    return next(
+      new AppError(
+        'Date of birth not foudn! Please add baptism registry.',
+        404,
+      ),
+    );
+  }
   const dob = new Date(user.dob).getTime();
 
   if (dob > dod) {
-    return next(
-      new AppError('Death date can not be older than birth date!', 400),
-    );
+    return next(new AppError('Death date can not be before birth date!', 400));
   }
 
   let queryObj = {};
@@ -515,7 +521,7 @@ exports.addDeathReg = catchAsync(async (req, res, next) => {
 
     if (dod < marriageDate) {
       return next(
-        new AppError('Death date cannot be older than marriage date!', 400),
+        new AppError('Death date cannot be before marriage date!', 400),
       );
     }
   }
@@ -544,12 +550,12 @@ exports.addDeathReg = catchAsync(async (req, res, next) => {
   req.body.dob = user.dob;
   req.body.age = calcDeathAge(user.dob, new Date(req.body.dod));
 
-  // const deathEntry = await DeathReg.create(req.body);
+  const deathEntry = await DeathReg.create(req.body);
 
   res.status(201).json({
     status: 'success',
     message: 'death registry added!',
-    // data: deathEntry,
+    data: deathEntry,
   });
 });
 

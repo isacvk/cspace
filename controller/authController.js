@@ -62,7 +62,7 @@ const randomPass = async () => {
 
 const randomId = async () => {
   let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  let string_length = 4;
+  let string_length = 6;
   let randomId = '';
   for (let i = 0; i < string_length; i++) {
     let rnum = Math.floor(Math.random() * chars.length);
@@ -139,7 +139,6 @@ exports.signup = catchAsync(async (req, res, next) => {
 });
 
 exports.login = async (req, res, next) => {
-  console.log(req.body);
   const { loginId, password } = req.body;
 
   if (!loginId || !password)
@@ -147,30 +146,21 @@ exports.login = async (req, res, next) => {
 
   const user = await Users.findOne({ loginId }).select('+password');
 
+  if (!user.isActive) {
+    return next(
+      new AppError(
+        'You are not an active user! Contact admin for login access',
+        403,
+      ),
+    );
+  }
+
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect loginId or password', 401));
   }
 
   createSendToken(user, 200, res);
 };
-//* Sample cookies
-//***! Probably should be deleted
-exports.loginCookie = catchAsync(async (req, res, next) => {
-  let cookieOptions = {
-    expiresIn: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
-    ),
-    sameSite: 'strict',
-    // secure: true,
-    httpOnly: true,
-    Path: '/',
-  };
-
-  res.cookie('jwt', '12345', cookieOptions);
-  res.status(202).json({
-    status: 'success',
-  });
-});
 
 exports.forgotPass = catchAsync(async (req, res, next) => {
   const validUser = await Users.findOne({ loginId: `${req.body.loginId}` });
@@ -346,14 +336,22 @@ exports.adminSignup = catchAsync(async (req, res, next) => {
 
   req.body.loginId = await randomId();
 
-  req.body.password = await bcrypt.hash(randomPass(), 12);
+  const newPassword = (await randomPass()).toString();
+
+  req.body.password = await bcrypt.hash(newPassword, 12);
 
   const updateAdmin = await Users.findOneAndUpdate({ role: 'Admin' }, req.body);
+
+  if (!updateAdmin) {
+    return next(
+      new AppError('Something went wrong in updating admin data!', 500),
+    );
+  }
 
   if (updateAdmin) {
     let message = `You can now login to cspace,
   UID: ${req.body.loginId}
-  PSWD: ${req.body.password}
+  PSWD: ${newPassword}
     `;
     let phoneNum = [];
     phoneNum[0] = updateAdmin.phoneNumber;
@@ -365,5 +363,17 @@ exports.adminSignup = catchAsync(async (req, res, next) => {
     status: 'success',
     message: 'admin details updated',
     data: updateAdmin,
+  });
+});
+
+exports.blockAdmin = catchAsync(async (req, res, next) => {
+  const blockAdmin = await Users.findOneAndUpdate(
+    { role: 'Admin' },
+    { isActive: false },
+  );
+
+  res.status(201).json({
+    status: 'success',
+    message: 'Admin is now blocked',
   });
 });

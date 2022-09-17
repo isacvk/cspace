@@ -1,9 +1,10 @@
-const fast2sms = require("fast-two-sms");
+const fast2sms = require('fast-two-sms');
 
 exports.sendSMS = async (message, phoneNum) => {
   let response;
   // ***! Change to "production" later
-  if (process.env.NODE_ENV === "development") {
+  console.log('Message Called : ', message, phoneNum);
+  if (process.env.NODE_ENV === 'development') {
     response = await fast2sms.sendMessage({
       authorization: `${process.env.F2SMS_KEY}`,
       message: message,

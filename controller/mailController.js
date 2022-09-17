@@ -42,10 +42,12 @@ const transporter = mail.createTransport({
 });
 
 exports.sendMail = catchAsync(async (req, res, next) => {
+  console.log('SEND MAIL CALLED');
+  console.log('MAIL ATTACH : ', req.mailattach);
   // TODO: GET MAIL ID USING USERID, FAMILY ID/WARD AND SEND MAIL
   const mailOptions = {
     from: 'isac.vk@outlook.com',
-    to: 'jestin9900767795@gmail.com',
+    to: `${req.body.to}`,
     subject: `${req.body.subject}`,
     text: `${req.body.text}`,
     attachments: [
@@ -59,11 +61,13 @@ exports.sendMail = catchAsync(async (req, res, next) => {
     if (err) {
       console.log('ERR IN MAIL SENDING : ', err);
     } else {
-      fs.unlink(req.mailattach, (error) => {
-        if (error) {
-          console.log('ERR IN FILE DELETION : ', error);
-        }
-      });
+      if (req.mailattach) {
+        fs.unlink(req.mailattach, (error) => {
+          if (error) {
+            console.log('ERR IN FILE DELETION : ', error);
+          }
+        });
+      }
       console.log('Message send : ', info.response);
       if (info.response.split(' ')[2] === 'OK') {
         res.status(200).json({

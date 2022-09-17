@@ -11,11 +11,20 @@ router.post(
   authController.signup,
 );
 
-router.post('/signup/admin', authController.adminSignup);
+router
+  .route('/signup/admin')
+  .post(
+    authController.protect,
+    authController.restrictTo('Super-Admin'),
+    authController.adminSignup,
+  )
+  .get(
+    authController.protect,
+    authController.restrictTo('Super-Admin'),
+    authController.blockAdmin,
+  );
 
 router.post('/login', authController.login);
-
-router.post('/login-cookie', authController.loginCookie);
 
 router.post('/forgot-password', authController.forgotPass);
 router.post('/verify-otp', authController.verifyOtp);

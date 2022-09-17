@@ -12,8 +12,11 @@ exports.verifySign = catchAsync(async (req, res, next) => {
   let flag = 0;
   let data;
   let response = {};
+
+  const sign = req.body.sign.replace(/\b(. )\b/g, (match) => '.');
+
   const decoded = await promisify(jwt.verify)(
-    req.body.sign,
+    sign,
     process.env.JWT_SECRET,
   ).catch((e) => {
     flag = 1;

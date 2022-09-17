@@ -96,7 +96,10 @@ exports.baptismPdfInfo = catchAsync(async (req, res, next) => {
     reg: 'baptism',
   };
 
-  baptismData.signature = signToken(credentials);
+  baptismData.signature = signToken(credentials).replace(
+    /\b(.)\b/g,
+    (match) => '. ',
+  );
 
   res.status(200).json({
     status: 'success',

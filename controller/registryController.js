@@ -18,6 +18,17 @@ const calcAge = (dob) => {
   return age;
 };
 
+const ageCalc = (dob, candidateDate) => {
+  const birthDate = new Date(dob);
+  const canidDate = new Date(candidateDate);
+  let age = canidDate.getFullYear() - birthDate.getFullYear();
+  const m = canidDate.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && canidDate.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+};
+
 const calcDeathAge = (dob, dod) => {
   let birthDate = dob;
   let deathDate = dod;
@@ -148,22 +159,61 @@ exports.getEngagementReg = catchAsync(async (req, res, next) => {
 });
 
 exports.addEngagementReg = catchAsync(async (req, res, next) => {
-  // console.log('REQ OBJ : ', req.body);
+  if (
+    !req.body.groomData.dob ||
+    !req.body.groomData.doBaptism ||
+    !req.body.brideData.dob ||
+    req.body.brideData.doBaptism ||
+    req.body.engagementDate
+  ) {
+    return next(new AppError('Please specify all the dates!', 400));
+  }
+
+  if (
+    new Date(req.body.groomData.dob).getTime() > req.body.groomData.doBaptism
+  ) {
+    return next(
+      new AppError(
+        "Groom's baptsim date cannot be older than birth date!",
+        400,
+      ),
+    );
+  }
+
+  if (
+    new Date(req.body.brideData.dob).getTime() > req.body.brideData.doBaptism
+  ) {
+    return next(
+      new AppError(
+        "bride's baptsim date cannot be older than birth date!",
+        400,
+      ),
+    );
+  }
+  req.body.brideData.age = ageCalc(
+    req.body.brideData.dob,
+    req.body.engagementDate,
+  );
+
+  if (req.body.brideData.age < 18) {
+    return next(new AppError('The bride is under aged!', 403));
+  }
+
+  req.body.groomData.age = ageCalc(
+    req.body.groomData.dob,
+    req.body.engagementDate,
+  );
+
+  if (req.body.groomData.age < 21) {
+    return next(new AppError('The groom is under aged!', 403));
+  }
+
   const user = await Parishioners.findOne({ _id: req.params.id }).select(
     'dob gender baptismName',
   );
 
   if (!user) {
     return next(new AppError(`No user found with Id${req.params.id}`, 404));
-  }
-
-  if (!isLegalAge(user.dob, user.gender)) {
-    return next(
-      new AppError(
-        `The person ${user.baptismName} is under aged! Can't add to registry.`,
-        403,
-      ),
-    );
   }
 
   let partner;
@@ -183,31 +233,6 @@ exports.addEngagementReg = catchAsync(async (req, res, next) => {
       (user.gender === 'F' && partner.gender === 'F')
     ) {
       return next(new AppError('Same sex marriage is not allowed!', 403));
-    }
-
-    if (!isLegalAge(partner.dob, partner.gender)) {
-      return next(
-        new AppError(
-          `The person ${partner.baptismName} is under aged! Can't add to registry.`,
-          403,
-        ),
-      );
-    }
-  }
-
-  let partnerAge;
-  if (!req.body.partnerId) {
-    if (user.gender === 'M') {
-      partnerAge = calcAge(req.body.brideData.dob);
-      if (partnerAge < 18) {
-        return next(new AppError('The bride is under aged!', 403));
-      }
-    }
-    if (user.gender === 'F') {
-      partnerAge = calcAge(req.body.groomData.dob);
-      if (partnerAge < 21) {
-        return next(new AppError('The groom is under aged!', 403));
-      }
     }
   }
 
@@ -231,9 +256,6 @@ exports.addEngagementReg = catchAsync(async (req, res, next) => {
     }
   }
 
-  // ?WTF IS THIS??? QUERYING FROM SAME MODEL?
-  // console.log('QEURY OBJ', queryObj);
-  // console.log('QEURY OBJ', queryObj2);
   let engagementData = [];
   let marriageData = [];
   let engagementData2 = [];
@@ -255,21 +277,12 @@ exports.addEngagementReg = catchAsync(async (req, res, next) => {
   if (marriageData.length !== 0 || marriageData2.length !== 0) {
     return next(new AppError('valid marriage data already extists!', 403));
   }
-  // TODO: CHECK IF BRIDE OR GROOM HAS VALID MARRIAGE REGISTRY
-  // TODO: GET DATA OF BRIDE AND GROOM AND ADD BY DEFAULT - NOT POSSIBLE AS SOME PEOPLE MAY NOT HAVE THAT.
-  // let groomData, brideData;
-  // if (!req.body.groomId && !req.body.brideId) {
-  //   return next(new AppError("Please provide either bride Id or groom Id"));
-  // }
-
-  // if (req.body.brideGroomId) {
-  //   groomData = await BaptismReg.findOne({ userId: req.body.brideGroomId });
-  //   if (groomData) req.body.brideGroomData.name = groomData.baptismName;
-  // }
 
   const entry = await EngagementReg.create(req.body);
 
-  // console.log("ENGAGE : ", req.body);
+  if (!entry) {
+    return next(new AppError('Something went wrong is adding the data'));
+  }
 
   res.status(201).json({
     status: 'success',
@@ -348,19 +361,29 @@ exports.addMarriageReg = catchAsync(async (req, res, next) => {
     status: 'valid',
   });
 
-  if (!engagementEntry)
-    return next(new AppError(`No valid engagement data found!`, 403));
+  if (!engagementEntry) {
+    return next(new AppError('No valid engagement data found!', 403));
+  }
 
-  //!PROBABLY NOT NEEDED AS VALIDATIONS HAPPEN IN ENGAGEMENT
+  if (
+    new Date(engagementEntry.engagementDate).getTime() >
+    new Date(req.body.marriageDate).getTime()
+  ) {
+    return next(
+      new AppError('Marriage date cannot be older than engagement date!', 400),
+    );
+  }
+
   if (engagementEntry.groomId) {
     const isMarried = await MarriageReg.findOne({
       groomId: engagementEntry.groomId,
       status: 'valid',
     });
-    if (isMarried)
+    if (isMarried) {
       return next(
-        new AppError(`Valid marriage entry exists for the groom!`, 403),
+        new AppError('Valid marriage entry exists for the groom!', 403),
       );
+    }
     req.body.groomId = engagementEntry.groomId;
   }
 
@@ -371,49 +394,24 @@ exports.addMarriageReg = catchAsync(async (req, res, next) => {
     });
     if (isMarried) {
       return next(
-        new AppError(`Valid marriage entry exists for the bride!`, 403),
+        new AppError('Valid marriage entry exists for the bride!', 403),
       );
     }
     req.body.brideId = engagementEntry.brideId;
   }
 
-  // //***? What about M, F and Others
-  // let queryObj = {};
-  // if (user.gender === "M") {
-  //   queryObj = { groomId: `${req.params.id}`, status: "valid" };
-  //   // req.body.groomId = req.params.id;
-  // }
-  // if (user.gender === "f") {
-  //   queryObj = { brideId: `${req.params.id}`, status: "valid" };
-  //   // req.body.brideId = req.params.id;
-  // }
-
-  // //***TODO: Add isValidMarriage in query later
-
-  // const isMarried = await MarriageReg.findOne(queryObj);
-
-  // if (isMarried) {
-  //   return next(new AppError("This person is already married!", 200));
-  // }
-
-  // const engagementData = await EngagementReg.findOne(queryObj);
-
-  // if (!engagementData)
-  //   return next(
-  //     new AppError(
-  //       `No valid engagement data found for ${user.baptismName}! Please add that before adding marriage data.`,
-  //       403
-  //     )
-  //   );
-
-  // console.log("ENG DATA : ", engagementData);
-
   if (engagementEntry.groomId) req.body.groomId = engagementEntry.groomId;
   if (engagementEntry.groomId) req.body.brideId = engagementEntry.brideId;
   req.body.groomName = engagementEntry.groomData.baptismName;
   req.body.brideName = engagementEntry.brideData.baptismName;
-  req.body.groomAge = calcAge(engagementEntry.groomData.dob);
-  req.body.brideAge = calcAge(engagementEntry.brideData.dob);
+  req.body.groomAge = ageCalc(
+    engagementEntry.groomData.dob,
+    req.body.marriageDate,
+  );
+  req.body.brideAge = ageCalc(
+    engagementEntry.brideData.dob,
+    req.body.marriageDate,
+  );
 
   const register = await MarriageReg.create(req.body);
 

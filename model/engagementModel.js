@@ -36,6 +36,10 @@ const engagementRegSchema = new mongoose.Schema({
       type: Date,
       required: [true, 'Dob is not specified'],
     },
+    age: {
+      type: Number,
+      required: [true, 'Age of groom is not specified'],
+    },
     doBaptism: {
       type: Date,
       required: [true, 'Baptism date is not specified'],
@@ -69,6 +73,10 @@ const engagementRegSchema = new mongoose.Schema({
     dob: {
       type: Date,
       required: [true, 'Dob is not specified'],
+    },
+    age: {
+      type: Number,
+      required: [true, 'Age of groom is not specified'],
     },
     doBaptism: {
       type: Date,

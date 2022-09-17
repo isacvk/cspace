@@ -45,17 +45,15 @@ exports.sendMail = catchAsync(async (req, res, next) => {
   console.log('SEND MAIL CALLED');
   console.log('MAIL ATTACH : ', req.mailattach);
   // TODO: GET MAIL ID USING USERID, FAMILY ID/WARD AND SEND MAIL
-  const mailOptions = {
+  let mailOptions = {
     from: 'isac.vk@outlook.com',
     to: `${req.body.to}`,
     subject: `${req.body.subject}`,
     text: `${req.body.text}`,
-    attachments: [
-      {
-        path: req.mailattach,
-      },
-    ],
   };
+  if (req.mailattach) {
+    mailOptions.attachments = [{ path: req.mailattach }];
+  }
 
   transporter.sendMail(mailOptions, (err, info) => {
     if (err) {

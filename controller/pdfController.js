@@ -125,7 +125,7 @@ exports.marriagePdfInfo = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    message: 'baptism registry informations',
+    message: 'marriage registry informations',
     data: marriageData,
   });
 });

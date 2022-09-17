@@ -338,5 +338,32 @@ exports.restrictTo = (...roles) => {
 };
 
 exports.adminSignup = catchAsync(async (req, res, next) => {
-  console.log('CALEED');
+  if (!req.body.phoneNumber || !req.body.name) {
+    return next(
+      new AppError('Provie name and phone number of the admin!', 400),
+    );
+  }
+
+  req.body.loginId = await randomId();
+
+  req.body.password = await bcrypt.hash(randomPass(), 12);
+
+  const updateAdmin = await Users.findOneAndUpdate({ role: 'Admin' }, req.body);
+
+  if (updateAdmin) {
+    let message = `You can now login to cspace,
+  UID: ${req.body.loginId}
+  PSWD: ${req.body.password}
+    `;
+    let phoneNum = [];
+    phoneNum[0] = updateAdmin.phoneNumber;
+
+    const sendMessage = await sms.sendSMS(message, phoneNum);
+  }
+
+  res.status(201).json({
+    status: 'success',
+    message: 'admin details updated',
+    data: updateAdmin,
+  });
 });

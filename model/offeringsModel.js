@@ -7,6 +7,7 @@ const offeringsSchema = new mongoose.Schema({
   },
   description: {
     type: String,
+    required: [true, 'Description is not specified!'],
   },
   amount: {
     type: Number,
@@ -14,6 +15,7 @@ const offeringsSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
+    required: [true, 'Create date is not specified!'],
   },
   festDate: {
     type: Date,
@@ -22,6 +24,7 @@ const offeringsSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true,
+    required: [true, 'Status of offering is not specified!'],
   },
 });
 

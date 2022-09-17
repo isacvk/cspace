@@ -7,10 +7,12 @@ const announceSchema = new mongoose.Schema({
   },
   date: {
     type: Date,
+    required: [true, 'Date of announcement is not specified'],
   },
   visibility: {
     type: String,
     enum: ['private', 'public'],
+    required: [true, 'Visibility of the announcement is not specified'],
   },
 });
 

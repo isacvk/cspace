@@ -8,6 +8,7 @@ const sponsorSchema = new mongoose.Schema({
   offeringId: {
     type: mongoose.Schema.ObjectId,
     ref: 'Offerings',
+    required: [true, 'Offering Id is not specified!'],
   },
   baptismName: {
     type: String,
@@ -19,6 +20,7 @@ const sponsorSchema = new mongoose.Schema({
   },
   familyName: {
     type: String,
+    required: [true, 'Family name is not specified!'],
   },
   phoneNum: {
     type: Number,
@@ -26,6 +28,7 @@ const sponsorSchema = new mongoose.Schema({
   },
   description: {
     type: String,
+    required: [true, 'Description is not specified!'],
   },
   orderId: {
     type: String,
@@ -35,6 +38,7 @@ const sponsorSchema = new mongoose.Schema({
     type: String,
     enum: ['initiated', 'paid'],
     default: 'initiated',
+    required: [true, 'Status is not specified!'],
   },
   paidAt: {
     type: Date,

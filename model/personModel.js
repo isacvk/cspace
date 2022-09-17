@@ -20,9 +20,11 @@ const personSchema = new mongoose.Schema(
     familyId: {
       type: mongoose.Schema.ObjectId,
       ref: 'Families',
+      required: [true, 'Family Id is required!'],
     },
     familyName: {
       type: String,
+      required: [true, 'Family name is required!'],
     },
     baptismName: {
       type: String,
@@ -30,11 +32,9 @@ const personSchema = new mongoose.Schema(
     },
     name: {
       type: String,
-      // required: [true, "Please tell us your last name!"],
     },
     dob: {
       type: Date,
-      // required: [true, "Please tell us your date of birth"],
     },
     age: {
       type: Number,
@@ -47,22 +47,18 @@ const personSchema = new mongoose.Schema(
     },
     doBaptism: {
       type: Date,
-      // required: [true, "Please tell us your baptism date"],
     },
     marriage: {
       type: Date,
-      // required: [true, "Please tell us your marriage date"],
     },
     dod: {
       type: Date,
     },
     phoneNumber: {
       type: Number,
-      // required: [true, "Please enter your contact number!"],
     },
     whatsappNum: {
       type: Number,
-      // required: [true, "Please enter your contact number!"],
     },
     email: {
       type: String,
@@ -70,16 +66,18 @@ const personSchema = new mongoose.Schema(
     gender: {
       type: String,
       enum: ['M', 'F'],
-      required: [true, 'Please specify the geners of the person'],
+      required: [true, 'Please specify the genders of the person'],
     },
     maritalStatus: {
       type: String,
       enum: ['single', 'engaged', 'married', 'divorced', 'hus-exp', 'wife-exp'],
       default: 'single',
+      required: [true, 'Marital status is not specified'],
     },
     isActive: {
       type: Boolean,
       default: true,
+      required: [true, 'Active status is required'],
     },
     wardNo: {
       type: Number,

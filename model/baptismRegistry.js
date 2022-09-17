@@ -6,6 +6,7 @@ const baptismSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.ObjectId,
     ref: 'Parishioners',
+    required: [true, 'User Id is not specified'],
   },
   familyId: {
     type: mongoose.Schema.ObjectId,
@@ -25,9 +26,11 @@ const baptismSchema = new mongoose.Schema({
   },
   father: {
     type: String,
+    required: [true, 'Father name is not specified'],
   },
   mother: {
     type: String,
+    required: [true, 'Mother name is not specified'],
   },
   dob: {
     type: Date,
@@ -43,6 +46,7 @@ const baptismSchema = new mongoose.Schema({
   },
   parish: {
     type: String,
+    required: [true, 'Parish is not specified'],
   },
   godFather: {
     name: {
@@ -70,7 +74,7 @@ const baptismSchema = new mongoose.Schema({
   },
   parishPriest: {
     type: String,
-    // required:[true,"Parish priest name is not specified"]
+    required: [true, 'Parish priest name is not specified'],
   },
   remarks: {
     type: String,

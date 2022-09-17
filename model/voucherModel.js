@@ -5,6 +5,8 @@ const Accounts = require('./accountsModel');
 const voucherSchema = new mongoose.Schema({
   voucherNum: {
     type: Number,
+    required: [true, 'Voucher number is not specified!'],
+    unique: true,
   },
   account: {
     type: String,

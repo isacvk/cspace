@@ -30,7 +30,7 @@ const engagementRegSchema = new mongoose.Schema({
     },
     parish: {
       type: String,
-      // required: [true, "Name of bridegroom's parish is not specified"],
+      required: [true, "Name of bridegroom's parish is not specified"],
     },
     dob: {
       type: Date,
@@ -42,7 +42,7 @@ const engagementRegSchema = new mongoose.Schema({
     },
     birthPlace: {
       type: String,
-      // required: [true, 'Baptism place is not specified'],
+      required: [true, 'Baptism place is not specified'],
     },
   },
   brideData: {
@@ -64,7 +64,7 @@ const engagementRegSchema = new mongoose.Schema({
     },
     parish: {
       type: String,
-      // required: [true, "Name of bride's parish is not specified"],
+      required: [true, "Name of bride's parish is not specified"],
     },
     dob: {
       type: Date,
@@ -76,7 +76,7 @@ const engagementRegSchema = new mongoose.Schema({
     },
     birthPlace: {
       type: String,
-      // required: [true, 'Baptism place is not specified'],
+      required: [true, 'Baptism place is not specified'],
     },
   },
   bannDates: [
@@ -101,6 +101,7 @@ const engagementRegSchema = new mongoose.Schema({
     type: String,
     enum: ['valid', 'divorced', 'hus-exp', 'wife-exp'],
     default: 'valid',
+    required: [true, 'Status of the engagement is not specified!'],
   },
   remarks: {
     type: String,

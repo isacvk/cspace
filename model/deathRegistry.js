@@ -8,6 +8,7 @@ const deathRegSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.ObjectId,
     ref: 'Parishioners',
+    required: [true, 'Please specify the user Id of the person'],
   },
   baptismName: {
     type: String,
@@ -15,14 +16,12 @@ const deathRegSchema = new mongoose.Schema({
   },
   dob: {
     type: Date,
+    required: [true, 'Dob of the person is not specified'],
   },
   age: {
     type: Number,
     required: [true, 'Please specify the age'],
   },
-  //   father:{
-  //     type:String
-  //   },
   sickness: {
     type: String,
   },
@@ -50,6 +49,11 @@ const deathRegSchema = new mongoose.Schema({
   },
   parishPriest: {
     type: String,
+    required: [true, 'Please specify the parish priest'],
+  },
+  place: {
+    type: String,
+    required: [true, 'Please specify the place of death'],
   },
   remarks: {
     type: String,

@@ -10,7 +10,6 @@ const BaptismReg = require('../model/baptismRegistry');
 
 exports.verifySign = catchAsync(async (req, res, next) => {
   let flag = 0;
-  let message;
   let data;
   let response = {};
   const decoded = await promisify(jwt.verify)(
@@ -34,8 +33,8 @@ exports.verifySign = catchAsync(async (req, res, next) => {
     }
     response.baptismData = data;
     const issueDate = new Date(decoded.iat * 1000).toLocaleString().split(',');
-    response.message = `This certificate was issued on ${issueDate[0]} at ${issueDate[1]}. 
-    This signature was issued with baptism certificate of ${data.baptismName} ${data.familyName}, 
+    response.message = `This signature was issued on ${issueDate[0]} at ${issueDate[1]}. 
+    It was issued with baptism certificate of ${data.baptismName} ${data.familyName}, 
     here are the details!`;
   }
 
@@ -45,7 +44,7 @@ exports.verifySign = catchAsync(async (req, res, next) => {
     if (!data) {
       return next(
         new AppError(
-          "Siganture is valid, but this persons baptism registry doesn't exist in the database!",
+          "Siganture is valid, but this marriage registry doesn't exist in the database!",
           404,
         ),
       );
@@ -54,8 +53,8 @@ exports.verifySign = catchAsync(async (req, res, next) => {
     response.marriageDetails = data;
 
     const issueDate = new Date(decoded.iat * 1000).toLocaleString().split(',');
-    response.message = `This certificate was issued on ${issueDate[0]} at ${issueDate[1]}. 
-    This signature was issued with marriage certificate of ${data.groomName} and ${data.brideName}, 
+    response.message = `This signature was issued on ${issueDate[0]} at ${issueDate[1]}. 
+    It was issued with marriage certificate of ${data.groomName} and ${data.brideName}, 
     here are the details!`;
 
     if (data.status === 'invalid') {

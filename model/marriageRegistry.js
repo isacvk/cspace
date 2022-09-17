@@ -25,6 +25,7 @@ const marriageRegSchema = new mongoose.Schema({
     type: String,
     enum: ['valid', 'divorced', 'hus-exp', 'wife-exp'],
     default: 'valid',
+    required: [true, 'Marriage status is not specified'],
   },
   marriageDate: {
     type: Date,

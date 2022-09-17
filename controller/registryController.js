@@ -58,16 +58,29 @@ exports.getBaptismReg = catchAsync(async (req, res, next) => {
 });
 
 exports.addBaptismReg = catchAsync(async (req, res, next) => {
-  // console.log('BAP REQ : ', req.body);
+  if (!req.body.dob || !req.body.doBaptism) {
+    return next(new AppError('Please provide dob and date of baptism', 400));
+  }
+
+  const dob = new Date(req.body.dob).getTime();
+  const doBaptism = new Date(req.body.doBaptism).getTime();
+
+  console.log('DOB : ', dob);
+  console.log('BAP : ', doBaptism);
+  console.log('IF : ', dob < doBaptism);
+
+  if (dob > doBaptism) {
+    return next(
+      new AppError('Baptism date can not be older than birth date!', 400),
+    );
+  }
+
   // ? WHAT ABOUT THE MEMBERS WHOSE PARENT DETAILS ARE NOT PRESENT IN DB
   const user = await Parishioners.findById(req.params.id);
 
   if (!user) {
     return next(new AppError(`No user found with Id ${req.params.id}`, 404));
   }
-
-  // const father = await Parishioners.findById(user.father);
-  // const mother = await Parishioners.findById(user.mother);
 
   // TODO: ADD VALIDATIONS HERE I.E ONLY IF USERS FOUND
   req.body.userId = req.params.id;

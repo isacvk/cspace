@@ -70,7 +70,15 @@ const personSchema = new mongoose.Schema(
     },
     maritalStatus: {
       type: String,
-      enum: ['single', 'engaged', 'married', 'divorced', 'hus-exp', 'wife-exp'],
+      enum: [
+        'single',
+        'engaged',
+        'married',
+        'divorced',
+        'hus-exp',
+        'wife-exp',
+        'Reg-To-Be-Added',
+      ],
       default: 'single',
       required: [true, 'Marital status is not specified'],
     },

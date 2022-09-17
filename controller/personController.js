@@ -136,6 +136,9 @@ exports.getPersonRelations = catchAsync(async (req, res, next) => {
 });
 
 exports.addRelations = catchAsync(async (req, res, next) => {
+  if (req.body.husband || req.body.wife) {
+    req.body.maritalStatus = 'Reg-To-Be-Added';
+  }
   const user = await Persons.findByIdAndUpdate(req.params.id, req.body);
 
   if (!user) {

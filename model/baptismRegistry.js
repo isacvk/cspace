@@ -7,6 +7,7 @@ const baptismSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'Parishioners',
     required: [true, 'User Id is not specified'],
+    unique: true,
   },
   familyId: {
     type: mongoose.Schema.ObjectId,

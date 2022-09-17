@@ -2,6 +2,7 @@ const pdf = require('html-pdf');
 const jwt = require('jsonwebtoken');
 
 const Persons = require('../model/personModel');
+const EngagementReg = require('../model/engagementModel');
 const MarriageReg = require('../model/marriageRegistry');
 const BaptismReg = require('../model/baptismRegistry');
 
@@ -106,15 +107,29 @@ exports.baptismPdfInfo = catchAsync(async (req, res, next) => {
 
 exports.marriagePdfInfo = catchAsync(async (req, res, next) => {
   if (!req.params.id) {
-    return next(new AppError('Please provide the userId!', 400));
+    return next(new AppError('Please provide the document Id!', 400));
   }
   const marriageData = await MarriageReg.findById(req.params.id).lean();
 
   if (!marriageData) {
     return next(
-      new AppError(`No entry found with userId ${req.params.id}!`, 404),
+      new AppError(`No entry found with document Id ${req.params.id}!`, 404),
     );
   }
+
+  let engData;
+  if (marriageData.brideId) {
+    engData = await EngagementReg.findOne({
+      brideId: marriageData.brideId,
+    }).lean();
+  } else {
+    engData = await EngagementReg.findOne({
+      groomId: marriageData.groomId,
+    }).lean();
+  }
+
+  marriageData['groomData'] = engData.groomData;
+  marriageData['brideData'] = engData.brideData;
 
   const credentials = {
     of: marriageData._id,

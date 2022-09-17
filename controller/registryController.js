@@ -125,7 +125,7 @@ exports.getEngagementReg = catchAsync(async (req, res, next) => {
   //***? WHAT TO DO WHEN MULTIPLE ENTRIES ARE THERE
   const entry = await EngagementReg.findOne(queryObj);
 
-  if (entry.length === 0)
+  if (!entry)
     return next(new AppError(`No data found for ${user.baptismName}!`, 404));
 
   res.status(201).json({
@@ -328,24 +328,7 @@ exports.getMarriageReg = catchAsync(async (req, res, next) => {
 });
 
 exports.addMarriageReg = catchAsync(async (req, res, next) => {
-  //***TODO: The details of the bride/groom should automaticlly appear
   //***TODO: SHOULD NOT ADD ENTRY IF DEATH REGISTRY IS PRESENT
-  //***? What if the person marries second time. [Add a field to mark marriage as invalid]
-
-  // const user = await Parishioners.findOne({ _id: req.params.id }).select(
-  //   "dob gender"
-  // );
-
-  // if (!user)
-  //   return next(new AppError(`No user found with Id${req.params.id}`, 404));
-
-  // if (!isLegalAge(user.dob, user.gender)) {
-  //   return next(
-  //     new AppError(`This person is under aged! Can't add to registry.`, 401)
-  //   );
-  // }
-
-  console.log('REQ PARAMS : ', req.params.id);
 
   const engagementEntry = await EngagementReg.findOne({
     _id: req.params.id,
@@ -365,6 +348,7 @@ exports.addMarriageReg = catchAsync(async (req, res, next) => {
       return next(
         new AppError(`Valid marriage entry exists for the groom!`, 403),
       );
+    req.body.groomId = engagementEntry.groomId;
   }
 
   if (engagementEntry.brideId) {
@@ -377,6 +361,7 @@ exports.addMarriageReg = catchAsync(async (req, res, next) => {
         new AppError(`Valid marriage entry exists for the bride!`, 403),
       );
     }
+    req.body.brideId = engagementEntry.brideId;
   }
 
   // //***? What about M, F and Others
@@ -414,11 +399,18 @@ exports.addMarriageReg = catchAsync(async (req, res, next) => {
   if (engagementEntry.groomId) req.body.brideId = engagementEntry.brideId;
   req.body.groomName = engagementEntry.groomData.baptismName;
   req.body.brideName = engagementEntry.brideData.baptismName;
+  req.body.groomAge = calcAge(engagementEntry.groomData.dob);
+  req.body.brideAge = calcAge(engagementEntry.brideData.dob);
 
   const register = await MarriageReg.create(req.body);
 
+  if (!register) {
+    return next(new AppError('Registry not added! Something went wrong!', 500));
+  }
+
   res.status(201).json({
     status: 'success',
+    data: register,
   });
 });
 
@@ -460,15 +452,31 @@ exports.getDeathReg = catchAsync(async (req, res, next) => {
 });
 
 exports.addDeathReg = catchAsync(async (req, res, next) => {
+  if (!req.params.id) {
+    return next(new AppError('Please provide the userId', 400));
+  }
+
   const user = await Parishioners.findById(req.params.id);
 
   if (!user) {
     return next(new AppError(`No user found with Id ${req.params.id}`, 404));
   }
 
-  //***!CHANGE NAME TO BAPTISM NAME
+  const baptismReg = await BaptismReg.findOne({ userId: req.params.id });
+
+  if (!baptismReg) {
+    return next(
+      new AppError(
+        `No baptism registry found for ${user.baptismName}! Please add that before continuing`,
+        403,
+      ),
+    );
+  }
+
   // TODO: CHECK IF DEATH REG ALREADY EXISTS
-  // req.body.baptismName = user.baptismName;
+  req.body.familyId = user.familyId;
+  req.body.familyName = user.familyName;
+  req.body.wardNo = user.wardNo;
   req.body.userId = user._id;
   req.body.baptismName = user.baptismName;
   req.body.dob = user.dob;
@@ -479,6 +487,8 @@ exports.addDeathReg = catchAsync(async (req, res, next) => {
 
   res.status(201).json({
     status: 'success',
+    message: 'death registry added!',
+    data: deathEntry,
   });
 });
 

@@ -9,6 +9,7 @@ const deathRegSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'Parishioners',
     required: [true, 'Please specify the user Id of the person'],
+    unique: true,
   },
   baptismName: {
     type: String,
@@ -63,7 +64,7 @@ const deathRegSchema = new mongoose.Schema({
 deathRegSchema.post('save', async (doc, next) => {
   // console.log("DEATH DOC : ", doc);
   const updateStats = await Parishioners.findByIdAndUpdate(doc.userId, {
-    death: doc.dod,
+    dod: doc.dod,
     isActive: false,
   });
 

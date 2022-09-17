@@ -17,9 +17,17 @@ const marriageRegSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Groom name is not specified'],
   },
+  groomAge: {
+    type: Number,
+    required: [true, 'Age of groom is not specified'],
+  },
   brideName: {
     type: String,
     required: [true, 'Bride name is not specified'],
+  },
+  brideAge: {
+    type: Number,
+    required: [true, 'Age of bride is not specified'],
   },
   status: {
     type: String,
@@ -100,20 +108,26 @@ marriageRegSchema.post('save', async function (doc, next) {
       { brideId: addToParishioners._id },
     );
   }
-
   next();
 });
 
+// marriageRegSchema.pre('save', async function (doc, next) {
+//   //* WHEN GROOM IS FROM ANOTHR PARISH
+//   if (!this.groomId && this.brideId) {
+
+//   }
+// })
+
 marriageRegSchema.post('save', async function (doc, next) {
-  if (this.brideId && !this.groomId) {
-    const updateActiveStatus = await Parishioners.findByIdAndUpdate(
-      this.brideId,
-      {
-        isActive: false,
-      },
-    );
+  //* WHEN GROOM IS FROM ANOTHR PARISH
+  if (!doc.groomId && doc.brideId) {
+    console.log('DOC.BRIDE ID : ', doc);
+    const updateIsActive = await Parishioners.findByIdAndUpdate(this.brideId, {
+      isActive: false,
+      marriage: doc.marriageDate,
+    });
+    next();
   }
-  next();
 });
 
 marriageRegSchema.post('save', async function (doc, next) {
@@ -141,15 +155,17 @@ marriageRegSchema.post('save', async function (doc, next) {
 
 marriageRegSchema.post('save', async function (doc, next) {
   let updateList = [];
-  if (this.groomId) updateList.push(this.groomId);
-  if (this.brideId) updateList.push(this.brideId);
+  if (doc.groomId) updateList.push(doc.groomId);
+  if (doc.brideId) updateList.push(doc.brideId);
 
-  updateMarriageDate = await Parishioners.updateMany(
-    { _id: { $in: updateList } },
-    {
-      $set: { marriage: this.marriageDate, maritalStatus: 'Married' },
-    },
-  );
+  if (updateList.length > 0) {
+    updateMarriageDate = await Parishioners.updateMany(
+      { _id: { $in: updateList } },
+      {
+        $set: { marriage: doc.marriageDate, maritalStatus: 'married' },
+      },
+    );
+  }
   next();
 });
 

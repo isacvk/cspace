@@ -83,15 +83,11 @@ const randomId = async () => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-  console.log('SIGN UP CALLED');
-  // find the name, create login ID and password and send sms
-  // ***?What if user already have uid and pass
-
   const user = await Parishioners.findById(req.body.userId);
 
   if (!user) {
     return next(
-      new AppErrro(`No user found with Id ${req.body.userId} !`, 404),
+      new AppError(`No user found with Id ${req.body.userId} !`, 404),
     );
   }
   // TEMP CODE
@@ -153,7 +149,7 @@ exports.login = async (req, res, next) => {
   const { loginId, password } = req.body;
 
   if (!loginId || !password)
-    return next(new AppError('Please provide your loginId and password'));
+    return next(new AppError('Please provide your loginId and password', 400));
 
   const user = await Users.findOne({ loginId }).select('+password');
 
@@ -185,6 +181,9 @@ exports.logout = catchAsync(async (req, res, next) => {
 });
 
 exports.forgotPass = catchAsync(async (req, res, next) => {
+  if (!req.body.loginId) {
+    return next(new AppError('Please provide your loginId', 400));
+  }
   const validUser = await Users.findOne({ loginId: `${req.body.loginId}` });
 
   if (!validUser) {
@@ -223,10 +222,16 @@ exports.forgotPass = catchAsync(async (req, res, next) => {
 });
 
 exports.verifyOtp = catchAsync(async (req, res, next) => {
-  const otpLength = req.body.otp / 1000;
-  if (otpLength < 1 || otpLength >= 10) {
-    return next(new AppError(`Please enter 4 digit otp`, 401));
+  req.body.otp = parseInt(req.body.otp);
+
+  if (isNaN(req.body.otp)) {
+    return next(new AppError('Invalid otp!', 400));
   }
+
+  // const otpLength = req.body.otp / 1000;
+  // if (otpLength < 1 || otpLength >= 10) {
+  //   return next(new AppError('Please enter 4 digit otp', 401));
+  // }
 
   const validOtp = await Users.findOne({
     loginId: `${req.body.loginId}`,
@@ -250,7 +255,7 @@ exports.verifyOtp = catchAsync(async (req, res, next) => {
       otp: `${req.body.otp}`,
     },
     {
-      otp: `1`,
+      otp: '1',
     },
   );
 
@@ -261,6 +266,14 @@ exports.verifyOtp = catchAsync(async (req, res, next) => {
 });
 
 exports.resetPass = catchAsync(async (req, res, next) => {
+  if (!req.body.password || !req.body.loginId) {
+    return next(new AppError('Please provide userId and password', 400));
+  }
+
+  if (req.body.password.length < 8) {
+    return next(new AppError('Password should be more than 8 characters', 400));
+  }
+
   const user = await Users.findOne({ loginId: `${req.body.loginId}` });
 
   if (!user) {

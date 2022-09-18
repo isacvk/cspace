@@ -4,6 +4,16 @@ const AgeChart = require('../model/ageChartModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
+exports.getAgeChart = catchAsync(async (req, res, next) => {
+  const data = await AgeChart.find().lean();
+
+  res.status(200).json({
+    status: 'success',
+    results: data.length,
+    data,
+  });
+});
+
 exports.createCategories = catchAsync(async (req, res, next) => {
   // const persons = await Parishioners.find({isActive:true})
 
@@ -16,6 +26,7 @@ exports.createCategories = catchAsync(async (req, res, next) => {
 });
 
 exports.generateChartData = catchAsync(async (req, res, next) => {
+  console.log('Generate chart got called!');
   const persons = await Parishioners.find({ isActive: true }).select(
     'age gender',
   );
@@ -173,10 +184,5 @@ exports.generateChartData = catchAsync(async (req, res, next) => {
         );
       }
     }
-  });
-
-  res.status(201).json({
-    status: 'success',
-    message: 'chart data created',
   });
 });

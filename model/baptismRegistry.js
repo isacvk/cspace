@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 
 const Parishioners = require('./personModel');
+const AgeChart = require('./ageChartModel');
+
+const chartController = require('../controller/chartController');
 
 const baptismSchema = new mongoose.Schema({
   userId: {
@@ -36,6 +39,11 @@ const baptismSchema = new mongoose.Schema({
   dob: {
     type: Date,
     required: [true, 'DOB is not specified'],
+  },
+  gender: {
+    type: String,
+    enum: ['M', 'F'],
+    required: [true, 'Gender not specified'],
   },
   doBaptism: {
     type: Date,
@@ -105,6 +113,11 @@ baptismSchema.post('save', async function (doc, next) {
       },
     },
   );
+  next();
+});
+
+baptismSchema.post('save', async function (doc, next) {
+  chartController.generateChartData();
   next();
 });
 

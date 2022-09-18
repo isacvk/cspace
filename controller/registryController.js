@@ -7,6 +7,8 @@ const DeathReg = require('../model/deathRegistry');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
+const charController = require('./chartController');
+
 const calcAge = (dob) => {
   let birthDate = new Date(dob);
   let today = new Date();
@@ -76,35 +78,59 @@ exports.addBaptismReg = catchAsync(async (req, res, next) => {
   const dob = new Date(req.body.dob).getTime();
   const doBaptism = new Date(req.body.doBaptism).getTime();
 
-  console.log('DOB : ', dob);
-  console.log('BAP : ', doBaptism);
-  console.log('IF : ', dob < doBaptism);
-
   if (dob > doBaptism) {
     return next(
       new AppError('Baptism date can not be older than birth date!', 400),
     );
   }
 
-  // ? WHAT ABOUT THE MEMBERS WHOSE PARENT DETAILS ARE NOT PRESENT IN DB
   const user = await Parishioners.findById(req.params.id);
 
   if (!user) {
     return next(new AppError(`No user found with Id ${req.params.id}`, 404));
   }
 
-  // TODO: ADD VALIDATIONS HERE I.E ONLY IF USERS FOUND
+  const age = ageCalc(req.body.dob, new Date());
+  if (user.husband) {
+    if (age < 18) {
+      return next(
+        new AppError(
+          "This person has a husband in relation! So age can't be below 18",
+          400,
+        ),
+      );
+    }
+  }
+  if (user.wife) {
+    if (age < 21) {
+      return next(
+        new AppError(
+          "This person has a wife in relation! So age can't be below 18",
+          400,
+        ),
+      );
+    }
+  }
+
   req.body.userId = req.params.id;
   req.body.familyId = user.familyId;
   req.body.baptismName = user.baptismName;
   req.body.name = user.name;
+  req.body.gender = user.gender;
 
   const addEntry = await BaptismReg.create(req.body);
+
+  if (!addEntry) {
+    return next(
+      new AppError('Something went wrong when adding the registry!', 500),
+    );
+  }
 
   res.status(201).json({
     status: 'success',
     data: addEntry,
   });
+  // charController.generateChartData;
 });
 
 exports.updateBaptismReg = catchAsync(async (req, res, next) => {
@@ -491,7 +517,7 @@ exports.addDeathReg = catchAsync(async (req, res, next) => {
   if (!user.dob) {
     return next(
       new AppError(
-        'Date of birth not foudn! Please add baptism registry.',
+        'Date of birth not found! Please add baptism registry.',
         404,
       ),
     );

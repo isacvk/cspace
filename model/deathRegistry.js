@@ -4,6 +4,8 @@ const Parishioners = require('./personModel');
 const MarriageReg = require('./marriageRegistry');
 const EngagementReg = require('./engagementModel');
 
+const chartController = require('../controller/chartController');
+
 const deathRegSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.ObjectId,
@@ -121,8 +123,7 @@ deathRegSchema.post('save', async (doc, next) => {
 });
 
 deathRegSchema.post('save', async (doc, next) => {
-  // CHANGE MARITAL STATUS OF THE PARTNER & THIS PESON?
-  // const user = await Parishioners.find
+  chartController.generateChartData();
 
   next();
 });

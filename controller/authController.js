@@ -185,9 +185,7 @@ exports.forgotPass = catchAsync(async (req, res, next) => {
     return next(new AppError('Please provide your loginId', 400));
   }
 
-  console.log(req.body.loginId);
   const validUser = await Users.findOne({ loginId: req.body.loginId });
-  console.log(validUser);
 
   if (!validUser) {
     return next(
@@ -208,7 +206,7 @@ exports.forgotPass = catchAsync(async (req, res, next) => {
 
   // SMS Content
   if (setOtp) {
-    let message = `Your OTP is ${otp} , valid for 15 mins`;
+    let message = `Your OTP is ${otp} , valid for 5 mins`;
     let phoneNum = [];
     phoneNum[0] = validUser.phoneNumber;
 
@@ -245,7 +243,7 @@ exports.verifyOtp = catchAsync(async (req, res, next) => {
   const timeElapsed =
     parseInt(new Date() / 1000, 10) - parseInt(validOtp.otpTime / 1000, 10);
 
-  if (timeElapsed > 900) {
+  if (timeElapsed > 300) {
     return next(new AppError('Your Otp has been expired', 401));
   }
 

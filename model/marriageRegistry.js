@@ -143,6 +143,7 @@ marriageRegSchema.post('save', async function (doc, next) {
     const brideFamily = await Parishioners.findById(this.brideId).select(
       'familyId',
     );
+    // !HANDLE THIS
     if (groomFamily.familyId !== brideFamily.familyId) {
       //***IF NOT THEN REMOVE BRIDE FROM BRIDE'S FAM AND ADD TO GROOM'S FAM
       const pullBrideId = await Family.findByIdAndUpdate(brideFamily.familyId, {

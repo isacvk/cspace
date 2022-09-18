@@ -85,20 +85,36 @@ exports.getFamilies = catchAsync(async (req, res, next) => {
 });
 
 exports.getFamily = catchAsync(async (req, res, next) => {
-  const getFamily = await Family.findById(req.params.id).populate('members');
+  const getFamily = await Family.findById(req.params.id)
+    .populate('members')
+    .lean();
 
   if (!getFamily) {
     return next(
       new AppError(`No family found with the id ${req.params.id}!`, 404),
     );
   }
+  if (req.user.role === 'User') {
+    console.log('TOTAL MEMBERS : ', getFamily.members.length);
+    getFamily.members.forEach((member) => {
+      // console.log('MEM : ', member.privacyEnabled, member._id);
+      if (member.privacyEnabled) {
+        for (const key in member) {
+          if (key === 'baptismName') {
+            continue;
+          }
+          member[key] = 'N/A';
+        }
+      }
+      //     console.log('MEM : ', member.privacyEnabled, member.id);
+    });
+  }
+
   res.status(200).json({
     status: 'success',
+    results: getFamily.length,
     data: getFamily,
   });
-  if (req.user.role === 'User') {
-    console.log('User IS ACCESSING');
-  }
 });
 
 exports.updateFamily = catchAsync(async (req, res, next) => {

@@ -75,19 +75,25 @@ exports.getPersons = catchAsync(async (req, res, next) => {
 });
 
 exports.getPerson = catchAsync(async (req, res, next) => {
-  const person = await Persons.findOne({ _id: req.params.id });
+  if (!req.params.id || req.params.id === null) {
+    return next(new AppError('Please provide person id!', 400));
+  }
 
-  if (!person)
+  const person = await Persons.findOne({ _id: req.params.id }).lean();
+
+  if (!person) {
     return next(new AppError(`No person found with id ${req.params.id}!`, 404));
+  }
 
   person.relations = person.__v = undefined;
 
   if (req.user.role === 'User' && person.privacyEnabled) {
-    // person.dob = person.age = person.doBaptism = person.birthPlace = person. parish = person.dobDay =
-    // person.dobMonth = person.doBaptism = person.marriage = person.dod = person.phoneNumber = person.email = '-';
-    person.map((key) => {
-      console.log(key);
-    });
+    for (const key in person) {
+      if (key === 'baptismName') {
+        continue;
+      }
+      person[key] = 'N/A';
+    }
   }
 
   res.status(200).json({

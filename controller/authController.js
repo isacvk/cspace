@@ -184,7 +184,10 @@ exports.forgotPass = catchAsync(async (req, res, next) => {
   if (!req.body.loginId) {
     return next(new AppError('Please provide your loginId', 400));
   }
-  const validUser = await Users.findOne({ loginId: `${req.body.loginId}` });
+
+  console.log(req.body.loginId);
+  const validUser = await Users.findOne({ loginId: req.body.loginId });
+  console.log(validUser);
 
   if (!validUser) {
     return next(
@@ -192,16 +195,13 @@ exports.forgotPass = catchAsync(async (req, res, next) => {
     );
   }
 
-  // const user = await Parishioners.findById(validUser.userId);
-
-  //***?What is user doesn't have a phone number
-  //***TODO: Generate OTP
-  let otp = generateOtp();
+  let otp = await generateOtp();
+  otp = parseInt(otp);
 
   const setOtp = await Users.findOneAndUpdate(
     { loginId: `${req.body.loginId}` },
     {
-      otp: `${otp}`,
+      otp: otp,
       otpTime: `${new Date()}`,
     },
   );

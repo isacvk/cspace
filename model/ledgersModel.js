@@ -12,6 +12,7 @@ const ledgerSchema = new mongoose.Schema({
   },
   groupName: {
     type: String,
+    required: [true, 'Group Name is not specified!'],
   },
   type: {
     type: String,

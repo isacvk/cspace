@@ -87,6 +87,9 @@ const personSchema = new mongoose.Schema(
       default: true,
       required: [true, 'Active status is required'],
     },
+    loginAccess: {
+      type: Boolean,
+    },
     wardNo: {
       type: Number,
       required: [true, 'Please specify ward number'],

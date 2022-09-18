@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const Parishioners = require('./personModel');
+
 const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
@@ -78,6 +80,12 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   }
   return false;
 };
+
+userSchema.post('save', async function (doc, next) {
+  const personLoginStatus = await Parishioners.findByIdAndUpdate(doc.userId, {
+    loginAccess: true,
+  });
+});
 
 const Users = mongoose.model('Users', userSchema);
 

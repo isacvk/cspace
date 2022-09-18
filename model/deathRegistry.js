@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Parishioners = require('./personModel');
 const MarriageReg = require('./marriageRegistry');
 const EngagementReg = require('./engagementModel');
+const Users = require('./userModel');
 
 const chartController = require('../controller/chartController');
 
@@ -123,8 +124,11 @@ deathRegSchema.post('save', async (doc, next) => {
 });
 
 deathRegSchema.post('save', async (doc, next) => {
-  chartController.generateChartData();
+  const updateUserStatus = await Users.findOneAndUpdate();
+});
 
+deathRegSchema.post('save', async (doc, next) => {
+  chartController.generateChartData();
   next();
 });
 

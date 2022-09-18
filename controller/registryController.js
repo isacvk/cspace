@@ -348,7 +348,9 @@ exports.getMarriageReg = catchAsync(async (req, res, next) => {
   // let entry = await MarriageReg.findById(req.params.id);
 
   // if (!entry) {
-  const user = await Parishioners.findById(req.params.id).select('gender');
+  const user = await Parishioners.findById(req.params.id).select(
+    'gender baptismName',
+  );
 
   if (!user) {
     return next(new AppError(`No user found with Id ${req.params.id}`, 404));
@@ -365,7 +367,12 @@ exports.getMarriageReg = catchAsync(async (req, res, next) => {
   const entry = await MarriageReg.findOne(queryObj).lean();
 
   if (!entry) {
-    return next(new AppError(`No entry found with id ${req.params.id}!`, 404));
+    return next(
+      new AppError(
+        `No valid marriage registry found for ${user.baptismName}!`,
+        404,
+      ),
+    );
   }
   const engData = await EngagementReg.findOne(queryObj).lean();
 

@@ -49,6 +49,17 @@ const signToken = (id) => {
   });
 };
 
+const generateOtp = async () => {
+  let chars = '0123456789';
+  let string_length = 4;
+  let otp = '';
+  for (let i = 0; i < string_length; i++) {
+    let rnum = Math.floor(Math.random() * chars.length);
+    otp += chars.substring(rnum, rnum + 1);
+  }
+  return otp;
+};
+
 const randomPass = async () => {
   let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
   let string_length = 8;
@@ -186,7 +197,7 @@ exports.forgotPass = catchAsync(async (req, res, next) => {
 
   //***?What is user doesn't have a phone number
   //***TODO: Generate OTP
-  let otp = '1232';
+  let otp = generateOtp();
 
   const setOtp = await Users.findOneAndUpdate(
     { loginId: `${req.body.loginId}` },

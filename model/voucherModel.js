@@ -11,6 +11,7 @@ const voucherSchema = new mongoose.Schema({
   account: {
     type: String,
     enum: ['cash', 'bank'],
+    required: [true, 'account is not specified!'],
   },
   date: {
     type: Date,
@@ -21,21 +22,25 @@ const voucherSchema = new mongoose.Schema({
   },
   amount: {
     type: Number,
-    required: [true, ' Amount is not specified!'],
+    required: [true, 'Amount is not specified!'],
   },
   groupId: {
     type: mongoose.Schema.ObjectId,
     ref: 'Groups',
+    required: [true, 'Group Id is not specified!'],
   },
   groupName: {
     type: String,
+    required: [true, 'Group name is not specified!'],
   },
   ledgerId: {
     type: mongoose.Schema.ObjectId,
     ref: 'Groups',
+    required: [true, 'Ledger Id is not specified!'],
   },
   ledgerName: {
     type: String,
+    required: [true, 'Ledger name is not specified!'],
   },
   type: {
     type: String,

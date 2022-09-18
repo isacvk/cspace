@@ -7,8 +7,8 @@ const router = express.Router();
 
 router.post(
   '/signup',
-  // authController.protect,
-  // authController.restrictTo("Admin"),
+  authController.protect,
+  authController.restrictTo('Admin'),
   authController.signup,
 );
 
@@ -31,8 +31,5 @@ router.get('/logout', authController.logout);
 router.post('/forgot-password', authController.forgotPass);
 router.post('/verify-otp', authController.verifyOtp);
 router.patch('/reset-password', authController.resetPass);
-
-router.post('/chart-category', chartController.createCategories);
-router.post('/chart-data', chartController.generateChartData);
 
 module.exports = router;

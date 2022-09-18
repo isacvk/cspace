@@ -72,26 +72,29 @@ marriageRegSchema.post('save', async function (doc, next) {
   //* WHEN BRIDE IS FROM ANOTHR PARISH
   if (this.groomId && !this.brideId) {
     const familyInfo = await Parishioners.findById(this.groomId).select(
-      'familyId wardNo',
+      'familyId wardNo familyName',
     );
     console.log('FAM INFO : ', familyInfo);
 
     let brideData = await EngagementReg.findOne({
       groomId: this.groomId,
       status: 'valid',
-    }).select('brideData');
+    }).select('brideData groomData');
 
     brideData = brideData.brideData;
     console.log('BRIDE INFO : ', brideData);
 
     const addToParishioners = await Parishioners.create({
       familyId: familyInfo.familyId,
+      familyName: familyInfo.familyName,
       wardNo: familyInfo.wardNo,
-      baptismName: brideData.name,
+      baptismName: brideData.baptismName,
       dob: brideData.dob,
       baptism: brideData.baptism,
       husband: this.groomId,
       maritalStatus: 'married',
+      gender: 'F',
+      marriage: doc.marriageDate,
     });
 
     console.log('PERSONS : ', addToParishioners);
@@ -135,12 +138,12 @@ marriageRegSchema.post('save', async function (doc, next) {
 });
 
 marriageRegSchema.post('save', async function (doc, next) {
-  if (this.brideId && this.groomId) {
+  if (doc.brideId && doc.groomId) {
     //***CHECK IF THEY ARE SAME FAMILY, IF TRUE DON'T DO ANYTHING
-    const groomFamily = await Parishioners.findById(this.groomId).select(
+    const groomFamily = await Parishioners.findById(doc.groomId).select(
       'familyId',
     );
-    const brideFamily = await Parishioners.findById(this.brideId).select(
+    const brideFamily = await Parishioners.findById(doc.brideId).select(
       'familyId',
     );
     // !HANDLE THIS

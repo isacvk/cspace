@@ -3,6 +3,5 @@
 /notes
 /.vscode
 /.prettierignore
-/public
 /controller/paytm
 /.eslintrc.js

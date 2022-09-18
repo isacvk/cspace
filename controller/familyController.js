@@ -100,7 +100,7 @@ exports.getFamily = catchAsync(async (req, res, next) => {
       // console.log('MEM : ', member.privacyEnabled, member._id);
       if (member.privacyEnabled) {
         for (const key in member) {
-          if (key === 'baptismName') {
+          if (key === 'baptismName' || key === '_id' || key === 'familyId') {
             continue;
           }
           member[key] = 'N/A';

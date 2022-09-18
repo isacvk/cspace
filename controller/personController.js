@@ -89,7 +89,7 @@ exports.getPerson = catchAsync(async (req, res, next) => {
 
   if (req.user.role === 'User' && person.privacyEnabled) {
     for (const key in person) {
-      if (key === 'baptismName') {
+      if (key === 'baptismName' || key === '_id' || key === 'familyId') {
         continue;
       }
       person[key] = 'N/A';

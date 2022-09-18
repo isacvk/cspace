@@ -193,6 +193,12 @@ exports.forgotPass = catchAsync(async (req, res, next) => {
     );
   }
 
+  if (!validUser.isActive) {
+    return next(
+      new AppError('You are not an active member! Contact admin.', 403),
+    );
+  }
+
   let otp = await generateOtp();
   otp = parseInt(otp);
 

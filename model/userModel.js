@@ -85,6 +85,7 @@ userSchema.post('save', async function (doc, next) {
   const personLoginStatus = await Parishioners.findByIdAndUpdate(doc.userId, {
     loginAccess: true,
   });
+  next();
 });
 
 const Users = mongoose.model('Users', userSchema);

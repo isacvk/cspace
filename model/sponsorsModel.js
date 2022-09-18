@@ -43,6 +43,10 @@ const sponsorSchema = new mongoose.Schema({
   paidAt: {
     type: Date,
   },
+  createdAt: {
+    type: Date,
+    required: [true, 'Initiate date is not specified'],
+  },
 });
 
 const Sponsors = mongoose.model('Sponsors', sponsorSchema);

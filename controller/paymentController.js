@@ -74,6 +74,7 @@ exports.initiate = catchAsync(async (req, res, next) => {
       description: req.body.description,
       offeringId: offering._id,
       orderId: response.id,
+      createdAt: new Date(),
     };
     if (userId) sponsorData.userId = userId;
     const createSponsor = await Sponsors.create(sponsorData);

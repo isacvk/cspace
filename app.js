@@ -51,6 +51,7 @@ app.use((req, res, next) => {
 schedule.scheduleJob('0 0 * * *', () => {
   cronController.generateBdayList();
   cronController.generateMarriageAnniversayList();
+  cronController.clearSponsorTable();
 });
 
 app.use('/api/v1/family', familyRouter);

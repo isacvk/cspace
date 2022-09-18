@@ -4,6 +4,7 @@ const Parishioners = require('../model/personModel');
 const MarriageReg = require('../model/marriageRegistry');
 const Birthdays = require('../model/birthdayModel');
 const Anniversaries = require('../model/marriagesModel');
+const Sponsors = require('../model/sponsorsModel');
 
 exports.generateBdayList = catchAsync(async () => {
   const now = new Date();
@@ -45,5 +46,24 @@ exports.generateMarriageAnniversayList = catchAsync(async () => {
       groomName: e.groomName,
       brideName: e.brideName,
     });
+  });
+});
+
+exports.clearSponsorTable = catchAsync(async () => {
+  const sponsors = await Sponsors.find({ status: 'initiated' })
+    .select('createdAt')
+    .lean();
+
+  if (sponsors.length === 0) return;
+  console.log('Clearing sponsors initiated before 20 min...');
+  sponsors.map(async (entry) => {
+    const sponsor = { ...entry };
+
+    const timePassed =
+      new Date().getTime() - new Date(sponsor.createdAt).getTime();
+
+    if (timePassed > 1200000) {
+      const removeEntry = await Sponsors.findByIdAndDelete(sponsor._id);
+    }
   });
 });

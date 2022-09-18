@@ -124,7 +124,10 @@ deathRegSchema.post('save', async (doc, next) => {
 });
 
 deathRegSchema.post('save', async (doc, next) => {
-  const updateUserStatus = await Users.findOneAndUpdate();
+  const updateUserStatus = await Users.findByIdAndUpdate(doc.userId, {
+    isActive: false,
+  });
+  next();
 });
 
 deathRegSchema.post('save', async (doc, next) => {

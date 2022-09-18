@@ -13,11 +13,22 @@ exports.announce = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getAnnouncement = catchAsync(async (req, res, next) => {
+exports.getAnnouncementPublic = catchAsync(async (req, res, next) => {
+  const announcements = await Announce.find({ visibility: 'public' });
+
+  res.status(200).json({
+    status: 'success',
+    results: announcements.length,
+    announcements,
+  });
+});
+
+exports.getAnnouncementUsers = catchAsync(async (req, res, next) => {
   const announcements = await Announce.find();
 
   res.status(200).json({
     status: 'success',
+    results: announcements.length,
     announcements,
   });
 });

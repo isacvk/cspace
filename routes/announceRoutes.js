@@ -5,16 +5,28 @@ const announceController = require('../controller/announceController');
 
 const router = express.Router();
 
+router.route('/public').get(announceController.getAnnouncementPublic);
+
 router
   .route('/')
-  .get(announceController.getAnnouncement)
+  .get(
+    authController.protect,
+    authController.restrictTo('Admin', 'Users', 'Accountant'),
+    announceController.getAnnouncementUsers,
+  )
   .post(announceController.announce);
-router.route('/:id').patch(announceController.modifyAnnounce);
-router.route('/:id').delete(announceController.deleteAnnounce);
-
-// router
-//   .route("/:id")
-//   .get()
-//   .patch();
-
+router
+  .route('/:id')
+  .patch(
+    authController.protect,
+    authController.restrictTo('Admin'),
+    announceController.modifyAnnounce,
+  );
+router
+  .route('/:id')
+  .delete(
+    authController.protect,
+    authController.restrictTo('Admin'),
+    announceController.deleteAnnounce,
+  );
 module.exports = router;

@@ -189,8 +189,8 @@ exports.addEngagementReg = catchAsync(async (req, res, next) => {
     !req.body.groomData.dob ||
     !req.body.groomData.doBaptism ||
     !req.body.brideData.dob ||
-    req.body.brideData.doBaptism ||
-    req.body.engagementDate
+    !req.body.brideData.doBaptism ||
+    !req.body.engagementDate
   ) {
     return next(new AppError('Please specify all the dates!', 400));
   }

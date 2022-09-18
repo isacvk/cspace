@@ -96,6 +96,9 @@ exports.getFamily = catchAsync(async (req, res, next) => {
     status: 'success',
     data: getFamily,
   });
+  if (req.user.role === 'User') {
+    console.log('User IS ACCESSING');
+  }
 });
 
 exports.updateFamily = catchAsync(async (req, res, next) => {

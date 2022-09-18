@@ -54,6 +54,24 @@ schedule.scheduleJob('0 0 * * *', () => {
   cronController.clearSponsorTable();
 });
 
+// app.use((req, res, next) => {
+//   if (req.method === 'POST') {
+//     console.log(req.body);
+
+//     req.body.map(function (a) {
+//       a.key2 = a.key2.toLowerCase();
+//     });
+
+//     console.log(req.body);
+//     // req.on('data', function (chunk) {
+//     //   var dataString = chunk.toString();
+//     //   dataUpper = dataString.toUpperCase();
+//     //   console.log('received body data', dataUpper);
+//     // });
+//   }
+//   next();
+// });
+
 app.use('/api/v1/family', familyRouter);
 app.use('/api/v1/persons', personRouter);
 app.use('/api/v1/users', userRouter);

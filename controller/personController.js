@@ -6,24 +6,6 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
 exports.newPerson = catchAsync(async (req, res, next) => {
-  const addPerson = await Persons.create(req.body);
-
-  res.status(201).json({
-    status: 'success',
-    data: addPerson,
-  });
-});
-
-const addMember = catchAsync(async (details) => {
-  console.log('MEMBERS : ', details);
-  const addPerson = await Persons.create(details).catch((e) => {
-    console.log('ERR : ', e);
-  });
-});
-
-exports.newPerson2 = catchAsync(async (req, res, next) => {
-  // const addPerson = await Persons.create(req.body);
-
   // TODO: ADD FAMILY NAME IN PARISHIONERS MODEL
   const family = await Family.findById(req.body.familyId);
 
@@ -41,7 +23,6 @@ exports.newPerson2 = catchAsync(async (req, res, next) => {
     personDetails.familyId = family.id;
     personDetails.wardNo = family.wardNum;
     personDetails.familyName = family.familyName;
-    // addMember(person);
 
     const addPerson = await Persons.create(personDetails).catch((e) => {
       console.log('ERR : ', e);
@@ -100,6 +81,14 @@ exports.getPerson = catchAsync(async (req, res, next) => {
     return next(new AppError(`No person found with id ${req.params.id}!`, 404));
 
   person.relations = person.__v = undefined;
+
+  if (req.user.role === 'User' && person.privacyEnabled) {
+    // person.dob = person.age = person.doBaptism = person.birthPlace = person. parish = person.dobDay =
+    // person.dobMonth = person.doBaptism = person.marriage = person.dod = person.phoneNumber = person.email = '-';
+    person.map((key) => {
+      console.log(key);
+    });
+  }
 
   res.status(200).json({
     status: 'success',

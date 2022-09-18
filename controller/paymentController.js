@@ -37,7 +37,10 @@ const getUserId = async (req, next) => {
   // 2. Verification token
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
-  const user = await Users.findById(decoded.id).select('userId');
+  const user = await Users.findById(decoded.id).select(
+    'userId familyId familyName',
+  );
+  req.user = user;
   return user.userId;
 };
 
@@ -76,7 +79,11 @@ exports.initiate = catchAsync(async (req, res, next) => {
       orderId: response.id,
       createdAt: new Date(),
     };
-    if (userId) sponsorData.userId = userId;
+    if (userId) {
+      sponsorData.userId = userId;
+      sponsorData.familyId = req.user.familyId;
+      sponsorData.familyName = req.user.familyName;
+    }
     const createSponsor = await Sponsors.create(sponsorData);
     if (!createSponsor) {
       return next(new AppError('Something went wrong, Try again!', 500));

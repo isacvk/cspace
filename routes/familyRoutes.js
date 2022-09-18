@@ -8,15 +8,26 @@ const router = express.Router();
 router
   .route('/')
   .get(
-    // authController.protect,
+    authController.protect,
+    authController.restrictTo('Admin', 'User', 'Accountant'),
     familyController.getFamilies,
   )
-  .post(familyController.addFamily);
+  .post(
+    authController.protect,
+    authController.restrictTo('Admin'),
+    familyController.addFamily,
+  );
 
 router
   .route('/:id')
-  .get(familyController.getFamily)
+  .get(
+    authController.protect,
+    authController.restrictTo('Admin', 'User', 'Accountant'),
+    familyController.getFamily,
+  )
   .patch(
+    authController.protect,
+    authController.restrictTo('User'),
     familyController.uploadFamilyPhoto,
     familyController.resizeFamilyPhoto,
     familyController.updateFamily,

@@ -50,6 +50,10 @@ const marriageRegSchema = new mongoose.Schema({
   remarks: {
     type: String,
   },
+  witness: {
+    type: String,
+    required: [true, 'Witness name is not specified'],
+  },
   marriageDay: {
     type: Number,
   },

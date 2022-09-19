@@ -9,6 +9,10 @@ const marriagesSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Name of the wife is not specified'],
   },
+  marriageDate: {
+    type: Date,
+    required: [true, 'Marriage date is not specified'],
+  },
 });
 
 const Marriages = mongoose.model('Marriages', marriagesSchema);

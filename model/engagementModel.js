@@ -107,7 +107,7 @@ const engagementRegSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['valid', 'divorced', 'hus-exp', 'wife-exp'],
+    enum: ['valid', 'divorced', 'invalid'],
     default: 'valid',
     required: [true, 'Status of the engagement is not specified!'],
   },

@@ -1,3 +1,7 @@
+const fs = require('fs');
+
+const json2csv = require('json2csv').parse;
+
 const catchAsync = require('../utils/catchAsync');
 
 const Parishioners = require('../model/personModel');
@@ -21,6 +25,7 @@ exports.generateBdayList = catchAsync(async () => {
   await Birthdays.deleteMany();
 
   birthdays.map(async (e) => {
+    if (!e.name) e.name = '-';
     const birthdayList = await Birthdays.create({
       baptismName: e.baptismName,
       name: e.name,
@@ -46,6 +51,7 @@ exports.generateMarriageAnniversayList = catchAsync(async () => {
     const anniversaryList = await Anniversaries.create({
       groomName: e.groomName,
       brideName: e.brideName,
+      marriageDate: e.marriageDate,
     });
   });
 });
@@ -78,5 +84,27 @@ exports.clearexpiredOfferings = catchAsync(async () => {
         isActive: false,
       });
     }
+  });
+});
+
+exports.createBdayCsv = catchAsync(async () => {
+  const fields = ['baptismName', 'name', 'familyName'];
+  const bdays = await Birthdays.find();
+
+  const csv = json2csv(bdays, { fields });
+
+  fs.writeFile('./public/bdays.csv', `${csv}`, (err) => {
+    if (err) throw err;
+  });
+});
+
+exports.createAnniversaryCsv = catchAsync(async () => {
+  const fields = ['groomName', 'brideName', 'marriageDate'];
+  const anniversaries = await Anniversaries.find();
+
+  const csv = json2csv(anniversaries, { fields });
+
+  fs.writeFile('./public/anniversaries.csv', `${csv}`, (err) => {
+    if (err) throw err;
   });
 });

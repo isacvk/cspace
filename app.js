@@ -57,8 +57,19 @@ schedule.scheduleJob('1 0 * * *', () => {
 });
 
 schedule.scheduleJob('*/5 * * * *', () => {
-  console.log('Cron scheduler calling');
+  // THIS WORKS EVERY 5 MINS
+  console.log('5 min scheduler running');
   cronController.clearexpiredOfferings();
+  cronController.generateBdayList();
+  cronController.generateMarriageAnniversayList();
+  cronController.clearexpiredOfferings();
+});
+
+schedule.scheduleJob('*/7 * * * *', () => {
+  // THIS WORKS EVERY 2 MINS
+  console.log('7 min scheduler running');
+  cronController.createBdayCsv();
+  cronController.createAnniversaryCsv();
 });
 
 // app.use((req, res, next) => {

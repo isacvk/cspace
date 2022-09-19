@@ -37,14 +37,15 @@ const getUserId = async (req, next) => {
   // 2. Verification token
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
-  const user = await Users.findById(decoded.id).select(
-    'userId familyId familyName',
+  const user = await Parishioners.findById(decoded.id).select(
+    'familyId familyName',
   );
   req.user = user;
-  return user.userId;
+  return user;
 };
 
 exports.initiate = catchAsync(async (req, res, next) => {
+  console.log(req.params.id);
   const offering = await Offerings.findById(req.params.id);
 
   if (!offering) {
@@ -53,11 +54,11 @@ exports.initiate = catchAsync(async (req, res, next) => {
     );
   }
 
-  let userId;
+  let user;
   if (req.body.self) {
-    userId = await getUserId(req, next);
+    user = await getUserId(req, next);
   }
-  console.log('UID : ', userId);
+  console.log('UID : ', user);
   const payment_capture = 1;
   const { amount } = offering;
   const currency = 'INR';
@@ -79,10 +80,10 @@ exports.initiate = catchAsync(async (req, res, next) => {
       orderId: response.id,
       createdAt: new Date(),
     };
-    if (userId) {
-      sponsorData.userId = userId;
-      sponsorData.familyId = req.user.familyId;
-      sponsorData.familyName = req.user.familyName;
+    if (user) {
+      sponsorData.userId = user._id;
+      sponsorData.familyId = user.familyId;
+      sponsorData.familyName = user.familyName;
     }
     const createSponsor = await Sponsors.create(sponsorData);
     if (!createSponsor) {

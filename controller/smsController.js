@@ -11,7 +11,7 @@ exports.sendSMS = async (message, phoneNum) => {
       numbers: phoneNum,
     });
 
-    // console.log("RES : ", response);
+    console.log('RES : ', response);
     return response;
   }
 };

@@ -94,6 +94,10 @@ const personSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'Please specify ward number'],
     },
+    outsideBride: {
+      type: Boolean,
+      default: false,
+    },
     father: {
       type: mongoose.Schema.ObjectId,
       ref: 'Parishioners',

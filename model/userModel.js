@@ -37,14 +37,6 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  // parish: {
-  //   type: String,
-  //   // required: [true,. "Please specify parish"],
-  // },
-  // parishId: {
-  //   type: String,
-  //   required: [true, "Parish ID is not specified"],
-  // },
   passwordChangedAt: Date,
   otp: Number,
   otpTime: Date,

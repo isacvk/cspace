@@ -25,6 +25,8 @@ router
     authController.blockAdmin,
   );
 
+router.post('/to-lower', authController.toLower);
+
 router.post('/login', authController.login);
 router.get('/logout', authController.logout);
 

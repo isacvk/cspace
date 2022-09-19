@@ -38,6 +38,7 @@ const familySchema = new mongoose.Schema({
   ],
   photo: {
     type: String,
+    default: 'family-default.jpg',
   },
   remarks: {
     type: String,

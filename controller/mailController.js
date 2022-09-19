@@ -42,7 +42,8 @@ const transporter = mail.createTransport({
 });
 
 exports.sendMail = catchAsync(async (req, res, next) => {
-  console.log('SEND MAIL CALLED');
+  console.log('SEND MAIL CALLED : ', req.body);
+  console.log('REQ FILE : ', req.file);
   console.log('MAIL ATTACH : ', req.mailattach);
   // TODO: GET MAIL ID USING USERID, FAMILY ID/WARD AND SEND MAIL
   let mailOptions = {
@@ -54,6 +55,8 @@ exports.sendMail = catchAsync(async (req, res, next) => {
   if (req.mailattach) {
     mailOptions.attachments = [{ path: req.mailattach }];
   }
+
+  // ?FROM HERE
 
   transporter.sendMail(mailOptions, (err, info) => {
     if (err) {
@@ -79,5 +82,12 @@ exports.sendMail = catchAsync(async (req, res, next) => {
         });
       }
     }
+  });
+
+  // ?TILL HERE
+
+  res.status(200).json({
+    status: 'success',
+    message: 'mail sent from server!',
   });
 });

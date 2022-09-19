@@ -145,6 +145,36 @@ exports.signup = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.toLower = catchAsync(async (req, res, next) => {
+  // for (const key in req.body) {
+  //   if (typeof req.body[key] === 'object') {
+  //     for (const innerKey in req.body[key]) {
+  //       if (typeof req.body[key][innerKey] === 'string') {
+  //         console.log(req.body[key][innerKey].toLowerCase());
+  //       }
+  //     }
+  //   } else if (typeof req.body[key] === 'string') {
+  //     console.log(req.body[key]);
+  //   }
+
+  // }
+  const mainObjKeys = Object.keys(req.body);
+
+  // mainObjKeys.forEach((key) => {
+  //   // console.log(req.body[key]);
+  //   if (typeof req.body[key] === 'object') {
+  //     const subObjKeys = Object.keys(req.body[key]);
+  //     subObjKeys.forEach((subKey)=>{
+  //       if (typeof req.body[key][innerKey] === 'string') {
+  //           console.log(req.body[key][innerKey].toLowerCase());
+  //       }
+  //     }
+  //   }
+  // });
+
+  res.send('ok');
+});
+
 exports.login = async (req, res, next) => {
   const { loginId, password } = req.body;
 
@@ -221,7 +251,7 @@ exports.forgotPass = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    message: 'An OTP is sent to your number, valid for 15 mins.',
+    message: 'An OTP is sent to your number, valid for 5 mins.',
   });
 });
 
@@ -351,7 +381,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // Grants Access To Protected Route
   req.user = currentUser;
-
+  req.user.uid = `${req.user.userId}`.split('"')[0];
   next();
 });
 

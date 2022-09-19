@@ -60,6 +60,9 @@ exports.addFamily = catchAsync(async (req, res, next) => {
 
 exports.getFamilies = catchAsync(async (req, res, next) => {
   const queryObj = { ...req.query };
+  if (queryObj.members) {
+    queryObj.members = { $size: queryObj.members };
+  }
   const excludedFields = ['sort'];
   excludedFields.forEach((el) => delete queryObj[el]);
 
@@ -94,10 +97,8 @@ exports.getFamily = catchAsync(async (req, res, next) => {
       new AppError(`No family found with the id ${req.params.id}!`, 404),
     );
   }
-  if (req.user.role === 'User') {
-    console.log('TOTAL MEMBERS : ', getFamily.members.length);
+  if (req.user.role === 'User' || req.user.role === 'Accountant') {
     getFamily.members.forEach((member) => {
-      // console.log('MEM : ', member.privacyEnabled, member._id);
       if (member.privacyEnabled) {
         for (const key in member) {
           if (key === 'baptismName' || key === '_id' || key === 'familyId') {
@@ -128,6 +129,6 @@ exports.updateFamily = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: 'success',
     message: 'Family info succesfully modified',
-    family: updateFamily,
+    data: updateFamily,
   });
 });

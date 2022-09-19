@@ -79,6 +79,16 @@ exports.getPerson = catchAsync(async (req, res, next) => {
     return next(new AppError('Please provide person id!', 400));
   }
 
+  console.log(req.user.uid, req.params.id);
+
+  const isSameUser = req.user.uid === req.params.id;
+
+  if (!isSameUser) {
+    return next(
+      new AppError("You don't have permission to access this document!", 403),
+    );
+  }
+
   const person = await Persons.findOne({ _id: req.params.id }).lean();
 
   if (!person) {
@@ -87,12 +97,17 @@ exports.getPerson = catchAsync(async (req, res, next) => {
 
   person.relations = person.__v = undefined;
 
-  if (req.user.role === 'User' && person.privacyEnabled) {
-    for (const key in person) {
-      if (key === 'baptismName' || key === '_id' || key === 'familyId') {
-        continue;
+  if (
+    (req.user.role === 'User' && person.privacyEnabled) ||
+    (req.user.role === 'Accountant' && person.privacyEnabled)
+  ) {
+    if (!isSameUser) {
+      for (const key in person) {
+        if (key === 'baptismName' || key === '_id' || key === 'familyId') {
+          continue;
+        }
+        person[key] = 'N/A';
       }
-      person[key] = 'N/A';
     }
   }
 

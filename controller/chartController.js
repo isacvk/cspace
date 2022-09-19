@@ -31,15 +31,11 @@ exports.generateChartData = catchAsync(async (req, res, next) => {
     'age gender',
   );
 
-  //   const persons = {};
-
   const resetData = await AgeChart.updateMany({ male: 0, female: 0 });
 
   let queryObj = {};
   persons.map(async (person) => {
-    console.log('PERSON : ', person);
     if (person.age < 11) {
-      //   queryObj = { category: '0-10' };
       if (person.gender === 'M') {
         const update = await AgeChart.findOneAndUpdate(
           { category: '0-10' },
@@ -52,22 +48,18 @@ exports.generateChartData = catchAsync(async (req, res, next) => {
         );
       }
     } else if (person.age < 21) {
-      //   queryObj = { category: '0-10' };
-      console.log('11-20 Block');
       if (person.gender === 'M') {
         const update = await AgeChart.findOneAndUpdate(
           { category: '11-20' },
           { $inc: { male: 1 } },
         );
       } else {
-        console.log('11-20 female');
         const update = await AgeChart.findOneAndUpdate(
           { category: '11-20' },
           { $inc: { female: 1 } },
         );
       }
     } else if (person.age < 31) {
-      //   queryObj = { category: '0-10' };
       if (person.gender === 'M') {
         const update = await AgeChart.findOneAndUpdate(
           { category: '21-30' },
@@ -80,7 +72,6 @@ exports.generateChartData = catchAsync(async (req, res, next) => {
         );
       }
     } else if (person.age < 41) {
-      //   queryObj = { category: '0-10' };
       if (person.gender === 'M') {
         const update = await AgeChart.findOneAndUpdate(
           { category: '31-40' },
@@ -93,7 +84,6 @@ exports.generateChartData = catchAsync(async (req, res, next) => {
         );
       }
     } else if (person.age < 51) {
-      //   queryObj = { category: '0-10' };
       if (person.gender === 'M') {
         const update = await AgeChart.findOneAndUpdate(
           { category: '41-50' },
@@ -106,7 +96,6 @@ exports.generateChartData = catchAsync(async (req, res, next) => {
         );
       }
     } else if (person.age < 61) {
-      //   queryObj = { category: '0-10' };
       if (person.gender === 'M') {
         const update = await AgeChart.findOneAndUpdate(
           { category: '51-60' },
@@ -119,7 +108,6 @@ exports.generateChartData = catchAsync(async (req, res, next) => {
         );
       }
     } else if (person.age < 71) {
-      //   queryObj = { category: '0-10' };
       if (person.gender === 'M') {
         const update = await AgeChart.findOneAndUpdate(
           { category: '61-70' },
@@ -132,7 +120,6 @@ exports.generateChartData = catchAsync(async (req, res, next) => {
         );
       }
     } else if (person.age < 81) {
-      //   queryObj = { category: '0-10' };
       if (person.gender === 'M') {
         const update = await AgeChart.findOneAndUpdate(
           { category: '71-80' },
@@ -145,7 +132,6 @@ exports.generateChartData = catchAsync(async (req, res, next) => {
         );
       }
     } else if (person.age < 91) {
-      //   queryObj = { category: '0-10' };
       if (person.gender === 'M') {
         const update = await AgeChart.findOneAndUpdate(
           { category: '81-90' },
@@ -158,7 +144,6 @@ exports.generateChartData = catchAsync(async (req, res, next) => {
         );
       }
     } else if (person.age < 101) {
-      //   queryObj = { category: '0-10' };
       if (person.gender === 'M') {
         const update = await AgeChart.findOneAndUpdate(
           { category: '91-100' },
@@ -171,7 +156,6 @@ exports.generateChartData = catchAsync(async (req, res, next) => {
         );
       }
     } else if (person.age > 100) {
-      //   queryObj = { category: '0-10' };
       if (person.gender === 'M') {
         const update = await AgeChart.findOneAndUpdate(
           { category: '100 above' },

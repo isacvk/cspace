@@ -95,6 +95,7 @@ marriageRegSchema.post('save', async function (doc, next) {
       maritalStatus: 'married',
       gender: 'F',
       marriage: doc.marriageDate,
+      outsideBride: true,
     });
 
     console.log('PERSONS : ', addToParishioners);

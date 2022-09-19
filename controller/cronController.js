@@ -5,6 +5,7 @@ const MarriageReg = require('../model/marriageRegistry');
 const Birthdays = require('../model/birthdayModel');
 const Anniversaries = require('../model/marriagesModel');
 const Sponsors = require('../model/sponsorsModel');
+const Offerings = require('../model/offeringsModel');
 
 exports.generateBdayList = catchAsync(async () => {
   const now = new Date();
@@ -66,4 +67,10 @@ exports.clearSponsorTable = catchAsync(async () => {
       const removeEntry = await Sponsors.findByIdAndDelete(sponsor._id);
     }
   });
+});
+
+exports.clearexpiredOfferings = catchAsync(async () => {
+  const activeOfferings = await Offerings.find({ isActive: true });
+
+  console.log(activeOfferings);
 });

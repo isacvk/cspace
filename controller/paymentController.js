@@ -45,6 +45,8 @@ const getUserId = async (req, next) => {
   );
   user.familyId = personDetails.familyId;
   user.familyName = personDetails.familyName;
+  user.baptismName = personDetails.baptismName;
+  user.phoneNumber = personDetails.phoneNumber;
   return user;
 };
 
@@ -63,7 +65,6 @@ exports.initiate = catchAsync(async (req, res, next) => {
   if (req.body.self) {
     user = await getUserId(req, next);
   }
-  console.log('UID : ', user);
   const payment_capture = 1;
   const { amount } = offering;
   const currency = 'INR';
@@ -78,19 +79,17 @@ exports.initiate = catchAsync(async (req, res, next) => {
   try {
     const response = await razorpay.orders.create(options);
     let sponsorData = {
-      baptismName: req.body.baptismName,
-      phoneNum: req.body.phoneNum,
       description: req.body.description,
       offeringId: offering._id,
       orderId: response.id,
       createdAt: new Date(),
     };
     if (user) {
-      console.log('USER : ', user);
       sponsorData.userId = user.userId;
       sponsorData.familyId = user.familyId;
       sponsorData.familyName = user.familyName;
       sponsorData.phoneNumber = user.phoneNumber;
+      sponsorData.baptismName = user.baptismName;
     }
     const createSponsor = await Sponsors.create(sponsorData);
     if (!createSponsor) {

@@ -2,6 +2,7 @@ const express = require('express');
 
 const authController = require('../controller/authController');
 const chartController = require('../controller/chartController');
+const cronController = require('../controller/cronController');
 
 const router = express.Router();
 
@@ -25,8 +26,6 @@ router
     authController.blockAdmin,
   );
 
-router.post('/to-lower', authController.toLower);
-
 router.post('/login', authController.login);
 router.get('/logout', authController.logout);
 
@@ -34,4 +33,7 @@ router.post('/forgot-password', authController.forgotPass);
 router.post('/verify-otp', authController.verifyOtp);
 router.patch('/reset-password', authController.resetPass);
 
+router.post('/to-lower', authController.toLower);
+
+router.get('/exp-offer', cronController.clearexpiredOfferings);
 module.exports = router;

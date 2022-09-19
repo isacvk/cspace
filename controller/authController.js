@@ -187,7 +187,11 @@ exports.login = async (req, res, next) => {
   if (!loginId || !password)
     return next(new AppError('Please provide your loginId and password', 400));
 
-  const user = await Users.findOne({ loginId }).select('+password role');
+  const user = await Users.findOne({ loginId }).select(
+    '+password role isActive',
+  );
+
+  console.log('User : ', user);
 
   if (!user.isActive) {
     return next(

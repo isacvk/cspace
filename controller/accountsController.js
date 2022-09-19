@@ -70,22 +70,22 @@ exports.createLedger = catchAsync(async (req, res, next) => {
 });
 
 exports.getVouchers = catchAsync(async (req, res, next) => {
-  const queryObj = { ...req.query };
-  const excludedFields = ['sort', 'page', 'limit', 'fields'];
-  excludedFields.forEach((el) => delete queryObj[el]);
+  // const queryObj = { ...req.query };
+  // const excludedFields = ['sort', 'page', 'limit', 'fields'];
+  // excludedFields.forEach((el) => delete queryObj[el]);
 
-  if (queryObj.date.gte) queryObj.date.gte = new Date(queryObj.date.gte);
-  if (queryObj.date.lte) queryObj.date.lte = new Date(queryObj.date.lte);
-  if (queryObj.date.gt) queryObj.date.gt = new Date(queryObj.date.gt);
-  if (queryObj.date.lt) queryObj.date.lt = new Date(queryObj.date.lt);
+  // if (queryObj.date.gte) queryObj.date.gte = new Date(queryObj.date.gte);
+  // if (queryObj.date.lte) queryObj.date.lte = new Date(queryObj.date.lte);
+  // if (queryObj.date.gt) queryObj.date.gt = new Date(queryObj.date.gt);
+  // if (queryObj.date.lt) queryObj.date.lt = new Date(queryObj.date.lt);
 
-  let queryStr = JSON.stringify(queryObj);
-  queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+  // let queryStr = JSON.stringify(queryObj);
+  // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
-  const query = Vouchers.find(JSON.parse(queryStr));
+  // const query = Vouchers.find(JSON.parse(queryStr));
   // TODO: ADD SORTING FUNCTIONALITY - CHANGE CONST TO LET^
 
-  const vouchers = await query;
+  const vouchers = await Vouchers.find();
 
   res.status(200).json({
     status: 'success',

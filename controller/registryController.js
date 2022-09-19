@@ -52,20 +52,20 @@ const isLegalAge = (dob, gender) => {
 exports.getBaptismRegs = catchAsync(async (req, res, next) => {
   const queryObj = { ...req.query };
 
-  const excludedFields = ['sort'];
-  excludedFields.forEach((el) => delete queryObj[el]);
+  // const excludedFields = ['sort'];
+  // excludedFields.forEach((el) => delete queryObj[el]);
 
-  let queryStr = JSON.stringify(queryObj);
-  queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+  const queryStr = JSON.stringify(queryObj);
+  // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
-  let query = BaptismReg.find(JSON.parse(queryStr));
+  const query = BaptismReg.find(JSON.parse(queryStr));
 
-  if (req.query.sort) {
-    const sortBy = req.query.sort.split(',').join(' ');
-    query = query.sort(sortBy);
-  } else {
-    query = query.sort('familyName');
-  }
+  // if (req.query.sort) {
+  //   const sortBy = req.query.sort.split(',').join(' ');
+  //   query = query.sort(sortBy);
+  // } else {
+  //   query = query.sort('familyName');
+  // }
   const registries = await query;
 
   res.status(200).json({

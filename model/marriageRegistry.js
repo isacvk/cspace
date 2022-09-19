@@ -140,24 +140,46 @@ marriageRegSchema.post('save', async function (doc, next) {
 
 marriageRegSchema.post('save', async function (doc, next) {
   if (doc.brideId && doc.groomId) {
+    console.log('They are from same family');
     //***CHECK IF THEY ARE SAME FAMILY, IF TRUE DON'T DO ANYTHING
-    const groomFamily = await Parishioners.findById(doc.groomId).select(
-      'familyId',
-    );
+
+    // Remove bride from bride's family
+
     const brideFamily = await Parishioners.findById(doc.brideId).select(
       'familyId',
     );
-    // !HANDLE THIS
-    if (groomFamily.familyId !== brideFamily.familyId) {
-      //***IF NOT THEN REMOVE BRIDE FROM BRIDE'S FAM AND ADD TO GROOM'S FAM
-      const pullBrideId = await Family.findByIdAndUpdate(brideFamily.familyId, {
-        $pull: {
+    console.log('Brides family Id : ', brideFamily.familyId);
+
+    const pullBrideId = await Family.findByIdAndUpdate(brideFamily.familyId, {
+      $pull: {
+        members: {
+          _id: brideFamily.familyId,
+        },
+      },
+    });
+
+    // Selecting groom family id
+    const groomFamily = await Parishioners.findById(doc.groomId).select(
+      'familyId familyName',
+    );
+
+    console.log('Groom family Id : ', groomFamily.familyId);
+
+    const updateBride = await Parishioners.findByIdAndUpdate(doc.brideId, {
+      familyId: groomFamily.familyId,
+      familyName: groomFamily.familyName,
+    });
+
+    const addToGroomFamily = await Parishioners.findByIdAndUpdate(
+      groomFamily.familyId,
+      {
+        $push: {
           members: {
-            _id: brideFamily.familyId,
+            _id: doc.brideId,
           },
         },
-      });
-    }
+      },
+    );
   }
   next();
 });

@@ -102,8 +102,8 @@ exports.getFamily = catchAsync(async (req, res, next) => {
     getFamily.members.forEach((member) => {
       if (member.privacyEnabled) {
         for (const key in member) {
-          console.log('MEM : ', member._id);
-          if (req.user.uid !== member._id) {
+          const memId = `${member._id}`.split('"')[0];
+          if (req.user.uid !== memId) {
             if (key === 'baptismName' || key === '_id' || key === 'familyId') {
               continue;
             }

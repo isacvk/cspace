@@ -153,18 +153,17 @@ exports.signup = catchAsync(async (req, res, next) => {
 });
 
 exports.toLower = catchAsync(async (req, res, next) => {
-  // for (const key in req.body) {
-  //   if (typeof req.body[key] === 'object') {
-  //     for (const innerKey in req.body[key]) {
-  //       if (typeof req.body[key][innerKey] === 'string') {
-  //         console.log(req.body[key][innerKey].toLowerCase());
-  //       }
-  //     }
-  //   } else if (typeof req.body[key] === 'string') {
-  //     console.log(req.body[key]);
-  //   }
-
-  // }
+  for (const key in req.body) {
+    if (typeof req.body[key] === 'object') {
+      for (const innerKey in req.body[key]) {
+        if (typeof req.body[key][innerKey] === 'string') {
+          console.log(req.body[key][innerKey].toLowerCase());
+        }
+      }
+    } else if (typeof req.body[key] === 'string') {
+      console.log(req.body[key]);
+    }
+  }
   const mainObjKeys = Object.keys(req.body);
 
   // mainObjKeys.forEach((key) => {
@@ -459,5 +458,15 @@ exports.blockAdmin = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: 'success',
     message: 'Admin is now blocked',
+  });
+});
+exports.enablePrivacy = catchAsync(async (req, res, next) => {
+  const privacy = await Parishioners.findByIdAndUpdate(req.user.userId, {
+    privacyEnabled: true,
+  });
+
+  res.status(201).json({
+    status: 'success',
+    message: 'Privacy enabled',
   });
 });

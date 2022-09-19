@@ -33,6 +33,13 @@ router.post('/forgot-password', authController.forgotPass);
 router.post('/verify-otp', authController.verifyOtp);
 router.patch('/reset-password', authController.resetPass);
 
+router.get(
+  '/enable-privacy',
+  authController.protect,
+  authController.restrictTo('User', 'Accountant'),
+  authController.enablePrivacy,
+);
+
 router.post('/to-lower', authController.toLower);
 
 // TESTING ROUTES FOR DEVELOPER ONLY

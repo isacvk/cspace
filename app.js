@@ -74,20 +74,18 @@ schedule.scheduleJob('*/7 * * * *', () => {
 });
 
 // app.use((req, res, next) => {
-//   if (req.method === 'POST') {
-//     console.log(req.body);
-
-//     req.body.map(function (a) {
-//       a.key2 = a.key2.toLowerCase();
-//     });
-
-//     console.log(req.body);
-//     // req.on('data', function (chunk) {
-//     //   var dataString = chunk.toString();
-//     //   dataUpper = dataString.toUpperCase();
-//     //   console.log('received body data', dataUpper);
-//     // });
+//   for (const key in req.body) {
+//     if (typeof req.body[key] === 'object') {
+//       for (const innerKey in req.body[key]) {
+//         if (typeof req.body[key][innerKey] === 'string') {
+//           req.body[key][innerKey] = req.body[key][innerKey].toLowerCase();
+//         }
+//       }
+//     } else if (typeof req.body[key] === 'string') {
+//       req.body[key] = req.body[key].toLowerCase();
+//     }
 //   }
+//   console.log(req.body);
 //   next();
 // });
 

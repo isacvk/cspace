@@ -178,6 +178,8 @@ exports.toLower = catchAsync(async (req, res, next) => {
   //   }
   // });
 
+  console.log(req.body.password.length);
+
   res.send('ok');
 });
 

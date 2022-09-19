@@ -28,7 +28,7 @@ exports.createOffering = catchAsync(async (req, res, next) => {
 });
 
 exports.getOfferings = catchAsync(async (req, res, next) => {
-  const offerings = await Offerings.find({ status: 'active' });
+  const offerings = await Offerings.find({ isActive: true });
 
   if (offerings.length === 0) {
     return next(new AppError('No offerings available at the moment!', 200));

@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.ObjectId,
     ref: 'Parishioners',
+    unique: true,
   },
   loginId: {
     type: String,

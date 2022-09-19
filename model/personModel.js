@@ -89,6 +89,7 @@ const personSchema = new mongoose.Schema(
     },
     loginAccess: {
       type: Boolean,
+      default: false,
     },
     wardNo: {
       type: Number,

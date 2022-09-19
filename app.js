@@ -48,10 +48,17 @@ app.use((req, res, next) => {
   next();
 });
 
-schedule.scheduleJob('0 0 * * *', () => {
+schedule.scheduleJob('1 0 * * *', () => {
+  // THIS WORKS AT 12:01AM EVERYDAY
   cronController.generateBdayList();
   cronController.generateMarriageAnniversayList();
   cronController.clearSponsorTable();
+  cronController.clearexpiredOfferings();
+});
+
+schedule.scheduleJob('*/5 * * * *', () => {
+  console.log('Cron scheduler calling');
+  cronController.clearexpiredOfferings();
 });
 
 // app.use((req, res, next) => {

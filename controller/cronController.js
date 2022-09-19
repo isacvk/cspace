@@ -70,7 +70,13 @@ exports.clearSponsorTable = catchAsync(async () => {
 });
 
 exports.clearexpiredOfferings = catchAsync(async () => {
-  const activeOfferings = await Offerings.find({ isActive: true });
+  const activeOfferings = await Offerings.find({ isActive: true }).lean();
 
-  console.log(activeOfferings);
+  activeOfferings.map(async (offering) => {
+    if (new Date(offering.festDate).getTime() < new Date().getTime()) {
+      const updateOffer = await Offerings.findByIdAndUpdate(offering._id, {
+        isActive: false,
+      });
+    }
+  });
 });

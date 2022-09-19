@@ -99,7 +99,6 @@ deathRegSchema.post('save', async (doc, next) => {
     );
     const wifeStatus = await Parishioners.findByIdAndUpdate(doc.wife, {
       maritalStatus: 'single',
-      wife: '',
     });
   }
 
@@ -118,7 +117,6 @@ deathRegSchema.post('save', async (doc, next) => {
     );
     const husbandStatus = await Parishioners.findByIdAndUpdate(doc.husband, {
       maritalStatus: 'single',
-      husband: '',
     });
   }
 

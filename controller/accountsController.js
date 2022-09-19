@@ -64,6 +64,7 @@ exports.createLedger = catchAsync(async (req, res, next) => {
   }
 
   req.body.groupName = group.name;
+  req.body.type = group.type;
 
   const createLedger = await Ledgers.create(req.body);
 

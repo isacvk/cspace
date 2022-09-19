@@ -98,13 +98,17 @@ exports.getFamily = catchAsync(async (req, res, next) => {
     );
   }
   if (req.user.role === 'User' || req.user.role === 'Accountant') {
+    console.log('USER : ', req.user.uid);
     getFamily.members.forEach((member) => {
       if (member.privacyEnabled) {
         for (const key in member) {
-          if (key === 'baptismName' || key === '_id' || key === 'familyId') {
-            continue;
+          console.log('MEM : ', member._id);
+          if (req.user.uid !== member._id) {
+            if (key === 'baptismName' || key === '_id' || key === 'familyId') {
+              continue;
+            }
+            member[key] = 'N/A';
           }
-          member[key] = 'N/A';
         }
       }
       //     console.log('MEM : ', member.privacyEnabled, member.id);

@@ -12,10 +12,10 @@ const AppError = require('../utils/appError');
 exports.createOffering = catchAsync(async (req, res, next) => {
   //   console.log('Req : ', req.body);
 
-  req.createdAt = new Date();
-  req.status = 'active';
+  req.body.createdAt = new Date();
 
   const createOffering = await Offerings.create(req.body);
+
   if (!createOffering) {
     return next(
       new AppError('Something went wrong when creating offering!', 500),

@@ -83,7 +83,7 @@ exports.getPerson = catchAsync(async (req, res, next) => {
 
   const isSameUser = req.user.uid === req.params.id;
 
-  if (!isSameUser) {
+  if (req.user.role === 'User' && !isSameUser) {
     return next(
       new AppError("You don't have permission to access this document!", 403),
     );

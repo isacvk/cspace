@@ -1,18 +1,41 @@
 const express = require('express');
 
 const offeringsController = require('../controller/offeringsController');
+const authController = require('../controller/authController');
 
 const router = express.Router();
 
 router
   .route('/')
   .get(offeringsController.getOfferings)
-  .post(offeringsController.createOffering);
+  .post(
+    authController.protect,
+    authController.restrictTo('Admin'),
+    offeringsController.createOffering,
+  );
 
-router.route('/:id').get(offeringsController.getOffering);
-// .post(paymentController.callback);
-router.route('/:id/sponsors').get(offeringsController.getSponsors);
+router
+  .route('/:id')
+  .get(
+    authController.protect,
+    authController.restrictTo('Admin', 'User', 'Accountant'),
+    offeringsController.getOffering,
+  );
 
-router.route('/generate-csv/:id').get(offeringsController.generateCsv);
+router
+  .route('/:id/sponsors')
+  .get(
+    authController.protect,
+    authController.restrictTo('Admin', 'User', 'Accountant'),
+    offeringsController.getSponsors,
+  );
+
+router
+  .route('/generate-csv/:id')
+  .get(
+    authController.protect,
+    authController.restrictTo('Admin'),
+    offeringsController.generateCsv,
+  );
 
 module.exports = router;

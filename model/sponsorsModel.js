@@ -4,6 +4,7 @@ const sponsorSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.ObjectId,
     ref: 'Parishioners',
+    required: [true, 'User Id is not specified!'],
   },
   offeringId: {
     type: mongoose.Schema.ObjectId,
@@ -17,12 +18,13 @@ const sponsorSchema = new mongoose.Schema({
   familyId: {
     type: mongoose.Schema.ObjectId,
     ref: 'Families',
+    required: [true, 'Family Id is not specified!'],
   },
   familyName: {
     type: String,
     required: [true, 'Family name is not specified!'],
   },
-  phoneNum: {
+  phoneNumber: {
     type: Number,
     required: [true, 'Phone number is not specified!'],
   },

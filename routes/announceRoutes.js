@@ -11,10 +11,14 @@ router
   .route('/')
   .get(
     authController.protect,
-    authController.restrictTo('Admin', 'Users', 'Accountant'),
+    authController.restrictTo('Admin', 'User', 'Accountant'),
     announceController.getAnnouncementUsers,
   )
-  .post(announceController.announce);
+  .post(
+    authController.protect,
+    authController.restrictTo('Admin'),
+    announceController.announce,
+  );
 router
   .route('/:id')
   .patch(

@@ -1,14 +1,14 @@
 const { promisify } = require('util');
 
-const Users = require('./../model/userModel');
-const Parishioners = require('./../model/personModel');
-
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
-const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/appError');
-const sms = require('./../controller/smsController');
+const Users = require('../model/userModel');
+const Parishioners = require('../model/personModel');
+
+const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
+const sms = require('./smsController');
 
 const createSendToken = (user, statusCode, res) => {
   user.password = undefined;
@@ -83,6 +83,10 @@ const randomId = async () => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
+  if (!req.body.userId) {
+    return next(new AppError('Please provide user Id', 400));
+  }
+
   const user = await Parishioners.findById(req.body.userId);
 
   if (!user) {
@@ -90,6 +94,8 @@ exports.signup = catchAsync(async (req, res, next) => {
       new AppError(`No user found with Id ${req.body.userId} !`, 404),
     );
   }
+
+  req.body.familyId = user.familyId;
   // TEMP CODE
   let counter = 0;
   const loginId = [
@@ -181,7 +187,7 @@ exports.login = async (req, res, next) => {
   if (!loginId || !password)
     return next(new AppError('Please provide your loginId and password', 400));
 
-  const user = await Users.findOne({ loginId }).select('+password');
+  const user = await Users.findOne({ loginId }).select('+password role');
 
   if (!user.isActive) {
     return next(

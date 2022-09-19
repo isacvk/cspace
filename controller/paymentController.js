@@ -13,6 +13,8 @@ const Parishioners = require('../model/personModel');
 const Offerings = require('../model/offeringsModel');
 const Sponsors = require('../model/sponsorsModel');
 
+const sms = require('./smsController');
+
 const razorpay = new Rpay({
   key_id: `${process.env.RPAY_ID}`,
   key_secret: `${process.env.RPAY_SECRET}`,
@@ -37,15 +39,18 @@ const getUserId = async (req, next) => {
   // 2. Verification token
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
-  const user = await Parishioners.findById(decoded.id).select(
-    'familyId familyName',
+  const user = await Users.findById(decoded.id).select('userId');
+  const personDetails = await Parishioners.findById(user.userId).select(
+    'familyId familyName baptismName phoneNumber',
   );
-  req.user = user;
+  user.familyId = personDetails.familyId;
+  user.familyName = personDetails.familyName;
   return user;
 };
 
 exports.initiate = catchAsync(async (req, res, next) => {
-  console.log(req.params.id);
+  console.log('PARAMS : ', req.params.id);
+  console.log('BODY : ', req.body.id);
   const offering = await Offerings.findById(req.params.id);
 
   if (!offering) {
@@ -81,9 +86,11 @@ exports.initiate = catchAsync(async (req, res, next) => {
       createdAt: new Date(),
     };
     if (user) {
-      sponsorData.userId = user._id;
+      console.log('USER : ', user);
+      sponsorData.userId = user.userId;
       sponsorData.familyId = user.familyId;
       sponsorData.familyName = user.familyName;
+      sponsorData.phoneNumber = user.phoneNumber;
     }
     const createSponsor = await Sponsors.create(sponsorData);
     if (!createSponsor) {
@@ -131,7 +138,16 @@ exports.callback = catchAsync(async (req, res, next) => {
         paidAt: new Date(),
       },
     );
+
     // TODO: SEND CONFIRMATION MESSAGE
+    if (updatePaymentStatus) {
+      const message = `Your payment has been received.
+        `;
+      let phoneNum = [];
+      phoneNum[0] = updatePaymentStatus.phoneNumber;
+
+      const sendMessage = await sms.sendSMS(message, phoneNum);
+    }
   } else {
     console.log('Some MF is messing!');
   }

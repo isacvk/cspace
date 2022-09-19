@@ -18,6 +18,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please enter the name'],
   },
+  familyId: {
+    type: mongoose.Schema.ObjectId,
+    required: [true, 'Family Id is not specified'],
+    ref: 'Familiy',
+  },
   role: {
     type: String,
     required: [true, 'User role not specified'],

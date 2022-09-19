@@ -34,11 +34,17 @@ exports.verifySign = catchAsync(async (req, res, next) => {
         ),
       );
     }
-    response.baptismData = data;
     const issueDate = new Date(decoded.iat * 1000).toLocaleString().split(',');
-    response.message = `This signature was issued on ${issueDate[0]} at ${issueDate[1]}. 
-    It was issued with baptism certificate of ${data.baptismName} ${data.familyName}, 
-    here are the details!`;
+    response.message = `This signature was issued on ${issueDate[0]} at ${
+      issueDate[1]
+    }. It was issued with baptism certificate of ${data.baptismName} ${
+      data.familyName
+    }. The baptism was happend on ${
+      data.doBaptism.toLocaleString().split(',')[0]
+    }. The baptism minister was ${data.minister} and the parish priest was ${
+      data.parishPriest
+    }.
+    `;
   }
 
   if (decoded.reg === 'marriage') {
@@ -53,12 +59,16 @@ exports.verifySign = catchAsync(async (req, res, next) => {
       );
     }
 
-    response.marriageDetails = data;
-
     const issueDate = new Date(decoded.iat * 1000).toLocaleString().split(',');
-    response.message = `This signature was issued on ${issueDate[0]} at ${issueDate[1]}. 
-    It was issued with marriage certificate of ${data.groomName} and ${data.brideName}, 
-    here are the details!`;
+    response.message = `This signature was issued on ${issueDate[0]} at ${
+      issueDate[1]
+    }. It was issued with marriage certificate of ${data.groomName} and ${
+      data.brideName
+    }. The marriage was happened on ${
+      data.marriageDate.toLocaleString().split(',')[0]
+    } and the celebrant was ${data.celebrant}. Priest at the time was ${
+      data.parishPriest
+    }.`;
 
     if (data.status === 'invalid') {
       response.note = 'This marriage is not valid anymore!';

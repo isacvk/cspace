@@ -141,6 +141,11 @@ exports.marriagePdfInfo = catchAsync(async (req, res, next) => {
 
   marriageData.signature = signToken(credentials);
 
+  marriageData.signature = signToken(credentials).replace(
+    /\b(.)\b/g,
+    (match) => '. ',
+  );
+
   res.status(200).json({
     status: 'success',
     message: 'marriage registry informations',

@@ -14,15 +14,15 @@ router.get(
 
 router.get(
   '/marriage/:id',
-  //   authController.protect,
-  //   authController.restrictTo("Admin"),
+  authController.protect,
+  authController.restrictTo('Admin'),
   pdfController.marriagePdfInfo,
 );
 
 router.get(
   '/baptism/:id',
-  //   authController.protect,
-  //   authController.restrictTo("Admin"),
+  authController.protect,
+  authController.restrictTo('Admin'),
   pdfController.baptismPdfInfo,
 );
 

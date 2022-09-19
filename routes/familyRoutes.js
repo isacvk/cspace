@@ -27,7 +27,7 @@ router
   )
   .patch(
     authController.protect,
-    authController.restrictTo('User'),
+    authController.restrictTo('User', 'Accountant'),
     familyController.uploadFamilyPhoto,
     familyController.resizeFamilyPhoto,
     familyController.updateFamily,

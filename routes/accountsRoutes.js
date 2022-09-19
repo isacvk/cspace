@@ -8,18 +8,42 @@ const router = express.Router();
 router.route('/').post(accountsController.createAccount);
 router
   .route('/groups')
-  .get(accountsController.getGroups)
-  .post(accountsController.createGroup);
+  .get(
+    authController.protect,
+    authController.restrictTo('Admin', 'Accountant'),
+    accountsController.getGroups,
+  )
+  .post(
+    authController.protect,
+    authController.restrictTo('Accountant'),
+    accountsController.createGroup,
+  );
 
 router
   .route('/ledgers')
-  .get(accountsController.getLedgers)
-  .post(accountsController.createLedger);
+  .get(
+    authController.protect,
+    authController.restrictTo('Admin', 'Accountant'),
+    accountsController.getLedgers,
+  )
+  .post(
+    authController.protect,
+    authController.restrictTo('Accountant'),
+    accountsController.createLedger,
+  );
 
 router
   .route('/vouchers')
-  .get(accountsController.getVouchers)
-  .post(accountsController.createVoucher);
+  .get(
+    authController.protect,
+    authController.restrictTo('Admin', 'Accountant'),
+    accountsController.getVouchers,
+  )
+  .post(
+    authController.protect,
+    authController.restrictTo('Accountant'),
+    accountsController.createVoucher,
+  );
 
 // router
 //   .route("/:id")

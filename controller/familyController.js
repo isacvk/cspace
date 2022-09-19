@@ -50,6 +50,12 @@ exports.resizeFamilyPhoto = (req, res, next) => {
 };
 
 exports.addFamily = catchAsync(async (req, res, next) => {
+  if (req.body.wardNum < 1 || req.body.wardNum > 10) {
+    return next(
+      new AppError('Please provide ward number between 1 and 10', 400),
+    );
+  }
+
   const addFamily = await Family.create(req.body);
 
   res.status(201).json({

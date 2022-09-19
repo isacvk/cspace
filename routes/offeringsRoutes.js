@@ -7,7 +7,11 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(offeringsController.getOfferings)
+  .get(
+    authController.protect,
+    authController.restrictTo('Admin', 'Accountant', 'User'),
+    offeringsController.getOfferings,
+  )
   .post(
     authController.protect,
     authController.restrictTo('Admin'),

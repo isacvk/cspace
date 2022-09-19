@@ -57,12 +57,6 @@ exports.createLedger = catchAsync(async (req, res, next) => {
     );
   }
 
-  if (group.type !== req.body.type) {
-    return next(
-      new AppError("The types between group and ledger doesn't match!", 400),
-    );
-  }
-
   req.body.groupName = group.name;
   req.body.type = group.type;
 
@@ -95,6 +89,7 @@ exports.getVouchers = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
+    results: vouchers.length,
     data: vouchers,
   });
 });

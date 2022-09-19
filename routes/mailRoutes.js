@@ -7,8 +7,8 @@ const router = express.Router();
 
 router.post(
   '/',
-  //   authController.protect,
-  //   authController.restrictTo("Admin"),
+  authController.protect,
+  authController.restrictTo('Admin'),
   mailController.uploadAttachment,
   mailController.sendMail,
 );

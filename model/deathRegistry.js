@@ -84,49 +84,53 @@ deathRegSchema.post('save', async (doc, next) => {
     isActive: false,
   });
 
-  if (updateStats.gender === 'M' && updateStats.wife) {
+  const user = await Parishioners.findById(doc.userId);
+
+  if (user.gender === 'M' && user.wife) {
     const engagementStatus = await EngagementReg.findOneAndUpdate(
-      { brideId: updateStats.wife },
+      { brideId: user.wife, status: 'valid' },
       {
         status: 'invalid',
       },
     );
     const marriageStatus = await MarriageReg.findOneAndUpdate(
-      { brideId: updateStats.wife },
+      { brideId: user.wife, status: 'valid' },
       {
         status: 'invalid',
       },
     );
-    const wifeStatus = await Parishioners.findByIdAndUpdate(updateStats.wife, {
+    const wifeStatus = await Parishioners.findByIdAndUpdate(user.wife, {
       maritalStatus: 'single',
     });
   }
 
-  if (updateStats.gender === 'F' && updateStats.husband) {
-    const husbandStatus = await Parishioners.findByIdAndUpdate(doc.husband, {
+  if (updateStats.gender === 'F' && user.husband) {
+    const husbandStatus = await Parishioners.findByIdAndUpdate(user.husband, {
       maritalStatus: 'single',
     });
     const engagementStatus = await EngagementReg.findOneAndUpdate(
-      { brideId: updateStats.wife },
+      { brideId: user.wife, status: 'valid' },
       {
         status: 'invalid',
       },
     );
     const marriageStatus = await MarriageReg.findOneAndUpdate(
-      { brideId: updateStats.wife },
+      { brideId: user.wife, status: 'valid' },
       {
         status: 'invalid',
       },
     );
   }
-
+  if (user.loginAccess) {
+    const userLogin = await Users.findOneAndUpdate(
+      { userId: user._id },
+      {
+        isActive: false,
+      },
+    );
+  }
   next();
-});
 
-deathRegSchema.post('save', async (doc, next) => {
-  const updateUserStatus = await Users.findByIdAndUpdate(doc.userId, {
-    isActive: false,
-  });
   next();
 });
 

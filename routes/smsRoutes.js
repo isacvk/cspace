@@ -7,22 +7,22 @@ const router = express.Router();
 
 router.post(
   '/person/:id',
-  //   authController.protect,
-  //   authController.restrictTo("Admin"),
+  authController.protect,
+  authController.restrictTo('Admin'),
   messageController.person,
 );
 
 router.post(
   '/family/:id',
-  //   authController.protect,
-  //   authController.restrictTo("Admin"),
+  authController.protect,
+  authController.restrictTo('Admin'),
   messageController.family,
 );
 
 router.post(
   '/',
-  //   authController.protect,
-  //   authController.restrictTo("Admin"),
+  authController.protect,
+  authController.restrictTo('Admin'),
   messageController.sendMessage,
 );
 

@@ -9,7 +9,7 @@ router
   .route('/')
   .get(
     authController.protect,
-    authController.restrictTo('Admin', 'Users', 'Accountant'),
+    authController.restrictTo('Admin', 'User', 'Accountant'),
     personController.getPersons,
   );
 
@@ -33,7 +33,7 @@ router
   .route('/changes')
   .post(
     authController.protect,
-    authController.restrictTo('Users'),
+    authController.restrictTo('User'),
     personController.proposeChange,
   );
 

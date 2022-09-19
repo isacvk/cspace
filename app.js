@@ -59,6 +59,7 @@ schedule.scheduleJob('1 0 * * *', () => {
 schedule.scheduleJob('*/5 * * * *', () => {
   // THIS WORKS EVERY 5 MINS
   console.log('5 min scheduler running');
+
   cronController.clearexpiredOfferings();
   cronController.generateBdayList();
   cronController.generateMarriageAnniversayList();

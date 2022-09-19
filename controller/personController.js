@@ -5,6 +5,28 @@ const Birthdays = require('../model/birthdayModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
+exports.newMember = catchAsync(async (req, res, next) => {
+  const family = await Family.findById(req.body.familyId);
+
+  if (!family) {
+    return next(
+      new AppError(`No family found with Id ${req.body.familyId}`, 404),
+    );
+  }
+
+  req.body.familyId = family.id;
+  req.body.wardNo = family.wardNum;
+  req.body.familyName = family.familyName;
+
+  const addPerson = await Persons.create(req.body);
+
+  res.status(201).json({
+    status: 'success',
+    message: 'member added successfully',
+    data: addPerson,
+  });
+});
+
 exports.newPerson = catchAsync(async (req, res, next) => {
   // TODO: ADD FAMILY NAME IN PARISHIONERS MODEL
   const family = await Family.findById(req.body.familyId);
@@ -24,9 +46,7 @@ exports.newPerson = catchAsync(async (req, res, next) => {
     personDetails.wardNo = family.wardNum;
     personDetails.familyName = family.familyName;
 
-    const addPerson = await Persons.create(personDetails).catch((e) => {
-      console.log('ERR : ', e);
-    });
+    const addPerson = await Persons.create(personDetails);
 
     flag = !addPerson ? 1 : 0;
 

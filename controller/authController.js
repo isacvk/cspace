@@ -147,7 +147,8 @@ exports.signup = catchAsync(async (req, res, next) => {
   }
 
   res.status(201).json({
-    status: 'sucess',
+    status: 'success',
+    message: 'Login id and password is sent to phone number',
   });
 });
 
@@ -193,7 +194,9 @@ exports.login = async (req, res, next) => {
     '+password role isActive',
   );
 
-  console.log('User : ', user);
+  if (!user) {
+    return next(new AppError('No user found with that Id!', 404));
+  }
 
   if (!user.isActive) {
     return next(
@@ -204,7 +207,7 @@ exports.login = async (req, res, next) => {
     );
   }
 
-  if (!user || !(await user.correctPassword(password, user.password))) {
+  if (!(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect loginId or password', 401));
   }
 

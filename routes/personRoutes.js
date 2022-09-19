@@ -22,6 +22,14 @@ router
   );
 
 router
+  .route('/add-member')
+  .post(
+    authController.protect,
+    authController.restrictTo('Admin'),
+    personController.newMember,
+  );
+
+router
   .route('/changes')
   .post(
     authController.protect,

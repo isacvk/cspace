@@ -86,38 +86,38 @@ deathRegSchema.post('save', async (doc, next) => {
 
   if (updateStats.gender === 'M' && updateStats.wife) {
     const engagementStatus = await EngagementReg.findOneAndUpdate(
-      { brideId: doc.wife },
+      { brideId: updateStats.wife },
       {
         status: 'invalid',
       },
     );
     const marriageStatus = await MarriageReg.findOneAndUpdate(
-      { brideId: doc.wife },
+      { brideId: updateStats.wife },
       {
         status: 'invalid',
       },
     );
-    const wifeStatus = await Parishioners.findByIdAndUpdate(doc.wife, {
+    const wifeStatus = await Parishioners.findByIdAndUpdate(updateStats.wife, {
       maritalStatus: 'single',
     });
   }
 
   if (updateStats.gender === 'F' && updateStats.husband) {
+    const husbandStatus = await Parishioners.findByIdAndUpdate(doc.husband, {
+      maritalStatus: 'single',
+    });
     const engagementStatus = await EngagementReg.findOneAndUpdate(
-      { brideId: doc.wife },
+      { brideId: updateStats.wife },
       {
         status: 'invalid',
       },
     );
     const marriageStatus = await MarriageReg.findOneAndUpdate(
-      { brideId: doc.wife },
+      { brideId: updateStats.wife },
       {
         status: 'invalid',
       },
     );
-    const husbandStatus = await Parishioners.findByIdAndUpdate(doc.husband, {
-      maritalStatus: 'single',
-    });
   }
 
   next();

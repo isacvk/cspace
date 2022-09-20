@@ -38,6 +38,21 @@ router
     authController.protect,
     authController.restrictTo('Admin', 'Accountant'),
     accountsController.getVouchers,
+  );
+router
+  .route('/generate-csv')
+  .get(
+    authController.protect,
+    authController.restrictTo('Admin', 'Accountant'),
+    accountsController.createCSV,
+  );
+
+router
+  .route('/vouchers/:id')
+  .get(
+    authController.protect,
+    authController.restrictTo('Admin', 'Accountant'),
+    accountsController.getVoucherUnderLedger,
   )
   .post(
     authController.protect,

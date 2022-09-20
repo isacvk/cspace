@@ -150,13 +150,16 @@ marriageRegSchema.post('save', async function (doc, next) {
     );
     console.log('Brides family Id : ', brideFamily.familyId);
 
-    const pullBrideId = await Family.findByIdAndUpdate(brideFamily.familyId, {
-      $pull: {
-        members: {
-          _id: brideFamily.familyId,
+    const pullBrideId = await Family.findOneAndUpdate(
+      { _id: brideFamily.familyId },
+      {
+        $pull: {
+          members: {
+            _id: brideFamily.familyId,
+          },
         },
       },
-    });
+    );
 
     // Selecting groom family id
     const groomFamily = await Parishioners.findById(doc.groomId).select(
@@ -170,8 +173,10 @@ marriageRegSchema.post('save', async function (doc, next) {
       familyName: groomFamily.familyName,
     });
 
-    const addToGroomFamily = await Parishioners.findByIdAndUpdate(
-      groomFamily.familyId,
+    const addToGroomFamily = await Parishioners.findOneAndUpdate(
+      {
+        _id: groomFamily.familyId,
+      },
       {
         $push: {
           members: {

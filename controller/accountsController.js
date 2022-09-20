@@ -1,3 +1,7 @@
+const fs = require('fs');
+
+const json2csv = require('json2csv').parse;
+
 const Accounts = require('../model/accountsModel');
 const Groups = require('../model/groupsModel');
 const Ledgers = require('../model/ledgersModel');
@@ -45,6 +49,15 @@ exports.getLedgers = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: ledgers,
+  });
+});
+
+exports.getVoucherUnderLedger = catchAsync(async (req, res, next) => {
+  const vouchers = await Vouchers.find({ ledgerId: req.params.id });
+
+  res.status(200).json({
+    status: 'success',
+    data: vouchers,
   });
 });
 
@@ -120,5 +133,26 @@ exports.createVoucher = catchAsync(async (req, res, next) => {
     status: 'success',
     message: 'ledger created successfully',
     data: createVoucher,
+  });
+});
+
+exports.createCSV = catchAsync(async (req, res, next) => {
+  const fields = [
+    'voucherNum',
+    'account',
+    'date',
+    'groupName',
+    'ledgerName',
+    'narration',
+    'type',
+    'amount',
+  ];
+
+  const voucher = await Vouchers.find();
+
+  const csv = json2csv(voucher, { fields });
+
+  fs.writeFile('./public/statement.csv', `${csv}`, (err) => {
+    if (err) throw err;
   });
 });

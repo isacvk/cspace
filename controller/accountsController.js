@@ -137,6 +137,7 @@ exports.createVoucher = catchAsync(async (req, res, next) => {
 });
 
 exports.createCSV = catchAsync(async (req, res, next) => {
+  console.log('Creating CSV ');
   const fields = [
     'voucherNum',
     'account',
@@ -150,9 +151,17 @@ exports.createCSV = catchAsync(async (req, res, next) => {
 
   const voucher = await Vouchers.find();
 
+  console.log('Vouchers : ', voucher);
+
   const csv = json2csv(voucher, { fields });
+
+  console.log('CSV : ', csv);
 
   fs.writeFile('./public/statement.csv', `${csv}`, (err) => {
     if (err) throw err;
+  });
+  res.status(200).json({
+    status: 'success',
+    message: 'csv successfully generated',
   });
 });

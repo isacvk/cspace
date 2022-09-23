@@ -65,7 +65,7 @@ const marriageRegSchema = new mongoose.Schema({
 marriageRegSchema.pre('save', async function (next) {
   this.marriageDay = this.marriageDate.getDate();
   this.marriageMonth = this.marriageDate.getMonth() + 1;
-  console.log(this);
+  console.log('PRE SAVE : ', this);
 });
 
 marriageRegSchema.post('save', async function (doc, next) {
@@ -126,11 +126,11 @@ marriageRegSchema.post('save', async function (doc, next) {
 //   }
 // })
 
-marriageRegSchema.post('save', async function (doc, next) {
+marriageRegSchema.post('save', async (doc, next) => {
   //* WHEN GROOM IS FROM ANOTHR PARISH
   if (!doc.groomId && doc.brideId) {
     console.log('DOC.BRIDE ID : ', doc);
-    const updateIsActive = await Parishioners.findByIdAndUpdate(this.brideId, {
+    const updateIsActive = await Parishioners.findByIdAndUpdate(doc.brideId, {
       isActive: false,
       marriage: doc.marriageDate,
     });
@@ -138,44 +138,64 @@ marriageRegSchema.post('save', async function (doc, next) {
   }
 });
 
-marriageRegSchema.post('save', async function (doc, next) {
+marriageRegSchema.post('save', async (doc, next) => {
   if (doc.brideId && doc.groomId) {
-    console.log('They are from same family');
-    //***CHECK IF THEY ARE SAME FAMILY, IF TRUE DON'T DO ANYTHING
+    console.log('They are from same parish');
 
-    // Remove bride from bride's family
+    const brideData = await Parishioners.findById(doc.brideId);
 
-    const brideFamily = await Parishioners.findById(doc.brideId).select(
-      'familyId',
-    );
-    console.log('Brides family Id : ', brideFamily.familyId);
+    const brideFamily = await Family.findById(brideData.familyId);
 
     const pullBrideId = await Family.findOneAndUpdate(
-      { _id: brideFamily.familyId },
+      { _id: brideFamily._id },
       {
-        $pull: {
-          members: {
-            _id: brideFamily.familyId,
-          },
+        $pullAll: {
+          members: [brideData._id],
         },
       },
+      { new: true },
+      // function (error, success) {
+      //   if (error) {
+      //     console.log('ERR IN PULLING');
+      //   } else {
+      //     console.log('PULLING SUCCESS');
+      //   }
+      // },
     );
+
+    console.log('PULLED : ', pullBrideId);
 
     // Selecting groom family id
-    const groomFamily = await Parishioners.findById(doc.groomId).select(
-      'familyId familyName',
+    const groomData = await Parishioners.findById(doc.groomId);
+
+    const groomFamily = await Family.findById(groomData.familyId);
+
+    console.log('GROOM FAM : ', groomFamily);
+
+    const updateBride = await Parishioners.findByIdAndUpdate(
+      doc.brideId,
+      {
+        familyId: groomFamily._id,
+        familyName: groomFamily.familyName,
+        husband: doc.groomId,
+      },
+      { new: true },
     );
 
-    console.log('Groom family Id : ', groomFamily.familyId);
+    console.log('BRIDE UPD : ', updateBride);
 
-    const updateBride = await Parishioners.findByIdAndUpdate(doc.brideId, {
-      familyId: groomFamily.familyId,
-      familyName: groomFamily.familyName,
-    });
-
-    const addToGroomFamily = await Parishioners.findOneAndUpdate(
+    const updateGroom = await Parishioners.findByIdAndUpdate(
+      doc.groomId,
       {
-        _id: groomFamily.familyId,
+        wife: doc.brideId,
+      },
+      { new: true },
+    );
+    console.log('GROOM UPD : ', updateGroom);
+
+    const addToGroomFamily = await Family.findOneAndUpdate(
+      {
+        _id: groomFamily._id,
       },
       {
         $push: {
@@ -184,12 +204,34 @@ marriageRegSchema.post('save', async function (doc, next) {
           },
         },
       },
+      { new: true },
     );
+
+    // const addToGroomFamily = await Family.findOneAndUpdate(
+    //   {
+    //     _id: groomFamily._id,
+    //   },
+    //   {
+    //     $push: {
+    //       members: [brideData._id],
+    //     },
+    //   },
+    //   { new: true, upsert: true },
+    //   // function (error, success) {
+    //   //   if (error) {
+    //   //     console.log('ERR IN PUSHING : ', error);
+    //   //   } else {
+    //   //     console.log('PUSHING SUCCESS : ', success);
+    //   //   }
+    //   // },
+    // );
+
+    console.log('PUSHED : ', addToGroomFamily);
   }
   next();
 });
 
-marriageRegSchema.post('save', async function (doc, next) {
+marriageRegSchema.post('save', async (doc, next) => {
   let updateList = [];
   if (doc.groomId) updateList.push(doc.groomId);
   if (doc.brideId) updateList.push(doc.brideId);

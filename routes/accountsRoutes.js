@@ -38,9 +38,15 @@ router
     authController.protect,
     authController.restrictTo('Admin', 'Accountant'),
     accountsController.getVouchers,
+  )
+  .post(
+    authController.protect,
+    authController.restrictTo('Accountant'),
+    accountsController.createVoucher,
   );
+
 router
-  .route('/generate-csv')
+  .route('/vouchers/generate-csv')
   .get(
     authController.protect,
     authController.restrictTo('Admin', 'Accountant'),
@@ -53,11 +59,6 @@ router
     authController.protect,
     authController.restrictTo('Admin', 'Accountant'),
     accountsController.getVoucherUnderLedger,
-  )
-  .post(
-    authController.protect,
-    authController.restrictTo('Accountant'),
-    accountsController.createVoucher,
   );
 
 // router

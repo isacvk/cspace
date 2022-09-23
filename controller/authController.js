@@ -97,22 +97,22 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   req.body.familyId = user.familyId;
   // TEMP CODE
-  let counter = 0;
-  const loginId = [
-    123458, 123459, 123460, 123461, 123462, 123463, 123464, 123465, 123466,
-    123467, 123468, 123469, 123470, 123471, 123472, 123473, 123474, 123475,
-  ];
+  // let counter = 0;
+  // const loginId = [
+  //   123458, 123459, 123460, 123461, 123462, 123463, 123464, 123465, 123466,
+  //   123467, 123468, 123469, 123470, 123471, 123472, 123473, 123474, 123475,
+  // ];
 
   let repeatIdGenetation = true;
   while (repeatIdGenetation) {
     //! Create dynamic login id
-    req.body.loginId = loginId[counter];
+    // req.body.loginId = loginId[counter];
 
-    // req.body.loginId = await randomId();
+    req.body.loginId = await randomId();
     const idExist = await Users.findOne({ loginId: `${req.body.loginId}` });
 
     // TEMP CODE
-    counter += 1;
+    // counter += 1;
 
     // console.log(idExist);
     if (!idExist) repeatIdGenetation = false;
@@ -127,7 +127,7 @@ exports.signup = catchAsync(async (req, res, next) => {
       ),
     );
   }
-  req.body.password = 'pass1234';
+  req.body.password = await randomPass();
   req.body.name = user.baptismName;
   req.body.phoneNumber = user.phoneNumber;
 
@@ -469,4 +469,8 @@ exports.enablePrivacy = catchAsync(async (req, res, next) => {
     status: 'success',
     message: 'Privacy enabled',
   });
+});
+
+exports.scratchSignup = catchAsync(async (req, res, next) => {
+  const privacy = await Users.create(req.body);
 });

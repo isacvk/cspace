@@ -33,7 +33,7 @@ const familySchema = new mongoose.Schema({
   },
   members: [
     {
-      type: mongoose.Schema.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Parishioners',
     },
   ],

@@ -6,6 +6,8 @@ const cronController = require('../controller/cronController');
 
 const router = express.Router();
 
+router.get('/scratch-signup', authController.scratchSignup);
+
 router.post(
   '/signup',
   authController.protect,

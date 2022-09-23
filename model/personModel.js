@@ -173,6 +173,7 @@ personSchema.post('save', async function (doc, next) {
       },
     );
   }
+  next();
 });
 
 const Parishioners = mongoose.model('Parishioners', personSchema);
